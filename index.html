@@ -1,0 +1,1843 @@
+<!doctype html>
+<!-- PROTOTYPE - NOT FOR PRODUCTION -->
+<!-- Question: 지원서만 보고 고른 기업을 조달 카드로 키워 순위전에서 살아남게 하는 판단이 12턴 동안 재미있는가? -->
+<!-- Date: 2026-11-13 -->
+<!-- 무대 버전 (2026-11-14, 2026-11-15부터 원본): 같은 규칙에 무대 배경 3겹·종이 지원서·PICK 도장·심사위원석 소품을 입혀 "게임처럼" 보이는지 시험한다. -->
+<!-- 원본은 prototypes/procure-101/ 에 그대로 있다. -->
+
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>혁신기업 키움 리그</title>
+<style>
+  /* 글꼴: 본문 Pretendard(SIL OFL), 제목·숫자 G마켓 산스. 게임 폴더의 vendor/에 들어 있어 오프라인에서도 보인다 */
+  @font-face { font-family: "Pretendard"; src: url(vendor/PretendardVariable.woff2) format("woff2"); font-weight: 45 920; font-display: swap; }
+  @font-face { font-family: "GmarketSans"; src: url(vendor/GmarketSansMedium.woff) format("woff"); font-weight: 500; font-display: swap; }
+  @font-face { font-family: "GmarketSans"; src: url(vendor/GmarketSansBold.woff) format("woff"); font-weight: 700 900; font-display: swap; }
+  :root {
+    --bg: #e9ecef; --panel: #ffffff; --panel2: #f8f9fa; --line: #ced4da; --line2: #dee2e6;
+    --ink: #1f2933; --muted: #535c68; --navy: #1f3a5f; --teal: #2a7f75;
+    --up: #d6283b; --down: #1c6ed6;
+    --pink: #e0367a; --purple: #6a3fe0; --gold: #e8a400;
+    --good: #2b8a3e; --bad: #c92a2a;
+    --font: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+    --font-title: "GmarketSans", "Pretendard", "Malgun Gothic", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #11161c; color: var(--ink); font-family: var(--font); }
+  body { font-variant-numeric: tabular-nums; font-size: 16px; line-height: 1.4; -webkit-tap-highlight-color: transparent; overflow: hidden; height: 100vh; }
+  button { font: inherit; cursor: pointer; }
+  b { font-weight: 800; }
+  /* 데스크톱: 1600x900 고정 무대를 창에 맞춰 축소·확대 (fit()) */
+  #app { width: 1600px; height: 900px; display: flex; flex-direction: column; transform-origin: 0 0; position: absolute; left: 0; top: 0; overflow: hidden; }
+  #app.stage { background: radial-gradient(ellipse at 20% 0%, #ffd6e8 0%, transparent 45%), radial-gradient(ellipse at 80% 0%, #e2d9ff 0%, transparent 45%), linear-gradient(170deg, #fff4f9 0%, #f4f0ff 55%, #eef6ff 100%); }
+  #app.office { background: linear-gradient(180deg, #dfe3e8 0%, #e9ecef 30%); }
+
+  /* ---------- 헤더 ---------- */
+  #hdr { display: flex; align-items: stretch; gap: 10px; padding: 8px 14px; background: #2b3440; color: #f1f3f5; flex: none; }
+  #hdr:empty { display: none; }
+  .stage #hdr { background: linear-gradient(90deg, #3a1d5c, #5a1f4a); }
+  .brand { display: flex; flex-direction: column; justify-content: center; min-width: 150px; }
+  .brand .t1 { font-weight: 900; font-size: 20px; letter-spacing: 0.5px; }
+  .brand .t2 { font-size: 14px; color: #c3cad3; }
+  .hbox { background: rgba(255,255,255,0.08); border-radius: 10px; padding: 5px 12px; display: flex; flex-direction: column; justify-content: center; }
+  .hbox .lbl { font-size: 14px; color: #c3cad3; }
+  .hbox .val { font-size: 20px; font-weight: 800; }
+  .budget-bar { height: 7px; width: 150px; background: rgba(255,255,255,0.18); border-radius: 4px; overflow: hidden; margin-top: 3px; }
+  .budget-bar i { display: block; height: 100%; background: #63e6be; }
+  .money { font-size: 14px; color: #dee2e6; max-width: 330px; }
+  .goals { flex: 1; min-width: 0; font-size: 14px; display: flex; flex-direction: column; justify-content: center; }
+  .goals div { display: flex; gap: 8px; }
+  .goals .gk { color: #ffd43b; font-weight: 800; min-width: 62px; flex: none; }
+  .hbtn { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #fff; border-radius: 8px; padding: 6px 12px; font-size: 14px; align-self: center; flex: none; }
+
+  /* ---------- 시세판 ---------- */
+  #tick { display: flex; flex-wrap: nowrap; gap: 18px; padding: 5px 14px; background: #1b2129; color: #e9ecef; font-size: 14px; overflow: hidden; flex: none; }
+  #tick:empty { display: none; }
+  .tk { display: flex; gap: 6px; align-items: baseline; white-space: nowrap; }
+  .tk .nm { color: #ced4da; }
+  .tk.mine .nm { color: #fff; font-weight: 800; }
+  .tk .my { background: var(--pink); color: #fff; border-radius: 4px; padding: 0 4px; font-size: 14px; font-weight: 800; }
+  .tk .up { color: #ff7b8b; } .tk .down { color: #7fb4ff; }
+  .tk .gone { color: #adb5bd; }
+
+  #main { flex: 1; padding: 12px 14px; min-height: 0; position: relative; }
+
+  /* ---------- 공통 ---------- */
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; }
+  .panel h3 { margin: 0 0 6px; font-size: 16px; color: var(--navy); display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .panel h3 small { font-size: 14px; color: var(--muted); font-weight: 600; }
+  .up { color: var(--up); font-weight: 800; } .down { color: var(--down); font-weight: 800; }
+  .chip { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; border-radius: 999px; padding: 0 8px; border: 1px solid var(--line); background: var(--panel2); white-space: nowrap; }
+  .chip.good { border-color: #8ce99a; background: #ebfbee; color: #1b5e2a; }
+  .chip.bad { border-color: #ffa8a8; background: #fff5f5; color: #9b1c1c; }
+  .chip.badge { border-color: #bac8ff; background: #edf2ff; color: #24308f; font-weight: 700; }
+  .chip.badge.nominee { border-color: #fcc2d7; background: #fff0f6; color: #a61e4d; }
+  .badge-ico { width: 15px; height: 15px; }
+  .btn { border: none; border-radius: 10px; padding: 11px 22px; font-size: 17px; font-weight: 800; background: var(--navy); color: #fff; box-shadow: 0 3px 0 #0f2238; }
+  .btn:disabled { background: #adb5bd; box-shadow: none; cursor: default; color: #fff; }
+  .btn.pink { background: var(--pink); box-shadow: 0 3px 0 #9c1d52; }
+  .btn.ghost { background: #fff; color: var(--navy); border: 2px solid var(--navy); box-shadow: none; }
+  .btn.ghost:disabled { color: #868e96; border-color: #adb5bd; background: #f1f3f5; }
+  .btn.small { padding: 6px 14px; font-size: 15px; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .art { width: 100%; height: 100%; }
+  .toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); background: #212529; color: #fff; padding: 10px 18px; border-radius: 10px; font-size: 16px; z-index: 50; box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+  .bar-bottom { display: flex; justify-content: center; gap: 14px; padding: 10px; margin-top: 12px; align-items: center; flex-wrap: wrap; }
+  .bar-bottom .info { font-size: 16px; color: #3b3f52; }
+
+  /* ---------- 타이틀 ---------- */
+  .title-wrap { max-width: 1100px; margin: 0 auto; padding: 40px 20px; text-align: center; }
+  .title-wrap .kicker { display: inline-block; background: var(--pink); color: #fff; font-weight: 800; padding: 4px 14px; border-radius: 999px; font-size: 15px; }
+  .title-wrap h1 { font-size: 64px; margin: 14px 0 4px; color: #2b1d4a; letter-spacing: -1px; }
+  .title-wrap h1 span { color: var(--pink); }
+  .title-wrap .sub { font-size: 20px; color: #4a4f63; margin-bottom: 20px; }
+  .how { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 20px 0; text-align: left; }
+  .how .panel { display: flex; gap: 12px; align-items: flex-start; font-size: 16px; }
+  .how .ic { width: 72px; height: 72px; flex: none; }
+  .controls { color: #4a4f63; font-size: 16px; margin: 14px 0 22px; }
+  .controls div { margin: 3px 0; }
+
+  /* ---------- 무대 제목 ---------- */
+  .stage-title { text-align: center; margin: 0 0 10px; }
+  .stage-title .ep { display: inline-block; background: linear-gradient(90deg, var(--pink), var(--purple)); color: #fff; padding: 2px 16px; border-radius: 999px; font-weight: 800; font-size: 15px; }
+  .stage-title h2 { margin: 4px 0 2px; font-size: 30px; color: #2b1d4a; }
+  .stage-title p { margin: 0; color: #4a4f63; font-size: 16px; }
+
+  /* ---------- MC (무대) · 비서 (사무실): 조달청 마스코트 나르미와 달이 ---------- */
+  .mc-row { display: grid; grid-template-columns: 130px minmax(0, 1fr) 130px; align-items: end; gap: 14px; max-width: 1240px; margin: 0 auto 10px; }
+  .mc-row .mc-mid { text-align: center; }
+  .mc { display: block; justify-self: center; animation: bob 2.6s ease-in-out infinite; filter: drop-shadow(0 8px 10px rgba(58,29,92,0.18)); }
+  .mc.narmi { height: 124px; }
+  .mc.dali { height: 104px; animation-delay: -1.3s; }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+  .bubble { position: relative; background: #fff; border: 2px solid #e3dcf5; border-radius: 16px; padding: 6px 14px; margin-top: 6px; text-align: left; box-shadow: 0 6px 16px rgba(106,63,224,0.10); }
+  .bubble div { font-size: 16px; color: #2f3445; padding: 1px 0; }
+  .who { display: inline-block; font-size: 14px; font-weight: 900; color: #fff; border-radius: 6px; padding: 0 7px; margin-right: 7px; background: var(--purple); }
+  .who.dali { background: #d9731a; }
+  .title-wrap .mc-row { margin: 6px auto 0; }
+  .sec { display: grid; grid-template-columns: 74px 1fr; gap: 8px; align-items: center; }
+  .sec img { height: 96px; justify-self: center; }
+  .sbub { position: relative; background: #fff8ef; border: 2px solid #f3c99b; border-radius: 12px; padding: 6px 10px; font-size: 15px; color: #3b3326; line-height: 1.35; }
+  .sbub::before { content: ""; position: absolute; left: -9px; top: 22px; border: 8px solid transparent; border-right-color: #f3c99b; border-left: 0; }
+  .report h3 .av { display: inline-flex; align-items: center; gap: 6px; }
+  .report h3 img { height: 30px; }
+
+  /* ---------- 심사위원석: 무대 화면 맨 아래는 플레이어가 앉은 책상 ---------- */
+  .stage #main { padding-bottom: 112px; }
+  .bar-bottom.desk { position: absolute; left: 0; right: 0; bottom: 0; height: 100px; margin: 0; padding: 18px 24px 10px; z-index: 3;
+    background: linear-gradient(180deg, #9aa1ab 0, #747b85 14px, #3a4048 14px, #262a31 100%); box-shadow: 0 -10px 24px rgba(31,41,51,0.18); }
+  .desk .plate { position: absolute; left: 34px; bottom: 16px; background: linear-gradient(180deg, #ffffff, #e9ecef); border: 2px solid #1f3a5f; border-radius: 6px; padding: 4px 18px; text-align: center; box-shadow: 0 4px 0 #11161c; }
+  .desk .plate small { display: block; font-size: 14px; color: #535c68; font-weight: 700; }
+  .desk .plate b { font-size: 20px; color: #1f3a5f; letter-spacing: 2px; }
+  .desk .mic { position: absolute; left: 270px; bottom: 10px; width: 70px; height: 104px; }
+  .desk .info { color: #f1f3f5; }
+  .desk .info b { color: #ffd43b; }
+
+  /* ---------- 오디션 ---------- */
+  .aud { display: grid; grid-template-columns: 820px 1fr; gap: 16px; }
+  .lineup { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; font-size: 15px; color: #4a4f63; align-items: center; }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; align-content: start; }
+  .tile { position: relative; background: #fff; border: 3px solid #e3dcf5; border-radius: 16px; padding: 10px; display: grid; grid-template-columns: 1fr 104px; gap: 4px 8px; cursor: pointer; box-shadow: 0 6px 16px rgba(106,63,224,0.10); }
+  .tile.focus { border-color: var(--purple); box-shadow: 0 0 0 3px #d0bfff; }
+  .tile.picked { border-color: var(--pink); box-shadow: 0 0 0 4px #ffd6e8, 0 10px 22px rgba(224,54,122,0.25); }
+  .tile .no { font-weight: 900; color: var(--purple); font-size: 15px; }
+  .tile .pic { width: 64px; height: 64px; background: linear-gradient(160deg, #f8f0ff, #eef4ff); border-radius: 12px; padding: 3px; border: 1px solid #e3dcf5; }
+  .tile .nm { font-size: 18px; font-weight: 900; grid-column: 1 / -1; }
+  .tile .pd { font-size: 14px; color: var(--muted); grid-column: 1 / -1; }
+  .tile .hx { grid-row: 1 / 3; grid-column: 2; display: flex; justify-content: center; align-items: center; }
+  .tile .stamp, .detail .stamp { position: absolute; top: 8px; right: 10px; background: var(--pink); color: #fff; font-weight: 900; padding: 1px 10px; border-radius: 6px; transform: rotate(6deg); font-size: 16px; letter-spacing: 1px; }
+  .detail { position: relative; background: #fff; border: 3px solid #e3dcf5; border-radius: 18px; padding: 14px 16px; display: grid; grid-template-columns: 250px 1fr; gap: 6px 16px; align-content: start; }
+  .detail.picked { border-color: var(--pink); }
+  .detail .head { grid-column: 1 / -1; display: flex; gap: 12px; align-items: center; }
+  .detail .pic { width: 84px; height: 84px; background: linear-gradient(160deg, #f8f0ff, #eef4ff); border-radius: 14px; padding: 4px; border: 1px solid #e3dcf5; flex: none; }
+  .detail .nm { font-size: 26px; font-weight: 900; }
+  .detail .pd { font-size: 15px; color: var(--muted); }
+  .detail .side { display: flex; flex-direction: column; gap: 6px; }
+  .traits { display: flex; flex-direction: column; gap: 5px; }
+  .trait { font-size: 14px; border-radius: 8px; padding: 4px 9px; }
+  .trait b { display: block; font-size: 15px; }
+  .trait.good { background: #ebfbee; color: #1b5e2a; }
+  .trait.bad { background: #fff5f5; color: #9b1c1c; }
+  .kv { font-size: 15px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+  .kv b { color: var(--ink); font-size: 17px; }
+
+  /* ---------- 월 운영 ---------- */
+  .month { display: grid; grid-template-columns: 820px 1fr; gap: 12px; height: 432px; }
+  .cos { display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: 210px; gap: 12px; }
+  .co { position: relative; background: #fff; border: 2px solid var(--line); border-radius: 14px; padding: 9px 10px; display: grid; grid-template-columns: 54px 1fr 84px; grid-template-rows: auto 1fr auto; gap: 4px 10px; cursor: pointer; overflow: hidden; }
+  .co.target { border-color: var(--navy); box-shadow: inset 0 0 0 2px #a5c8ec; }
+  .co.ok { border-color: var(--teal); background: #f2fbf9; }
+  .co.no { background: #f8f9fa; }
+  .co.hover { box-shadow: inset 0 0 0 4px #63e6be; }
+  .co .pic { width: 54px; height: 54px; background: var(--panel2); border-radius: 10px; padding: 3px; border: 1px solid var(--line2); }
+  .co .nm { font-weight: 900; font-size: 17px; display: flex; gap: 6px; align-items: center; }
+  .co .sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; flex: none; }
+  .co .pd { font-size: 14px; color: var(--muted); }
+  .co .vv { font-size: 21px; font-weight: 900; }
+  .co .vv small { font-size: 15px; margin-left: 6px; }
+  .co .chips { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px; align-content: flex-start; }
+  .co .eff { grid-column: 1 / -1; font-size: 14px; color: #1d6b62; }
+  .co .why { grid-column: 1 / -1; font-size: 14px; border-radius: 8px; padding: 3px 8px; }
+  .co .why.ok { background: #e6fcf5; color: #0b5c4f; }
+  .co .why.no { background: #fff0f0; color: #9b1c1c; }
+  .co .flash { position: absolute; left: 8px; right: 8px; bottom: 8px; background: var(--teal); color: #fff; font-size: 14px; font-weight: 800; padding: 4px 9px; border-radius: 8px; animation: pop .35s ease-out; z-index: 2; }
+  .co.empty { cursor: default; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 15px; border-style: dashed; background: transparent; }
+  @keyframes pop { from { transform: translateY(8px) scale(.95); opacity: 0; } to { transform: none; opacity: 1; } }
+  .center { display: grid; grid-template-rows: 250px 1fr; gap: 12px; min-width: 0; }
+  .chart svg { width: 100%; height: 168px; display: block; }
+  .legend { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 14px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .legend i { width: 18px; height: 4px; border-radius: 2px; display: inline-block; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; min-height: 0; }
+  .twocol .panel { overflow: hidden; }
+  .report div, .news div { font-size: 14px; padding: 2px 0; border-bottom: 1px dashed var(--line2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .report div:last-child, .news div:last-child { border-bottom: none; }
+  .news .tag { display: inline-block; background: #fff0f0; color: var(--bad); font-weight: 800; border-radius: 4px; padding: 0 5px; margin-right: 5px; }
+  .handwrap { margin-top: 12px; display: grid; grid-template-columns: 1fr 340px; gap: 12px; }
+  .hand { display: flex; gap: 12px; }
+  .side-box { display: flex; flex-direction: column; gap: 10px; justify-content: space-between; }
+  .side-box .t { font-weight: 900; font-size: 18px; color: var(--navy); }
+  .side-box .hint { font-size: 15px; color: var(--muted); }
+  .side-box .bud { font-size: 16px; }
+  .side-box .bud b { font-size: 26px; }
+  .side-box .btn { width: 100%; }
+
+  /* ---------- 카드 ---------- */
+  .card { width: 200px; height: 290px; border-radius: 14px; background: #fff; border: 3px solid #adb5bd; display: flex; flex-direction: column; overflow: hidden; cursor: grab; user-select: none; touch-action: none; transition: transform .12s, box-shadow .12s; position: relative; flex: none; }
+  .card:hover { transform: translateY(-4px); }
+  .card.sel { transform: translateY(-8px); box-shadow: 0 0 0 4px #ffd43b, 0 10px 22px rgba(0,0,0,0.25); }
+  .card.dim { filter: grayscale(0.7); }
+  .card.dim .cost { background: #ffe3e3; color: #9b1c1c; }
+  .card .top { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; color: #fff; font-size: 14px; font-weight: 800; }
+  .card .cost { background: #fff; color: var(--ink); border-radius: 999px; padding: 0 8px; font-size: 15px; font-weight: 900; }
+  .card .aw { height: 92px; border-bottom: 2px solid rgba(0,0,0,0.08); flex: none; }
+  .card-art { width: 100%; height: 100%; display: block; }
+  .card-art img { width: 100%; height: 100%; object-fit: contain; display: block; padding: 3px; filter: drop-shadow(0 3px 4px rgba(0,0,0,0.18)); }
+  .img-art { object-fit: contain; display: block; -webkit-user-drag: none; }
+  .fig .pic img { width: 100%; height: 100%; }
+  .card .cn { font-weight: 900; font-size: 15px; padding: 5px 8px 1px; line-height: 1.25; }
+  .card .ct { font-size: 14px; padding: 1px 8px 4px; line-height: 1.32; color: #343a40; flex: 1; }
+  .card .ct div { margin-bottom: 1px; }
+  .card .ct b { color: var(--navy); }
+  .card .rr { font-size: 14px; font-weight: 800; text-align: center; padding: 2px; color: #fff; }
+  .card.r-common { border-color: #adb5bd; } .card.r-common .rr { background: #6c757d; }
+  .card.r-rare { border-color: #4dabf7; } .card.r-rare .rr { background: #1c6ed6; }
+  .card.r-epic { border-color: #9775fa; } .card.r-epic .rr { background: #6a3fe0; }
+  .card.r-legend { border-color: #fab005; box-shadow: 0 0 14px rgba(250, 176, 5, 0.55); } .card.r-legend .rr { background: linear-gradient(90deg, #b35c00, #d98c00, #b35c00); }
+  .k-cert .top { background: #3b5bdb; } .k-trial .top { background: #c2410c; } .k-sales .top { background: #2b8a3e; }
+  .k-rnd .top { background: #6a3fe0; } .k-consult .top { background: #0b7285; } .k-stock .top { background: #8a5a00; }
+  .k-pr .top { background: #b0204f; } .k-all .top { background: #495057; }
+  .drag-ghost { position: fixed; pointer-events: none; z-index: 60; transform-origin: 0 0; opacity: 0.92; box-shadow: 0 16px 30px rgba(0,0,0,0.35); }
+
+  /* ---------- 순위 발표식 ---------- */
+  .ceremony { position: relative; display: grid; grid-template-columns: 960px 1fr; gap: 16px; }
+  .beams { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  .beams i { position: absolute; bottom: -10%; width: 220px; height: 1100px; transform-origin: 50% 100%; background: linear-gradient(0deg, rgba(224,54,122,0.0), rgba(224,54,122,0.16) 40%, rgba(255,255,255,0)); animation: sweep 5s ease-in-out infinite alternate; }
+  .beams i:nth-child(2) { left: 5%; }
+  .beams i:nth-child(3) { left: 32%; background: linear-gradient(0deg, rgba(106,63,224,0), rgba(106,63,224,0.14) 40%, rgba(255,255,255,0)); animation-delay: -1.5s; }
+  .beams i:nth-child(4) { left: 60%; animation-delay: -3s; }
+  .beams i:nth-child(5) { left: 85%; background: linear-gradient(0deg, rgba(232,164,0,0), rgba(232,164,0,0.16) 40%, rgba(255,255,255,0)); animation-delay: -2s; }
+  @keyframes sweep { from { transform: rotate(-14deg); } to { transform: rotate(14deg); } }
+  .beams svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .beams polyline { stroke-dasharray: 300; stroke-dashoffset: 300; animation: draw 1.4s ease-out forwards, fade 1.2s 1.4s ease-in forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes fade { to { opacity: 0.0; } }
+  #main > .stage-title, .ceremony { position: relative; z-index: 1; }
+  .ranks { display: grid; grid-auto-flow: column; grid-template-columns: 1fr 1fr; gap: 8px 12px; align-content: start; }
+  .rk { display: grid; grid-template-columns: 40px 44px 1fr auto; gap: 8px; align-items: center; background: rgba(255,255,255,0.94); border: 2px solid #e3dcf5; border-radius: 12px; padding: 4px 10px; animation: up .45s ease-out; min-height: 58px; }
+  @keyframes up { from { transform: translateY(26px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .rk.hide { visibility: hidden; animation: none; }
+  .rk .n { font-size: 24px; font-weight: 900; color: #5f6477; text-align: center; }
+  .rk.r1 { border-color: var(--gold); background: linear-gradient(90deg, #fff3bf, #fff); box-shadow: 0 6px 20px rgba(232,164,0,0.3); }
+  .rk.r1 .n { color: #a35f00; font-size: 30px; }
+  .rk.r3 .n { color: #9a5418; }
+  .rk.mine { border-color: var(--pink); }
+  .rk.out { background: rgba(248,249,250,0.94); }
+  .rk .pic { width: 44px; height: 44px; }
+  .rk .nm { font-weight: 900; font-size: 16px; display: flex; gap: 6px; align-items: center; }
+  .rk .sub { font-size: 14px; color: var(--muted); }
+  .rk .vv { text-align: right; font-weight: 900; font-size: 17px; }
+  .tag { font-size: 14px; font-weight: 900; border-radius: 6px; padding: 0 6px; white-space: nowrap; }
+  .tag.my { background: var(--pink); color: #fff; }
+  .tag.drop { background: #e9ecef; color: #495057; }
+  .tag.elim { background: #343a40; color: #fff; }
+  .tag.nom { background: linear-gradient(90deg, #b35c00, #d9480f); color: #fff; }
+  .judge .vs { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; text-align: center; margin: 4px 0 8px; }
+  .judge .vs .big { font-size: 28px; font-weight: 900; }
+  .judge .vs .l { font-size: 14px; color: var(--muted); }
+  .judge .vs .mid { font-weight: 900; color: var(--purple); font-size: 18px; }
+  .lines div { display: flex; justify-content: space-between; gap: 10px; font-size: 15px; padding: 3px 0; border-bottom: 1px dashed var(--line2); }
+  .lines div.total { border-bottom: none; font-size: 18px; font-weight: 900; padding-top: 5px; }
+  .adv { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .advc { display: grid; grid-template-columns: 44px 1fr auto; gap: 10px; align-items: center; border: 2px solid var(--line); border-radius: 12px; padding: 4px 10px; background: #fff; cursor: pointer; font-size: 15px; }
+  .advc.on { border-color: var(--pink); background: #fff0f6; }
+  .advc.focus { outline: 3px dashed var(--purple); outline-offset: 2px; }
+  .advc .sm { font-size: 14px; color: var(--muted); }
+  .advc .st { font-weight: 900; font-size: 15px; border-radius: 8px; padding: 3px 10px; }
+  .advc.on .st { background: var(--pink); color: #fff; }
+  .advc:not(.on) .st { background: #343a40; color: #fff; }
+  .advc .pic { width: 44px; height: 44px; }
+  .side-col { display: flex; flex-direction: column; gap: 10px; }
+
+  /* ---------- 지명 · 결과 ---------- */
+  .finalists { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 1300px; margin: 0 auto; }
+  .finalists .detail { cursor: pointer; grid-template-columns: 300px 1fr; }
+  .detail.focus { outline: 3px dashed var(--purple); outline-offset: 3px; }
+  .result { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 340px 1fr; gap: 16px; }
+  .grade { text-align: center; background: #fff; border-radius: 20px; border: 3px solid var(--gold); padding: 18px; box-shadow: 0 10px 30px rgba(232,164,0,0.25); }
+  .grade .g { font-size: 130px; font-weight: 900; line-height: 1; color: var(--pink); }
+  .grade .gt { font-size: 26px; font-weight: 900; margin: 4px 0; }
+  .grade p { font-size: 16px; color: #3b3f52; }
+  .result .ranks { grid-auto-flow: row; grid-template-columns: 1fr; }
+  .figs { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+  .fig { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 8px; text-align: center; font-size: 14px; font-weight: 700; }
+  .fig .pic { width: 96px; height: 96px; margin: 0 auto; }
+  .fig .pic svg { width: 100%; height: 100%; }
+
+  /* ---------- 스핀오프: 공공 쇼케이스 무대 (흰색·연회색·남색·청록). 배경 3겹, 마우스 시차 ---------- */
+  #app.stage { background: #e9eef3; }
+  #bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; display: none; }
+  #app.stage #bg { display: block; }
+  #bg i { position: absolute; display: block; background-repeat: no-repeat; will-change: transform; transition: filter .6s ease; }
+  #bg .bg-back { inset: -24px; background: url(assets/stage/stage_back.webp) center top / cover no-repeat; }
+  #bg .bg-seats { left: 50%; bottom: 196px; width: 1240px; height: 520px; margin-left: -620px; background: url(assets/stage/stage_seats.webp) center bottom / contain no-repeat; }
+  #bg .bg-floor { left: -40px; right: -40px; bottom: 96px; height: 110px; background: url(assets/stage/stage_floor.webp) center bottom / 100% 100% no-repeat; }
+  #bg::after { content: ""; position: absolute; inset: 0; transition: background .6s ease; background: radial-gradient(ellipse at 50% 40%, rgba(233,238,243,0) 45%, rgba(31,58,95,0.18) 100%); }
+  /* 조명 강약: 서류를 읽는 화면(오디션·지명)은 배경을 흐리고 옅게 가라앉히고, 발표식·결과·타이틀에서만 또렷하게 */
+  #app.dim #bg i { filter: blur(3px) saturate(0.7); }
+  #app.dim #bg::after { background: rgba(233,238,243,0.55); }
+  #hdr, #tick, #main { position: relative; z-index: 1; }
+  .stage #hdr { background: linear-gradient(90deg, #14304f, #1f3a5f); }
+  .stage-title .ep, .title-wrap .kicker { background: #0c8599; }
+  .stage .stage-title h2, .stage .title-wrap h1 { color: #14304f; text-shadow: 0 2px 0 rgba(255,255,255,0.85), 0 0 18px rgba(255,255,255,0.9); }
+  .stage .title-wrap h1 span { color: #0c8599; }
+  .stage .title-wrap .sub, .stage .controls { background: rgba(255,255,255,0.86); border-radius: 12px; padding: 6px 18px; color: #2b3a4e; box-shadow: 0 4px 14px rgba(31,58,95,0.12); }
+  .stage .title-wrap .sub { display: inline-block; max-width: 900px; }
+  .stage .controls { width: fit-content; margin-left: auto; margin-right: auto; }
+  .stage .stage-title p, .stage .lineup { color: #2b3a4e; }
+  .stage .bubble { border-color: #cfdae6; box-shadow: 0 6px 16px rgba(31,58,95,0.12); }
+  .stage .who { background: #1f3a5f; }
+  .stage .btn.pink { background: #0c8599; box-shadow: 0 3px 0 #075e6b; }
+  .stage .tag.my { background: #1f3a5f; }
+  .stage .rk.mine { border-color: #0c8599; }
+  .stage .beams i { background: linear-gradient(0deg, rgba(12,133,153,0), rgba(12,133,153,0.12) 40%, rgba(255,255,255,0)); }
+  .stage .beams i:nth-child(3) { background: linear-gradient(0deg, rgba(31,58,95,0), rgba(31,58,95,0.10) 40%, rgba(255,255,255,0)); }
+  .stage .beams i:nth-child(5) { background: linear-gradient(0deg, rgba(232,164,0,0), rgba(232,164,0,0.12) 40%, rgba(255,255,255,0)); }
+
+  /* 지원서: 클립이 꽂힌 종이 한 장 */
+  .stage .tiles { row-gap: 22px; padding-top: 10px; }
+  .stage .tile, .stage .detail { background: linear-gradient(170deg, #ffffff, #f7f5ef); border: 1px solid #dfe4ea; border-radius: 10px; box-shadow: 0 8px 18px rgba(31,58,95,0.16); transition: translate .12s, box-shadow .12s; }
+  .stage .tile::before, .stage .detail::before { content: ""; position: absolute; top: -13px; left: 50%; width: 46px; height: 32px; margin-left: -23px; background: url(assets/stage/clip.png) center / contain no-repeat; z-index: 3; }
+  .stage .tiles .tile:nth-child(odd) { rotate: -0.6deg; } .stage .tiles .tile:nth-child(even) { rotate: 0.5deg; }
+  .stage .tile:hover { translate: 0 -3px; }
+  .stage .tile.focus { translate: 0 -5px; border-color: #0c8599; box-shadow: 0 0 0 3px #99d8e0, 0 14px 24px rgba(31,58,95,0.22); }
+  .stage .tile.picked, .stage .detail.picked { border-color: #1f3a5f; box-shadow: 0 0 0 3px #a9bdd6, 0 14px 24px rgba(31,58,95,0.22); }
+  .stage .tile .no { color: #0c8599; }
+  .stage .tile .pic, .stage .detail .pic { background: #fff; border: 1px solid #e3e7ec; border-radius: 6px; }
+  .stage .detail { padding-top: 22px; }
+  body:not(.mobile) .stage .aud .detail .btn[data-act="pick"] { display: none; }
+
+  /* PICK 도장: 도장이 내려와 찍히고, 관공서 직인처럼 붉은 인주 자국이 남는다 */
+  .inkmark { position: absolute; top: 40px; right: 6px; width: 96px; height: 96px; background: url(assets/stage/stamp_ink.png) center / contain no-repeat; display: flex; align-items: center; justify-content: center; rotate: -14deg; mix-blend-mode: multiply; pointer-events: none; z-index: 2; }
+  .inkmark b { color: #d6283b; font-size: 22px; font-weight: 900; letter-spacing: 1px; opacity: 0.92; }
+  .inkmark.big { width: 136px; height: 136px; top: auto; bottom: 22px; right: 46px; } .inkmark.big b { font-size: 34px; }
+  .inkmark.fresh { animation: ink .9s ease-out var(--d, 0s) both; }
+  @keyframes ink { 0%, 32% { opacity: 0; scale: 1.5; } 38% { opacity: 1; scale: 0.92; } 52%, 100% { opacity: 1; scale: 1; } }
+  .stamper { position: absolute; top: -20px; right: 22px; width: 70px; pointer-events: none; z-index: 4; animation: stamper .9s ease-in-out var(--d, 0s) both; }
+  .inkmark.big + .stamper { width: 96px; top: auto; bottom: 64px; right: 66px; }
+  @keyframes stamper { 0% { transform: translate(40px, -110px) rotate(20deg); opacity: 0; } 12% { opacity: 1; } 34% { transform: translate(0, 0) rotate(0) scale(1.04, 0.94); } 56% { transform: translate(0, -8px) rotate(0); opacity: 1; } 100% { transform: translate(50px, -150px) rotate(22deg); opacity: 0; } }
+
+  /* 심사위원석 소품: 책상 상판, 명패, 마이크, 큰 PICK 버튼 */
+  .stage #main { padding-bottom: 130px; }
+  .bar-bottom.desk { height: 118px; background: #c9a77c url(assets/stage/desk_top.webp) center top / 100% 100% no-repeat; box-shadow: 0 -10px 24px rgba(31,58,95,0.2); }
+  .desk .plate { left: 18px; bottom: 6px; width: 340px; height: 104px; padding: 0 40px 2px 0; background: url(assets/stage/nameplate.png) center / contain no-repeat; border: none; box-shadow: none; border-radius: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+  .desk .mic { left: 360px; bottom: 6px; width: 100px; height: 128px; object-fit: contain; filter: drop-shadow(0 6px 8px rgba(0,0,0,0.3)); }
+  .desk .info { color: #14304f; font-weight: 700; background: rgba(255,255,255,0.8); border-radius: 8px; padding: 4px 12px; }
+  .desk .info b { color: #0c8599; }
+  .bigpick { position: absolute; right: 40px; bottom: 4px; width: 172px; height: 172px; border: none; background: none; padding: 0; }
+  .bigpick img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 10px 12px rgba(0,0,0,0.3)); transition: transform .08s; }
+  .bigpick:active img { transform: translateY(6px) scale(1, 0.94); }
+  .bigpick span { position: absolute; left: 0; right: 0; top: 24%; text-align: center; color: #fff; font-weight: 900; font-size: 26px; letter-spacing: 1px; text-shadow: 0 2px 0 #0b1f36; pointer-events: none; }
+  .bigpick.on span { font-size: 20px; }
+  .bigpick small { position: absolute; left: 0; right: 0; bottom: -2px; text-align: center; color: #14304f; font-size: 14px; font-weight: 800; pointer-events: none; }
+
+  /* ---------- 피드백 반영 (2026-11-14): 글꼴, 타이틀 순서, 심사장, 지원서, 월 운영, 성과 발표, 도움말 ---------- */
+  .title-wrap h1, .stage-title h2, .stage-title .ep, .title-wrap .kicker, .brand .t1, .btn, .bigpick span, .grade .g, .grade .gt,
+  .rk .n, .br .n, .pod .pr, .hbox .val, .co .vv, .judge .vs .big, .tile .no, .tile .nm, .detail .nm, .detail .val b, .card .cn,
+  .ovhead h3, .ovbody h4, .step .no, .step .st, .side-box .bud b, .lines .total, .rankp .r, .tray .cnt, .appl .tagn span { font-family: var(--font-title); }
+  .title-wrap h1 { font-weight: 700; letter-spacing: -0.5px; }
+  .btn { font-weight: 700; letter-spacing: 0.2px; }
+  [data-tip] { cursor: help; }
+  #tip { position: fixed; display: none; z-index: 100; max-width: 360px; background: #14304f; color: #fff; font-size: 14px; line-height: 1.45; padding: 6px 11px; border-radius: 8px; box-shadow: 0 8px 22px rgba(0,0,0,0.3); pointer-events: none; }
+
+  /* 헤더: 시세판 줄을 빼고, 제목·분기를 한 칸에 모아 목표 문장 자리를 넓힌다 */
+  .brand { min-width: 190px; } .brand .t1 { font-size: 19px; font-weight: 700; } .brand .t2 { font-size: 14px; }
+  .money { max-width: 250px; }
+  .goals .gk { min-width: 78px; }
+  .hbtns { display: flex; gap: 6px; align-self: center; flex: none; }
+
+  /* 타이틀: 1 → 2 → 3 순서가 보이게 */
+  .title-wrap { padding: 22px 20px; }
+  .title-wrap h1 { font-size: 60px; margin: 10px 0 4px; }
+  .how { grid-template-columns: 1fr 44px 1fr 44px 1fr; gap: 0; margin: 18px 0 10px; align-items: stretch; }
+  .how .arrow { display: flex; align-items: center; justify-content: center; }
+  .how .arrow::before { content: ""; border-left: 18px solid #0c8599; border-top: 13px solid transparent; border-bottom: 13px solid transparent; }
+  .how .step { position: relative; padding: 14px 14px 10px; font-size: 15px; line-height: 1.45; }
+  .step .no { position: absolute; top: -14px; left: -10px; width: 36px; height: 36px; border-radius: 50%; background: #0c8599; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; box-shadow: 0 3px 0 #075e6b; }
+  .step .st { display: block; font-size: 18px; color: #14304f; margin-bottom: 3px; font-weight: 700; }
+  .loop { display: inline-block; background: rgba(255,255,255,0.88); border: 1px dashed #0c8599; color: #14304f; font-weight: 700; border-radius: 999px; padding: 4px 16px; font-size: 15px; }
+  .title-wrap .controls { margin: 12px auto 14px; }
+  .title-wrap .row .btn { min-width: 180px; }
+
+  /* 심사장: 무대에 기업이 입장하고 지원서가 심사위원석 서류함으로 날아간다 (--age: 연출이 지난 시간) */
+  .lobby { position: absolute; inset: 0; pointer-events: none; z-index: 4; }
+  #bg .bg-seats { transition: opacity .5s ease, filter .6s ease; } #app.lobby-on #bg .bg-seats { opacity: 0; }
+  .lobby .appl { position: absolute; top: 400px; width: 190px; margin-left: -95px; text-align: center; animation: enter .7s cubic-bezier(.2,.8,.3,1.15) both; animation-delay: calc(var(--t) - var(--age)); }
+  .appl .pp { width: 124px; height: 124px; margin: 0 auto -40px; position: relative; z-index: 2; filter: drop-shadow(0 10px 8px rgba(31,58,95,0.25)); }
+  .appl .pl { width: 176px; display: block; margin: 0 auto; }
+  .appl .tagn { margin-top: 6px; display: inline-block; background: #fff; border: 1px solid #cfdae6; border-radius: 8px; padding: 3px 12px; font-weight: 800; color: #14304f; font-size: 16px; box-shadow: 0 4px 10px rgba(31,58,95,0.12); white-space: nowrap; }
+  .appl .tagn span { color: #0c8599; margin-right: 6px; font-size: 13px; }
+  @keyframes enter { from { opacity: 0; transform: translateY(-70px) scale(.8); } to { opacity: 1; transform: none; } }
+  .lobby .fold { position: absolute; top: 400px; width: 60px; opacity: 0; --dy: 280px; animation: fly .9s ease-in-out both; animation-delay: calc(var(--t) - var(--age)); filter: drop-shadow(0 6px 6px rgba(0,0,0,0.25)); }
+  @keyframes fly {
+    0% { opacity: 0; transform: translate(0, 40px) scale(.5); }
+    18% { opacity: 1; transform: translate(0, -46px) scale(1) rotate(-10deg); }
+    60% { opacity: 1; transform: translate(calc(var(--dx) * 0.6), calc(var(--dy) * 0.2 - 80px)) rotate(8deg) scale(.95); }
+    92% { opacity: 1; transform: translate(var(--dx), var(--dy)) scale(.7); }
+    100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.6); }
+  }
+  .lobby .tray { position: absolute; left: 1200px; bottom: 22px; width: 230px; margin-left: -115px; }
+  .tray img { width: 100%; display: block; position: relative; }
+  .tray i { position: absolute; left: 50%; width: 140px; margin-left: -70px; height: 9px; background: #1f3a5f; border: 1px solid #0f2238; border-radius: 3px; opacity: 0; animation: land .3s ease-out both; animation-delay: calc(var(--t) - var(--age)); }
+  .tray i:nth-child(even) { rotate: -2deg; } .tray i:nth-child(odd) { rotate: 1.5deg; }
+  @keyframes land { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: none; } }
+  .tray .cnt { position: absolute; left: 50%; top: -32px; transform: translateX(-50%); background: #0c8599; color: #fff; font-weight: 700; border-radius: 999px; padding: 3px 14px; white-space: nowrap; font-size: 15px; box-shadow: 0 3px 0 #075e6b; }
+
+  /* 지원서 요약 카드: 육각형을 빼고 제품 그림을 키우고, 그 자리에 핵심 역량·예상 가치 */
+  .tile { grid-template-columns: 108px 1fr; gap: 6px 10px; padding: 10px 12px; }
+  .tile .pcol { display: flex; flex-direction: column; gap: 2px; }
+  .tile .inkmark { left: 26px; right: auto; top: 46px; width: 92px; height: 92px; } .tile .stamper { left: 30px; right: auto; top: -10px; }
+  .tile .info .pd { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tile .pic { width: 108px; height: 108px; padding: 4px; }
+  .tile .info { min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 1px; }
+  .tile .info .nm { font-size: 19px; font-weight: 700; grid-column: auto; }
+  .tile .info .pd { font-size: 14px; grid-column: auto; }
+  .tile .sec { font-size: 13px; color: #0c8599; font-weight: 700; }
+  .tile .ev { margin-top: 4px; font-size: 13px; color: var(--muted); } .tile .ev b { font-size: 17px; color: #14304f; margin-left: 4px; }
+  .tile .corebox, .tile .tr { grid-column: 1 / -1; }
+  .corebox, .corerow { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .corebox .lbl, .corerow .lbl { font-size: 13px; color: var(--muted); font-weight: 700; border-bottom: 1px dotted #868e96; }
+  .corechip { background: #fff0f6; color: #a61e4d; border: 1px solid #fcc2d7; border-radius: 999px; padding: 0 9px; font-size: 14px; font-weight: 700; white-space: nowrap; }
+  .corechip b { font-weight: 900; }
+
+  /* 지원서 상세: 육각형을 크게, 이름표는 바깥에, 오른쪽은 핵심 역량·장단점·잘 맞는 카드로 채운다 */
+  .detail { grid-template-columns: 390px 1fr; gap: 8px 18px; padding: 14px 18px; }
+  .detail .head { gap: 14px; }
+  .detail .head .hd { flex: 1; min-width: 0; }
+  .detail .pic { width: 96px; height: 96px; }
+  .detail .nm { font-size: 28px; font-weight: 700; }
+  .detail .head .val { text-align: right; padding-right: 6px; }
+  .detail .head .val span { display: block; font-size: 14px; color: var(--muted); }
+  .detail .head .val b { font-size: 26px; color: #14304f; font-weight: 700; }
+  .detail .hexwrap { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+  .hlp { border: 1px solid #b7d8de; background: #fff; color: #0c8599; font-weight: 700; border-radius: 999px; padding: 3px 14px; font-size: 14px; }
+  .detail .side { gap: 8px; }
+  .trait { display: grid; grid-template-columns: 36px 1fr; column-gap: 8px; align-items: baseline; padding: 4px 10px; }
+  .trait b { grid-row: span 2; font-size: 13px; display: inline; }
+  .trait .tn { font-weight: 800; font-size: 15px; }
+  .trait .td { font-size: 14px; grid-column: 2; }
+  .fitk { display: flex; flex-direction: column; gap: 3px; font-size: 14px; background: #f1f6fb; border-radius: 8px; padding: 6px 10px; }
+  .fitk div { display: flex; gap: 8px; } .fitk span { color: var(--muted); min-width: 76px; font-weight: 700; flex: none; }
+  .fitk .g b { color: #0b5c4f; } .fitk .b b { color: #9b1c1c; }
+  .kv2 { font-size: 14px; display: flex; gap: 8px; } .kv2 span { min-width: 84px; color: var(--muted); font-weight: 700; flex: none; } .kv2 b { font-weight: 600; }
+  .stage .detail .stamp { background: #1f3a5f; }
+  .detail .inkmark.big { right: auto; left: 22px; bottom: 12px; width: 120px; height: 120px; }
+  .detail .inkmark.big + .stamper { right: auto; left: 34px; bottom: 56px; width: 150px; }
+  .stage .grade .g { color: #0c8599; }
+
+  /* 월 운영: 시세판이 빠진 만큼 위 칸을 키우고, 기업 카드의 작은 육각형은 능력치 막대로 */
+  .month { height: 470px; }
+  .cos { grid-auto-rows: 229px; }
+  .co { grid-template-columns: 62px 1fr 176px; grid-template-rows: auto 1fr auto; }
+  .co .pic { width: 62px; height: 62px; }
+  .co .mid { min-width: 0; }
+  .co .pd { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .co .vv { white-space: nowrap; font-size: 20px; }
+  .co .vv small { display: block; margin-left: 0; }
+  .co .vv { font-weight: 700; }
+  .co .more { grid-column: 1; grid-row: 2; align-self: start; border: 1px solid #b7d8de; background: #fff; color: #0c8599; font-weight: 700; border-radius: 8px; padding: 2px 0; font-size: 13px; }
+  .co .sbars { grid-column: 3; grid-row: 1 / 3; }
+  .sbars div { display: grid; grid-template-columns: 56px 1fr 40px; align-items: center; gap: 5px; font-size: 13px; line-height: 1.3; }
+  .sbars span { color: #495057; }
+  .sbars i { height: 7px; background: #e9ecef; border-radius: 4px; overflow: hidden; }
+  .sbars i b { display: block; height: 100%; background: #8fa3b8; }
+  .sbars .core span { color: #c2255c; font-weight: 800; } .sbars .core i b { background: #c2255c; }
+  .sbars em { font-style: normal; font-weight: 800; text-align: right; }
+  .sbars em small { color: #2b8a3e; margin-left: 2px; font-size: 11px; }
+  .center { grid-template-rows: 268px 1fr; }
+  .chart .plot svg { width: 100%; height: 200px; display: block; }
+  .live { color: #d6283b; animation: blink 0.8s ease-in-out infinite alternate; }
+  @keyframes blink { from { opacity: 1; } to { opacity: 0.35; } }
+  .rankp .rows div { display: grid; grid-template-columns: 22px 40px 1fr auto 58px; gap: 6px; font-size: 13.5px; align-items: center; padding: 1px 4px; border-bottom: 1px dashed var(--line2); border-radius: 4px; }
+  .rankp .rows div:last-child { border-bottom: none; }
+  .rankp .rows .mine { background: #eef6ff; font-weight: 700; }
+  .rankp .r { font-weight: 700; color: #14304f; text-align: center; }
+  .rankp .tag { font-size: 12px; text-align: center; padding: 0 4px; }
+  .rankp .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rankp .rows span:last-child { text-align: right; font-size: 13px; }
+  .tag.my { background: #1f3a5f; color: #fff; }
+  .month.animating .hand, .month.animating .co .more { opacity: 0.5; filter: grayscale(0.4); pointer-events: none; }
+  .handwrap { grid-template-columns: 1fr 430px; }
+  .hand { gap: 10px; }
+  .side-box { gap: 8px; }
+  .sbub { font-size: 14.5px; line-height: 1.45; }
+  .side-box .bud { display: flex; align-items: baseline; gap: 8px; } .side-box .bud b { font-size: 24px; font-weight: 700; } .side-box .bud .hint { margin-left: auto; font-size: 14px; }
+  .row.nowrap { flex-wrap: nowrap; } .row.nowrap .btn { flex: 1; width: auto; padding: 6px 8px; }
+
+  /* 카드: 크기는 그대로, 무엇을 하는 카드인지 한 줄과 잘 맞는 기업을 더한다 */
+  .card .aw { height: 78px; }
+  .card .cn { font-size: 15px; font-weight: 700; padding: 5px 8px 0; }
+  .card .ab { font-size: 12.5px; color: #5c6672; padding: 1px 8px 3px; line-height: 1.3; }
+  .card .ct { font-size: 13.5px; line-height: 1.3; }
+  .card .fit { font-size: 12px; padding: 3px 8px; background: #f1f6fb; color: #2b3a4e; border-top: 1px solid #e3e7ec; line-height: 1.3; }
+  .card .fit b { color: #0c8599; margin-right: 3px; }
+
+  /* 분기 성과 발표: 시상대 + 전체 순위 막대 + 예산 결과 */
+  .ceremony { grid-template-columns: 470px 1fr 400px; gap: 14px; height: 476px; }
+  .podwrap { position: relative; height: 476px; }
+  .podwrap .podium { position: absolute; left: 0; bottom: 0; width: 470px; }
+  .pod { position: absolute; width: 160px; margin-left: -80px; text-align: center; z-index: 2; }
+  .pod.p1 { left: 235px; bottom: 182px; } .pod.p2 { left: 78px; bottom: 140px; } .pod.p3 { left: 392px; bottom: 112px; }
+  .pod.on { animation: up .6s cubic-bezier(.2,.8,.3,1.2) both; }
+  .pod .pn { font-weight: 800; font-size: 16px; color: #14304f; background: rgba(255,255,255,0.9); border-radius: 8px; padding: 1px 6px; display: inline-block; }
+  .pod .pv { font-size: 14px; font-weight: 700; margin: 3px auto; background: rgba(255,255,255,0.9); border-radius: 8px; padding: 0 6px; display: inline-block; color: #14304f; }
+  .pod .pn + .pv { display: block; width: fit-content; }
+  .pod .pv .tag { font-size: 12px; }
+  .pod .pp { position: relative; width: 104px; height: 104px; margin: 0 auto; filter: drop-shadow(0 8px 8px rgba(31,58,95,0.25)); }
+  .pod.p1 .pp { width: 124px; height: 124px; }
+  .pod .md { position: absolute; right: -14px; bottom: 4px; width: 38px; z-index: 2; }
+  .pod .pq { width: 84px; height: 84px; margin: 0 auto 10px; border-radius: 50%; background: rgba(255,255,255,0.7); border: 2px dashed #8fa3b8; color: #8fa3b8; font-size: 40px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
+  .pod .pr { position: absolute; left: 50%; top: 100%; transform: translateX(-50%); margin-top: 40px; font-size: 40px; font-weight: 700; color: #fff; text-shadow: 0 2px 0 #0b1f36; }
+  .bars { height: 476px; overflow: hidden; padding: 8px 12px; display: flex; flex-direction: column; gap: 3px; }
+  .bars h3 { margin-bottom: 2px; }
+  .br { display: grid; grid-template-columns: 30px 48px 118px 80px 1fr 76px 64px; align-items: center; gap: 6px; font-size: 14px; border-radius: 8px; padding: 0 6px; flex: none; animation: up .45s ease-out; }
+  .br.hide { visibility: hidden; animation: none; }
+  .br.mine { background: #eef6ff; }
+  .br .n { font-size: 18px; font-weight: 700; color: #535c68; text-align: center; }
+  .br.r1 .n { color: #b8860b; } .br.r2 .n { color: #7d8794; } .br.r3 .n { color: #a5582a; }
+  .br .pic { width: min(48px, calc(var(--rh) - 10px)); height: min(48px, calc(var(--rh) - 10px)); }
+  .br .nm { font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .br .tag { font-size: 12px; justify-self: start; }
+  .br .track { height: 16px; background: #eef1f4; border-radius: 8px; overflow: hidden; }
+  .br .track i { display: block; height: 100%; background: #adb5bd; border-radius: 8px; transform-origin: left; animation: grow .8s ease-out both; }
+  .br.mine .track i { background: linear-gradient(90deg, #1f3a5f, #0c8599); }
+  .br.gone .track i { background: #495057; }
+  .br .vv { text-align: right; font-weight: 800; }
+  .br .g { text-align: right; font-size: 13px; }
+  @keyframes grow { from { transform: scaleX(0); } to { transform: none; } }
+  .ceremony .side-col { max-height: 476px; overflow: auto; }
+  .judge .vs .big { font-size: 24px; }
+  .judge p { margin: 4px 0; font-size: 15px; }
+  .ceremony .lines div { font-size: 14px; padding: 2px 0; }
+  .advhint { font-size: 14px; }
+  .advc { padding: 3px 8px; font-size: 14px; }
+  .advc.on { border-color: #1f3a5f; background: #eef6ff; } .advc.on .st { background: #1f3a5f; }
+  .advc.focus { outline-color: #0c8599; }
+
+  /* 도움말 · 기업 자세히 보기 창 */
+  #ov { position: absolute; inset: 0; z-index: 40; pointer-events: none; }
+  #ov:empty { display: none; }
+  .ovbg { position: absolute; inset: 0; background: rgba(15,25,40,0.45); pointer-events: auto; }
+  .ovbox { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); background: #fff; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.35); pointer-events: auto; display: flex; flex-direction: column; max-height: 840px; }
+  .ovbox.help { width: 1300px; height: 820px; }
+  .ovbox.codet { width: 960px; }
+  .ovhead { display: flex; align-items: center; gap: 16px; padding: 12px 18px; border-bottom: 1px solid #e3e7ec; flex: none; }
+  .ovhead h3 { margin: 0; color: #14304f; font-size: 22px; font-weight: 700; }
+  .tabs { display: flex; gap: 6px; }
+  .tab { border: 1px solid #cfdae6; background: #fff; border-radius: 999px; padding: 6px 18px; font-weight: 700; color: #2b3a4e; font-size: 15px; }
+  .tab.on { background: #1f3a5f; color: #fff; border-color: #1f3a5f; }
+  .ovhead .x { margin-left: auto; border: none; background: #e9eef3; border-radius: 8px; padding: 7px 16px; font-weight: 700; color: #14304f; }
+  .ovbody { overflow: auto; padding: 6px 22px 20px; font-size: 15px; }
+  .ovbody h4 { color: #14304f; font-size: 18px; margin: 14px 0 6px; font-weight: 700; }
+  .ovbody p { margin: 4px 0 8px; }
+  .hrow { display: grid; grid-template-columns: 320px 1fr; gap: 18px; align-items: center; }
+  .hgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .hgrid.two { grid-template-columns: repeat(2, 1fr); }
+  .hitem { border: 1px solid #e3e7ec; border-radius: 10px; padding: 6px 10px; display: flex; flex-direction: column; gap: 1px; }
+  .hitem b { color: #14304f; } .hitem span { font-size: 14px; } .hitem small { font-size: 13px; color: var(--muted); }
+  .hitem.good { background: #ebfbee; } .hitem.bad { background: #fff5f5; }
+  .hitem.kind i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 6px; }
+  b.core { color: #c2255c; }
+  .hcards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .hc { display: grid; grid-template-columns: 64px 1fr; gap: 8px; border: 1px solid #e3e7ec; border-radius: 10px; padding: 6px; font-size: 13.5px; line-height: 1.4; }
+  .hc .ha { width: 64px; height: 64px; border-radius: 8px; overflow: hidden; }
+  .hc small { color: var(--muted); } .hab { color: #2b3a4e; } .hct { color: #495057; } .hct b { color: var(--navy); }
+  .hfit { color: #0c8599; font-weight: 700; font-size: 12.5px; }
+  .terms div { display: grid; grid-template-columns: 170px 1fr; gap: 12px; padding: 9px 0; border-bottom: 1px dashed #e3e7ec; }
+  .terms b { color: #14304f; }
+  .codet .detail { border: none; box-shadow: none; background: none; rotate: none; }
+  .codet .detail::before { display: none; }
+
+  /* ---------- 모바일 세로: 고정 무대를 풀고 스크롤 ---------- */
+  body.mobile { overflow: auto; height: auto; background: #e9ecef; }
+  body.mobile #app { position: static; width: auto; height: auto; min-height: 100vh; transform: none !important; overflow: visible; }
+  body.mobile #hdr { flex-wrap: wrap; padding: 8px 10px; gap: 6px; }
+  body.mobile .brand { min-width: 0; flex: 1 1 100%; flex-direction: row; gap: 8px; align-items: baseline; }
+  body.mobile .money { display: none; }
+  body.mobile .goals { flex: 1 1 100%; order: 9; }
+  body.mobile #tick { flex-wrap: wrap; gap: 3px 12px; padding: 5px 10px; }
+  body.mobile #main { padding: 10px 10px 96px; }
+  body.mobile .title-wrap { padding: 24px 6px; }
+  body.mobile .title-wrap h1 { font-size: 42px; }
+  body.mobile .how { grid-template-columns: 1fr; }
+  body.mobile #app { overflow-x: hidden; max-width: 100vw; }
+  body.mobile .chip { white-space: normal; }
+  body.mobile .hbtn { padding: 4px 8px; }
+  body.mobile .aud, body.mobile .month, body.mobile .ceremony, body.mobile .result, body.mobile .finalists, body.mobile .handwrap { grid-template-columns: minmax(0, 1fr); height: auto; }
+  body.mobile .tiles { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+  body.mobile .tile { grid-template-columns: 1fr; padding: 8px; }
+  body.mobile .tile .hx { display: none; }
+  body.mobile .detail { grid-template-columns: 1fr; justify-items: stretch; }
+  body.mobile .detail .hexwrap { display: flex; justify-content: center; }
+  body.mobile .cos { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; }
+  body.mobile .co { min-width: 300px; height: 210px; scroll-snap-align: start; }
+  body.mobile .center { grid-template-rows: auto auto; }
+  body.mobile .twocol { grid-template-columns: 1fr; }
+  body.mobile .hand { overflow-x: auto; padding: 10px 2px 6px; scroll-snap-type: x mandatory; }
+  body.mobile .card { scroll-snap-align: start; width: 190px; }
+  body.mobile .ranks { grid-auto-flow: row; grid-template-columns: 1fr; grid-template-rows: none !important; }
+  body.mobile .stage-title h2 { font-size: 24px; }
+  body.mobile .bar-bottom, body.mobile .side-box .btn.next { position: fixed; left: 0; right: 0; bottom: 0; margin: 0; z-index: 20; }
+  body.mobile .bar-bottom { background: rgba(255,255,255,0.96); box-shadow: 0 -4px 14px rgba(0,0,0,0.12); padding: 10px; }
+  body.mobile .side-box .btn.next { border-radius: 0; padding: 16px; }
+  body.mobile .beams { position: fixed; }
+  body.mobile #main { display: flex; flex-direction: column; gap: 10px; }
+  body.mobile .month { display: contents; }
+  body.mobile .cos { order: 1; } body.mobile .handwrap { order: 2; margin-top: 0; } body.mobile .center { order: 3; }
+  body.mobile .chart svg { height: auto; }
+  body.mobile .mc-row { grid-template-columns: 64px minmax(0, 1fr) 56px; gap: 6px; }
+  body.mobile .mc.narmi { height: 72px; } body.mobile .mc.dali { height: 60px; }
+  body.mobile .bubble div { font-size: 15px; }
+  body.mobile .bar-bottom.desk { position: fixed; height: auto; padding: 16px 10px 10px; gap: 8px;
+    background: linear-gradient(180deg, #9aa1ab 0, #747b85 8px, #3a4048 8px, #262a31 100%); }
+  body.mobile .desk .plate { position: static; padding: 2px 10px; }
+  body.mobile .desk .plate small { display: none; } body.mobile .desk .plate b { font-size: 15px; }
+  body.mobile .desk .mic { display: none; }
+  body.mobile #bg { position: fixed; }
+  body.mobile #bg .bg-seats { width: 100%; left: 0; margin-left: 0; bottom: 90px; }
+  body.mobile .bigpick { display: none; }
+  body.mobile .desk .plate { background: #fff; width: auto; height: auto; border-radius: 6px; padding: 2px 10px; }
+  body.mobile .stage .tiles .tile { rotate: none; }
+</style>
+</head>
+<body>
+<div id="app"><div id="bg" aria-hidden="true"><i class="bg-back"></i><i class="bg-seats"></i><i class="bg-floor"></i></div><div id="hdr"></div><div id="tick"></div><div id="main"></div><div id="ov"></div></div>
+<div id="tip"></div>
+<div id="toast"></div>
+<script src="config.js"></script>
+<script src="data.js"></script>
+<script src="art.js"></script>
+<script>
+'use strict';
+// 혁신기업 키움 리그: DOM과 SVG로 그리는 대시보드형 게임. 고정 스텝 루프, 시계 hook, window.game,
+// play·figures 장면은 점검 스크립트가 읽으므로 유지한다.
+
+// ---- Built to be checked ----------------------------------------------------------------
+const params = new URLSearchParams(location.search);
+const tune = new Proxy({}, { get: (_, k) => CONFIG[k].value }); // live: tune.speed is CONFIG.speed.value
+const STEP = 1 / 60;            // simulation step in seconds
+const TITLE = '혁신기업 키움 리그';
+const CONTROLS = [
+  '클릭·터치: 카드를 고른 뒤 기업을 누르면 지원 (카드를 기업 위로 끌어다 놓아도 됨)',
+  '키보드: 1~5 카드 선택 · ←→ 기업 선택 · Space 지원/PICK · Enter 다음 달/확정',
+  'H: 도움말 · I: 기업 자세히 보기 · M: 소리 켜기/끄기',
+];
+const clock = window.GAME_CLOCK || { now: () => performance.now() / 1000 }; // a check may inject one
+const CHEAP = params.get('render') === 'cheap';
+let seed;
+function rng() { // mulberry32; every gameplay random call reads this, never Math.random
+  seed = (seed + 0x6D2B79F5) | 0;
+  let t = Math.imul(seed ^ (seed >>> 15), seed | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+const events = []; // window.game.events
+
+// ---- Input: keys by position (event.code), OS key repeat ignored ------------------------
+const down = new Set(), hit = new Set();
+const pressed = code => hit.has(code);
+addEventListener('keydown', e => {
+  startAudio();
+  if (!e.repeat) { down.add(e.code); hit.add(e.code); }
+  if (e.code === 'Space' || e.code.startsWith('Arrow')) e.preventDefault();
+});
+addEventListener('keyup', e => down.delete(e.code));
+addEventListener('blur', () => down.clear());
+
+// ---- Audio: started on first input, mute on M --------------------------------------------
+let audio = null, muted = false;
+function startAudio() {
+  if (!audio) {
+    const ac = window.GAME_AUDIO || new (window.AudioContext || window.webkitAudioContext)();
+    const out = ac.createGain(); out.gain.value = muted ? 0 : tune.volume;
+    out.connect(ac.destination); audio = { ac, out };
+  }
+  if (audio.ac.state === 'suspended') audio.ac.resume();
+}
+function setMuted(m) { muted = m; if (audio) audio.out.gain.value = m ? 0 : tune.volume; mark(); }
+addEventListener('tune', () => setMuted(muted));
+function tone(freq, dur, type = 'square', vol = 0.3, delay = 0) {
+  if (!audio || muted) return;
+  const t = audio.ac.currentTime + delay, o = audio.ac.createOscillator(), g = audio.ac.createGain();
+  o.type = type; o.frequency.value = freq;
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  o.connect(g).connect(audio.out); o.start(t); o.stop(t + dur);
+}
+const sfx = {
+  // 도장이 종이에 닿는 순간(0.3초)에 맞춰 둔탁한 소리, 이어서 짧은 차임
+  pick: () => { tone(120, 0.14, 'sine', 0.6, 0.3); tone(70, 0.22, 'triangle', 0.45, 0.3); tone(660, 0.12, 'triangle', 0.2, 0.42); tone(990, 0.18, 'triangle', 0.18, 0.5); },
+  unpick: () => tone(330, 0.12, 'triangle', 0.2),
+  card: () => { tone(784, 0.1, 'sine', 0.3); tone(1175, 0.2, 'sine', 0.22, 0.07); },
+  no: () => tone(160, 0.18, 'sawtooth', 0.12),
+  next: () => { tone(440, 0.08, 'triangle', 0.18); tone(523, 0.12, 'triangle', 0.18, 0.08); },
+  fanfare: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.3, 'triangle', 0.22, i * 0.12)),
+  reveal: () => tone(880, 0.08, 'square', 0.08),
+  elim: () => { tone(330, 0.25, 'sawtooth', 0.12); tone(220, 0.4, 'sawtooth', 0.12, 0.2); },
+};
+
+// ---- Helpers ----------------------------------------------------------------------------
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const avg = a => a.length ? a.reduce((s, x) => s + x, 0) / a.length : 0;
+const fmtV = v => `${v.toFixed(1)}억`;
+const fmtP = x => `${x >= 0 ? '+' : '−'}${Math.abs(x * 100).toFixed(1)}%`;
+const cls = x => x >= 0 ? 'up' : 'down';
+const CARD = Object.fromEntries(CARDS.map(c => [c.id, c]));
+const LINE_COLORS = ['#d6283b', '#2a7f75', '#6a3fe0', '#e8890c', '#1c6ed6'];
+let dirty = true;
+function mark() { dirty = true; }
+function toast(text) { state.toast = { text, until: state.t + 2.2 }; mark(); }
+
+// ---- Game state -------------------------------------------------------------------------
+let scene, state;
+function reset() {
+  seed = Number(params.get('seed')) || CONFIG.seed;
+  state = {
+    t: 0, score: 0, gained: '',
+    phase: 'audition', quarter: 1, turn: 0,
+    cos: {}, order: [], qStart: {},
+    budget: tune.budgetQ1, alloc: [{ k: '1분기 배정 예산', v: tune.budgetQ1 }], spentQ: 0, spentTotal: 0,
+    hand: [], selected: null, target: 0, rerolled: false,
+    applicants: [], picks: [], need: 0, focus: 0,
+    cer: null, nominee: null, nomPick: null,
+    news: [], report: [], toast: null, result: null,
+    lobby: null, anim: null, pending: null, help: null, coDetail: null,
+  };
+}
+const all = () => state.order.map(id => state.cos[id]);
+const existing = () => all().filter(c => c.status !== 'applicant');
+const mine = () => all().filter(c => c.status === 'mine');
+const has = (co, t) => co.traits.includes(t);
+function colorOf(co) { return LINE_COLORS[mineOrder().indexOf(co.id) % LINE_COLORS.length] || '#868e96'; }
+function mineOrder() { return all().filter(c => c.everPicked).map(c => c.id); }
+
+function score(co) { // 핵심 역량 가중 평균 (0~1)
+  let s = 0;
+  for (const st of STATS) s += (co.core.includes(st.key) ? 0.25 : 0.125) * co.stats[st.key] / 100;
+  return s;
+}
+function makeCompany(def) {
+  const stats = {};
+  for (const st of STATS) stats[st.key] = clamp(def.stats[st.key] + Math.round((rng() * 2 - 1) * 3), 5, 100);
+  const co = {
+    id: def.id, name: def.name, product: def.product, sector: def.sector, art: def.art, energy: !!def.energy,
+    core: def.core, traits: def.traits, stats, prevStats: { ...stats }, badges: [], effects: [],
+    status: 'applicant', everPicked: false, joined: state.turn, hist: [], path: [], trialQuarter: 0,
+    cardsThisMonth: 0, stockThisMonth: false, flash: null, spent: 0, lastG: 0, lastWhy: [],
+  };
+  co.value = co.start = Math.round(tune.startValue * (0.5 + score(co)) * 10) / 10;
+  co.hist[state.turn] = co.value;
+  return co;
+}
+
+// ---- 카드 규칙 ----------------------------------------------------------------------------
+function traitMul(co, kind) {
+  let m = 1;
+  for (const t of co.traits) {
+    const km = TRAITS[t].kindMul && TRAITS[t].kindMul[kind];
+    if (km === 'good') m *= tune.goodFactor; else if (km === 'bad') m *= tune.mismatchFactor; else if (typeof km === 'number') m *= km;
+  }
+  if (has(co, 'solo')) m *= 1.3;
+  if (state.nominee === co.id) m *= tune.nomineeFactor;
+  return m;
+}
+function cardCost(card, co) { return co && has(co, 'patent') && card.kind === 'cert' ? Math.round(card.cost * 0.7) : card.cost; }
+function cardCond(card, co) {
+  if (!co || co.status !== 'mine') return '내 기업만 지원할 수 있습니다';
+  if (has(co, 'solo') && co.cardsThisMonth >= 1) return '1인 개발 체제: 이번 달은 이미 지원받음';
+  const c = card.cond || {};
+  if (c.notBadge && co.badges.includes(c.notBadge)) return `이미 [${BADGES[c.notBadge].name}] 지정됨`;
+  if (c.badge && !co.badges.includes(c.badge)) return `[${BADGES[c.badge].name}] 배지가 필요합니다`;
+  if (c.stat) {
+    let min = c.min;
+    if (card.id === 'innov' && has(co, 'exec')) min = 55;
+    if (card.id === 'gpass' && has(co, 'export')) min = 45;
+    if (co.stats[c.stat] < min) return `${STAT_NAME[c.stat]} ${min} 필요 (현재 ${Math.floor(co.stats[c.stat])})`;
+  }
+  if (c.trialThisQuarter && co.trialQuarter !== state.quarter) return '이번 분기에 먼저 써보기(시범구매)를 받은 기업만 가능합니다';
+  if (state.budget < cardCost(card, co)) return `예산 부족 (${cardCost(card, co)}억 필요)`;
+  return '';
+}
+function addStat(co, k, amt) {
+  if (k === 'pub' && has(co, 'civic')) amt *= 1.5;
+  if (k === 'mkt' && has(co, 'export')) amt *= 1.5;
+  if (k === 'prod' && has(co, 'lab')) amt *= 0.5;
+  const before = co.stats[k];
+  co.stats[k] = Math.min(100, co.stats[k] + amt);
+  return co.stats[k] - before;
+}
+function linkOk(link, co) { return (link.badge && co.badges.includes(link.badge)) || (link.energy && co.energy); }
+function applyFx(list, co, m, out) {
+  for (const f of list) {
+    if (f.stat) { const a = addStat(co, f.stat, f.amt * m); out.push(`${STAT_NAME[f.stat]} +${Math.round(a)}`); }
+    if (f.allStats) { STATS.forEach(s => addStat(co, s.key, f.amt * m)); out.push(`모든 스탯 +${Math.round(f.amt * m)}`); }
+    if (f.lowest) {
+      const k = STATS.map(s => s.key).reduce((a, b) => co.stats[a] <= co.stats[b] ? a : b);
+      const a = addStat(co, k, f.amt * m); out.push(`${STAT_NAME[k]} +${Math.round(a)}`);
+    }
+    if (f.bump) { co.value *= 1 + f.bump * m; out.push(`기업가치 +${(f.bump * m * 100).toFixed(1)}%`); }
+    if (f.pct) { co.effects.push({ pct: f.pct * m, left: f.months }); out.push(`${f.months}개월 매달 +${(f.pct * m * 100).toFixed(1)}%`); }
+    if (f.grant && !co.badges.includes(f.grant)) { co.badges.push(f.grant); out.push(`[${BADGES[f.grant].name}] 지정`); }
+  }
+}
+function playCard(handIdx, coId) {
+  const card = CARD[state.hand[handIdx]], co = state.cos[coId];
+  if (!card) return false;
+  const why = cardCond(card, co);
+  if (why) { toast(why); sfx.no(); return false; }
+  const cost = cardCost(card, co);
+  state.budget -= cost; state.spentQ += cost; state.spentTotal += cost;
+  const targets = card.fx.some(f => f.allMine) ? mine() : [co];
+  for (const t of targets) {
+    const out = [];
+    const m = traitMul(t, card.kind);
+    applyFx(card.fx, t, m, out);
+    if (card.link && linkOk(card.link, t)) applyFx(card.linkFx, t, m, out);
+    t.flash = { text: out.join(' · '), until: state.t + 2.6 };
+    t.hist[state.turn] = t.value;
+    t.spent += cost / targets.length;
+  }
+  co.cardsThisMonth++;
+  if (card.kind === 'trial') co.trialQuarter = state.quarter;
+  if (card.kind === 'stock') co.stockThisMonth = true;
+  state.hand.splice(handIdx, 1);
+  state.selected = null;
+  state.news.unshift({ turn: state.turn, text: `${co.name}, ${card.name}${targets.length > 1 ? ' (내 기업 전체)' : ''}` });
+  events.push({ type: 'card', card: card.id, co: co.id });
+  sfx.card(); mark();
+  return true;
+}
+function drawHand() {
+  const w = RARITY_WEIGHTS[state.quarter - 1];
+  for (let tries = 0; tries < 30; tries++) {
+    const pool = CARDS.filter(c => w[c.rarity] > 0);
+    const hand = [];
+    while (hand.length < tune.handSize && pool.length) {
+      const total = pool.reduce((s, c) => s + w[c.rarity], 0);
+      let r = rng() * total, i = 0;
+      while (r > w[pool[i].rarity]) { r -= w[pool[i].rarity]; i++; }
+      hand.push(pool.splice(Math.min(i, pool.length - 1), 1)[0].id);
+    }
+    const affordable = hand.filter(id => CARD[id].cost <= state.budget).length;
+    if (affordable >= Math.min(2, hand.length) || tries === 29) { state.hand = hand; break; }
+  }
+  state.selected = null;
+}
+
+// ---- 성장 엔진 ----------------------------------------------------------------------------
+function simulateMonth() {
+  for (const co of existing()) {
+    const why = [];
+    if (co.status !== 'mine') { // 시장에서 스스로 자란다
+      for (const k of co.core) addStat(co, k, rng() * tune.selfStatDrift * 2);
+    }
+    if (has(co, 'qa')) co.stats.qual = Math.min(100, co.stats.qual + 1);
+    let g = tune.growthBase + tune.growthPerStat * (score(co) - 0.5);
+    why.push(`역량 ${fmtP(g)}`);
+    if (co.status !== 'mine') g += tune.selfGrowth;
+    let b = 0;
+    for (const k of co.badges) b += tune[BADGES[k].tune];
+    if (b) { g += b; why.push(`배지 ${fmtP(b)}`); }
+    let e = 0;
+    for (const ef of co.effects) { e += ef.pct; ef.left--; }
+    co.effects = co.effects.filter(ef => ef.left > 0);
+    if (e) { g += e; why.push(`지원 효과 ${fmtP(e)}`); }
+    let tr = 0;
+    for (const t of co.traits) if (TRAITS[t].monthly) tr += TRAITS[t].monthly;
+    if (has(co, 'cashpoor') && co.stats.fin < 40) tr -= 0.02;
+    if (has(co, 'late')) tr += state.quarter <= 2 ? -0.01 : 0.03;
+    if (has(co, 'material') && !co.stockThisMonth) tr -= 0.01;
+    if (tr) { g += tr; why.push(`특성 ${fmtP(tr)}`); }
+    let vol = tune.growthNoise;
+    if (has(co, 'steady')) vol *= 0.5;
+    if (has(co, 'volatile')) vol *= 2;
+    const n = (rng() * 2 - 1) * vol;
+    g += n; why.push(`시장 ${fmtP(n)}`);
+    co.value = Math.max(5, co.value * (1 + g));
+    co.lastG = g; co.lastWhy = why;
+    co.cardsThisMonth = 0; co.stockThisMonth = false;
+  }
+}
+
+// ---- 진행 --------------------------------------------------------------------------------
+function startGame() { reset(); scene = 'play'; audition(1); events.push({ type: 'start' }); }
+function audition(q) {
+  state.phase = 'audition'; state.quarter = q;
+  const pool = COMPANIES.filter(d => d.quarter === q);
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  const n = q === 1 ? tune.applicantsQ1 : tune.applicantsLater;
+  state.applicants = [];
+  for (const d of pool.slice(0, n)) {
+    const co = makeCompany(d);
+    state.cos[co.id] = co; state.order.push(co.id); state.applicants.push(co.id);
+  }
+  state.picks = []; state.focus = 0;
+  state.need = Math.min(q === 1 ? tune.pickQ1 : tune.pickLater, state.applicants.length);
+  state.phase = 'lobby'; state.lobby = { t0: state.t, done: false };
+  mark();
+}
+/** 심사장 연출의 시간표(초): 기업이 차례로 입장한 뒤, 차례로 지원서를 심사위원석 서류함에 낸다 */
+function lobbyTimes(n) {
+  const enter = i => i * tune.lobbyEnterGap, sendStart = enter(n - 1) + 0.9;
+  const send = i => sendStart + i * tune.lobbySendGap;
+  return { enter, send, land: i => send(i) + 0.9, end: send(n - 1) + 1.2 };
+}
+/** 심사장: 연출 중이면 끝 장면으로 건너뛰고, 다 끝났으면 오디션(지원서 심사)으로 넘어간다 */
+function confirmLobby() {
+  const L = state.lobby;
+  if (!L.done) { L.done = true; L.t0 = state.t - lobbyTimes(state.applicants.length).end; mark(); return; }
+  state.lobby = null; state.phase = 'audition'; sfx.next(); mark();
+}
+function togglePick(id) {
+  const i = state.picks.indexOf(id);
+  if (i >= 0) { state.picks.splice(i, 1); sfx.unpick(); }
+  else if (state.picks.length < state.need) { state.picks.push(id); state.stampFx = { id, t: state.t }; sfx.pick(); }
+  else { toast(`이번 오디션은 ${state.need}곳만 PICK할 수 있습니다`); sfx.no(); }
+  mark();
+}
+function confirmAudition() {
+  if (state.picks.length !== state.need) { toast(`${state.need}곳을 PICK해야 합니다`); sfx.no(); return; }
+  for (const id of state.applicants) {
+    const co = state.cos[id];
+    if (state.picks.includes(id)) { co.status = 'mine'; co.everPicked = true; state.news.unshift({ turn: state.turn, text: `${co.name}, 혁신조달 오디션 합격` }); }
+    else co.status = 'dropped';
+  }
+  state.applicants = [];
+  snapshotQuarter();
+  startMonth();
+}
+function snapshotQuarter() { for (const co of existing()) state.qStart[co.id] = co.value; }
+function startMonth() {
+  state.phase = 'month'; state.rerolled = false; state.target = 0;
+  drawHand();
+  mark();
+}
+function nextMonth() {
+  if (state.anim) { finishMonthAnim(); return; }
+  for (const co of mine()) co.prevStats = { ...co.stats };
+  const from = Object.fromEntries(existing().map(co => [co.id, co.value]));
+  simulateMonth();
+  state.turn++;
+  for (const co of existing()) { co.hist[state.turn] = co.value; co.path[state.turn] = wiggle(co, from[co.id], co.value); }
+  state.report = mine().map(co => ({ name: co.name, g: co.lastG, why: co.lastWhy }));
+  events.push({ type: 'month', turn: state.turn });
+  state.selected = null;
+  state.anim = { t0: state.t };
+  sfx.next(); mark();
+}
+/** 결산 연출이 끝나면(또는 건너뛰면) 다음 달 카드를 받거나 분기 성과 발표로 간다 */
+function finishMonthAnim() {
+  state.anim = null;
+  if (state.turn % 3 === 0) ceremony(); else startMonth();
+}
+const SUB = 10; // 한 달 구간을 차트에서 몇 칸으로 나눠 오르내림을 보여 줄지
+/** 화면용 난수(게임 결과에는 쓰지 않는다): 같은 기업·같은 달이면 늘 같은 값 */
+function hash01(str) { let h = 2166136261; for (const ch of str) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967296; }
+/** 한 달 동안의 오르내림: 시작값에서 끝값까지 가되 중간에 흔들린다. 끝값은 결산 결과 그대로. */
+function wiggle(co, v0, v1) {
+  const amp = Math.max(Math.abs(v1 - v0) * 0.7, v0 * 0.015), pts = [];
+  for (let k = 1; k < SUB; k++) {
+    const f = k / SUB;
+    pts.push(v0 + (v1 - v0) * f + (hash01(co.id + ':' + state.turn + ':' + k) * 2 - 1) * amp * Math.sin(Math.PI * f));
+  }
+  pts.push(v1);
+  return pts;
+}
+/** 결산 연출 진행도 0~1 (연출 중이 아니면 1) */
+function animP() { return state.anim ? clamp((state.t - state.anim.t0) / Math.max(0.01, tune.monthAnim), 0, 1) : 1; }
+/** 차트에 그릴 점 목록 [[달(소수), 기업가치], ...]. 마지막 달은 연출 진행도만큼만 그린다. */
+function series(co) {
+  const out = [], p = animP();
+  for (let t = 0; t <= state.turn; t++) {
+    const v = co.hist[t], prev = co.hist[t - 1], pts = co.path[t];
+    if (v == null) continue;
+    if (prev == null || !pts) { out.push([t, v]); continue; }
+    const lim = t === state.turn ? p : 1;
+    for (let k = 1; k <= SUB; k++) {
+      const f = k / SUB;
+      if (f <= lim + 1e-9) { out.push([t - 1 + f, pts[k - 1]]); continue; }
+      const a = k === 1 ? prev : pts[k - 2];
+      out.push([t - 1 + lim, a + (pts[k - 1] - a) * (lim - (k - 1) / SUB) * SUB]);
+      break;
+    }
+  }
+  return out;
+}
+/** 지금 화면에 보일 기업가치(결산 연출 중에는 오르내리는 중간값) */
+function valNow(co) { const sr = series(co); return sr.length ? sr[sr.length - 1][1] : co.value; }
+function ceremony() {
+  const q = state.quarter;
+  const ranking = existing().slice().sort((a, b) => b.value - a.value);
+  const qg = co => co.value / (state.qStart[co.id] || co.start) - 1;
+  const my = ranking.filter(c => c.status === 'mine');
+  const other = ranking.filter(c => c.status !== 'mine');
+  const myG = avg(my.map(qg)), dropG = avg(other.map(qg));
+  const diffPts = (myG - dropG) * 100;
+  const perf = Math.round(diffPts * tune.budgetPerPoint);
+  const top = ranking[0] && ranking[0].status === 'mine' ? tune.budgetTopBonus : 0;
+  const carry = Math.round(state.budget * tune.budgetCarry);
+  const next = clamp(tune.budgetBase + perf + top + carry, tune.budgetMin, tune.budgetMax);
+  const keep = q === 2 ? 3 : q === 3 ? 2 : my.length;
+  state.cer = {
+    q, ranking: ranking.map(c => c.id), growth: Object.fromEntries(ranking.map(c => [c.id, qg(c)])),
+    myG, dropG, diffPts, perf, top, carry, next, keep: Math.min(keep, my.length),
+    eliminating: q === 2 || q === 3,
+    advance: my.slice(0, Math.min(keep, my.length)).map(c => c.id),
+    start: state.t, revealed: 0, final: q === 4,
+  };
+  state.phase = 'ceremony'; state.focus = 0;
+  sfx.fanfare(); mark();
+}
+function confirmCeremony() {
+  const c = state.cer;
+  if (c.revealed < c.ranking.length) { c.revealed = c.ranking.length; mark(); return; }
+  if (c.final) { finish(); return; }
+  if (c.eliminating && c.advance.length !== c.keep) { toast(`${c.keep}곳을 다음 라운드로 올려보내야 합니다`); sfx.no(); return; }
+  if (c.eliminating) {
+    for (const co of mine()) if (!c.advance.includes(co.id)) {
+      co.status = 'eliminated';
+      state.news.unshift({ turn: state.turn, text: `${co.name}, ${c.q}분기 성과 발표에서 탈락` });
+      sfx.elim();
+    }
+  }
+  state.alloc = [{ k: `${c.q + 1}분기 기본 배정`, v: tune.budgetBase }, { k: '성과 평가', v: c.perf }];
+  if (c.top) state.alloc.push({ k: '1위 기업 보유', v: c.top });
+  if (c.carry) state.alloc.push({ k: '이월', v: c.carry });
+  state.budget = c.next; state.spentQ = 0;
+  state.cer = null;
+  state.quarter++;
+  if (state.quarter <= 3 && tune.pickLater > 0) audition(state.quarter);
+  else if (state.quarter <= 3) { snapshotQuarter(); startMonth(); }
+  else { state.phase = 'nominate'; state.nomPick = null; state.focus = 0; mark(); }
+}
+function confirmNominate() {
+  if (!state.nomPick) { toast('국가대표 후보를 한 곳 지명하세요'); sfx.no(); return; }
+  state.nominee = state.nomPick;
+  state.news.unshift({ turn: state.turn, text: `${state.cos[state.nominee].name}, 국가대표 후보 지명` });
+  sfx.fanfare();
+  snapshotQuarter();
+  startMonth();
+}
+function finish() {
+  const ranking = existing().slice().sort((a, b) => b.value - a.value);
+  const nom = state.cos[state.nominee] || mine()[0];
+  const rank = ranking.indexOf(nom) + 1;
+  const rankPts = rank === 1 ? 40 : rank === 2 ? 30 : rank === 3 ? 22 : rank <= 5 ? 14 : 6;
+  const picked = all().filter(c => c.everPicked), dropped = existing().filter(c => !c.everPicked);
+  const mult = c => c.value / c.start;
+  const R = avg(picked.map(mult)) / Math.max(0.01, avg(dropped.map(mult)));
+  const portPts = clamp((R - 1) * 60, 0, 30);
+  const created = picked.reduce((s, c) => s + (c.value - c.start), 0);
+  const eff = created / Math.max(1, state.spentTotal);
+  const effPts = clamp(eff * tune.effPoints, 0, 20);
+  const bw = { innov: 2, excel: 3, gpass: 4, venture: 1 };
+  const badgePts = clamp(nom.badges.reduce((s, b) => s + (bw[b] || 0), 0), 0, 10);
+  const total = Math.round(rankPts + portPts + effPts + badgePts);
+  const gi = total >= tune.gradeS ? 0 : total >= tune.gradeA ? 1 : total >= tune.gradeB ? 2 : total >= tune.gradeC ? 3 : total >= tune.gradeD ? 4 : 5;
+  state.result = { nom: nom.id, rank, rankPts, R, portPts, created, eff, effPts, badgePts, total, grade: GRADES[gi], ranking: ranking.map(c => c.id) };
+  state.score = total; state.gained = `${GRADES[gi].g} 등급: ${GRADES[gi].title}`;
+  scene = 'results';
+  events.push({ type: 'end', grade: GRADES[gi].g, total });
+  sfx.fanfare(); mark();
+}
+
+// ---- 화면 그리기 ----------------------------------------------------------------------------
+const $ = id => document.getElementById(id);
+function setHTML(el, html) {
+  if (el._html === html) return;
+  const keep = [...el.querySelectorAll('[data-keep]')].map(n => [n.dataset.keep, n.scrollLeft]);
+  el.innerHTML = html; el._html = html;
+  for (const [k, x] of keep) { const n = el.querySelector(`[data-keep="${k}"]`); if (n) n.scrollLeft = x; }
+}
+const monthName = turn => `${Math.min(12, turn + 1)}월`;
+/** 받침에 맞는 조사를 붙인다: josa('그린필터텍', '이', '가') → '그린필터텍이' */
+function josa(w, withB, noB) {
+  const c = w.charCodeAt(w.length - 1);
+  return w + (c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 ? withB : noB);
+}
+const MASCOT = { narmi: { src: 'assets/narmi.png', name: '나르미' }, dali: { src: 'assets/dali.png', name: '달이' } };
+/** 무대 제목 줄: 왼쪽 MC 나르미, 가운데 제목과 말풍선, 오른쪽 MC 달이. lines = [[who, text], ...] */
+function mcHead(ep, title, lines) {
+  const talk = lines.map(([who, text]) => `<div><span class="who ${who}">MC ${MASCOT[who].name}</span>${text}</div>`).join('');
+  return `<div class="stage-title mc-row">
+    <img class="mc narmi" src="${MASCOT.narmi.src}" alt="MC 나르미">
+    <div class="mc-mid">${ep ? `<span class="ep">${ep}</span>` : ''}${title ? `<h2>${title}</h2>` : ''}<div class="bubble">${talk}</div></div>
+    <img class="mc dali" src="${MASCOT.dali.src}" alt="MC 달이"></div>`;
+}
+/**
+ * 무대 화면 맨 아래: 플레이어가 앉은 심사위원석 책상(상판, 명패, 마이크). inner = 정보와 버튼.
+ * pick = { id, on } 이면 책상 오른쪽에 큰 PICK 버튼을 놓는다(오디션 화면).
+ */
+function desk(inner, pick) {
+  const btn = pick ? `<button class="bigpick ${pick.on ? 'on' : ''}" data-act="pick" data-id="${pick.id}"><img src="assets/stage/pick_button.png" alt="" draggable="false"><span>${pick.on ? 'PICK 취소' : 'PICK'}</span><small>Space</small></button>` : '';
+  return `<div class="bar-bottom desk"><div class="plate"><small>조달청 혁신조달 심사본부</small><b>심사위원</b></div><img class="mic" src="assets/stage/mic.png" alt="" draggable="false">${inner}${btn}</div>`;
+}
+/**
+ * 지원서에 찍힌 PICK 도장. 방금 찍은 지원서에는 도장이 내려오는 연출을 붙인다.
+ * 화면을 다시 그려도 연출이 처음부터 반복되지 않게, 지난 시간만큼 음수 지연(--d)을 준다.
+ */
+function stampMark(id, big) {
+  const fx = state.stampFx, age = fx && fx.id === id ? state.t - fx.t : 99;
+  if (age >= 1) return `<span class="inkmark ${big ? 'big' : ''}"><b>PICK</b></span>`;
+  const d = `style="--d:-${age.toFixed(3)}s"`;
+  return `<span class="inkmark fresh ${big ? 'big' : ''}" ${d}><b>PICK</b></span><img class="stamper" src="assets/stage/stamp.png" alt="" ${d}>`;
+}
+/** 효과 배율을 말로: 1배는 '그대로', 0.5배는 '절반', 나머지는 'n배' */
+const mulTxt = m => Math.abs(m - 1) < 0.005 ? '그대로' : Math.abs(m - 0.5) < 0.005 ? '절반' : `${+m.toFixed(2)}배`;
+/** 이 기업에서 카드 효과가 커지거나 줄어드는 까닭 목록 [{name, m}] */
+function mulWhy(co, kind) {
+  const r = [];
+  for (const t of co.traits) {
+    const km = TRAITS[t].kindMul && TRAITS[t].kindMul[kind];
+    const m = km === 'good' ? tune.goodFactor : km === 'bad' ? tune.mismatchFactor : typeof km === 'number' ? km : 0;
+    if (m) r.push({ name: TRAITS[t].name, m });
+  }
+  if (has(co, 'solo')) r.push({ name: TRAITS.solo.name, m: 1.3 });
+  if (state.nominee === co.id) r.push({ name: '국가대표 후보', m: tune.nomineeFactor });
+  return r;
+}
+/** '효과 2배 (현장에 강한 팀)'처럼 한눈에 읽히는 효과 설명 */
+function effectTxt(co, card) {
+  const m = traitMul(co, card.kind), why = mulWhy(co, card.kind);
+  return `효과 ${mulTxt(m)}${why.length ? ` (${why.map(w => w.name).join(', ')})` : ''}`;
+}
+/** 카드 분야(kind)와 잘 맞는 특성 이름들 */
+function fitTraitsOf(kind, good = true) {
+  return Object.values(TRAITS).filter(t => {
+    const km = t.kindMul && t.kindMul[kind];
+    if (km == null) return false;
+    const m = km === 'good' ? tune.goodFactor : km === 'bad' ? tune.mismatchFactor : km;
+    return good ? m > 1 : m < 1;
+  }).map(t => t.name);
+}
+/** 카드가 특히 잘 맞는 기업: 특성, 연계 배지·업종, 비용 할인 */
+function cardFitTxt(card) {
+  const f = fitTraitsOf(card.kind);
+  if (card.link) f.push(card.link.badge ? `[${BADGES[card.link.badge].name}] 배지` : '에너지 업종');
+  if (card.kind === 'cert') f.push(`${TRAITS.patent.name}(비용 할인)`);
+  return f.join(' · ');
+}
+/** 카드 한 장을 내 기업 중 누구에게 쓰면 좋은지 점수 (클수록 좋다) */
+function fitScore(card, co) { return traitMul(co, card.kind) + (card.link && linkOk(card.link, co) ? 0.6 : 0); }
+/** 비서 달이의 카드 조언: 고른 카드가 어떤 기업에 맞는지, 지금은 누구에게 쓰면 좋은지 */
+function cardAdvice(card) {
+  const my = mine();
+  const ok = my.filter(co => !cardCond(card, co)).sort((a, b) => fitScore(card, b) - fitScore(card, a));
+  const good = fitTraitsOf(card.kind), bad = fitTraitsOf(card.kind, false);
+  let h = `<b>${card.name}</b>은(는) ${card.about}하는 카드예요. `;
+  if (good.length) h += `'${good.join("'·'")}' 기업에 쓰면 효과가 커져요. `;
+  if (card.link) h += card.link.badge ? `[${BADGES[card.link.badge].name}] 배지가 있는 기업이면 보너스가 붙어요. ` : '에너지 업종이면 효과가 2배예요. ';
+  if (bad.length) h += `'${bad.join("'·'")}' 기업은 효과가 줄어요. `;
+  if (!ok.length) return h + `<br><b>지금은 받을 수 있는 기업이 없어요.</b> (${my.length ? cardCond(card, my[0]) : '내 기업 없음'})`;
+  const b = ok[0];
+  return h + `<br>추천: <b>${b.name}</b> · ${effectTxt(b, card)}${card.link && linkOk(card.link, b) ? ' + 연계 보너스' : ''}`;
+}
+/** 손에 든 카드 중 효과가 특히 커지는 (카드, 기업) 조합 하나 */
+function bestPairTip() {
+  let best = null;
+  state.hand.forEach(id => {
+    const card = CARD[id];
+    for (const co of mine()) {
+      if (cardCond(card, co)) continue;
+      const sc = fitScore(card, co);
+      if (sc > 1.05 && (!best || sc > best.sc)) best = { card, co, sc };
+    }
+  });
+  return best ? `이번 카드 중에서는 <b>'${best.card.name}'</b>을(를) <b>${best.co.name}</b>에 쓰면 ${effectTxt(best.co, best.card)}예요.` : '';
+}
+/** 사무실의 비서 달이가 지금 상황에 맞춰 건네는 말: 카드를 고르면 어떤 기업에 맞는지 조언한다 */
+function secretaryLine(sel) {
+  if (state.anim) return `${monthName(state.turn - 1)} 결산 중이에요. 차트에서 기업가치가 오르내리는 모습을 지켜보세요! (Enter로 건너뛰기)`;
+  const cheapest = Math.min(...state.hand.map(id => CARD[id].cost), 999);
+  if (sel) return cardAdvice(sel);
+  if (!state.hand.length) return '이번 달 카드를 모두 쓰셨어요. 다음 달로 넘어가시죠.';
+  if (state.budget < cheapest) return `예산이 모자랍니다. 남은 예산의 ${Math.round(tune.budgetCarry * 100)}%는 다음 분기로 넘어가요.`;
+  const tip = bestPairTip();
+  if (state.turn === 0) return `심사위원님, 비서 달이입니다! 카드를 고르시면 어느 기업에 맞는지 알려 드릴게요. ${tip}`;
+  if (state.turn % 3 === 0 && state.spentQ === 0) return `${state.quarter}분기 예산 ${Math.round(state.budget)}억이 배정되었습니다. ${tip}`;
+  if (state.turn % 3 === 2) return `이번 달이 끝나면 분기 성과 발표예요. 포기한 기업보다 많이 키워야 예산이 늘어요. ${tip}`;
+  return tip || '카드를 고르시면 어느 기업에 맞는지 알려 드릴게요.';
+}
+function badgeChips(co) {
+  let h = co.badges.map(b => `<span class="chip badge">${badgeIcon(b)}${BADGES[b].name}</span>`).join('');
+  if (state.nominee === co.id) h = `<span class="chip badge nominee">${badgeIcon('nominee')}국가대표 후보</span>` + h;
+  return h;
+}
+function traitChips(co) {
+  return co.traits.map(t => `<span class="chip ${TRAITS[t].good ? 'good' : 'bad'}" data-tip="${TRAITS[t].good ? '장점' : '단점'}: ${TRAITS[t].desc}">${TRAITS[t].name}</span>`).join('');
+}
+function traitList(co) {
+  return co.traits.map(t => `<div class="trait ${TRAITS[t].good ? 'good' : 'bad'}"><b>${TRAITS[t].good ? '장점' : '단점'}</b><span class="tn">${TRAITS[t].name}</span><span class="td">${TRAITS[t].desc}</span></div>`).join('');
+}
+/** 핵심 역량 칩: 마우스를 올리면 뜻이 보인다 */
+function coreChips(co) {
+  return co.core.map(k => `<span class="corechip" data-tip="${STAT_NAME[k]}: ${STAT_DESC[k]}">${STAT_NAME[k]} <b>${Math.round(co.stats[k])}</b></span>`).join('');
+}
+/** 능력치 6개를 짧은 막대로: 요약 카드용 (육각형 대신). 핵심 역량은 강조, 이번 달 오른 만큼 +n */
+function statBars(co, opts = {}) {
+  return `<div class="sbars">${STATS.map(s => {
+    const v = co.stats[s.key], d = opts.diff ? v - (co.prevStats[s.key] ?? v) : 0;
+    return `<div class="${co.core.includes(s.key) ? 'core' : ''}" data-tip="${s.name}: ${s.desc}${co.core.includes(s.key) ? ' (핵심 역량)' : ''}"><span>${s.name}</span><i><b style="width:${Math.round(v)}%"></b></i><em>${Math.round(v)}${d >= 0.5 ? `<small>+${Math.round(d)}</small>` : ''}</em></div>`;
+  }).join('')}</div>`;
+}
+/** 이 기업과 잘 맞는 카드 분야와 안 맞는 카드 분야 */
+function fitKinds(co) {
+  const good = [], bad = [];
+  for (const k of Object.keys(KIND)) {
+    let m = 1;
+    for (const t of co.traits) {
+      const km = TRAITS[t].kindMul && TRAITS[t].kindMul[k];
+      m *= km === 'good' ? tune.goodFactor : km === 'bad' ? tune.mismatchFactor : typeof km === 'number' ? km : 1;
+    }
+    if (m > 1.001) good.push(`${KIND[k].name} ${mulTxt(m)}`); else if (m < 0.999) bad.push(`${KIND[k].name} ${mulTxt(m)}`);
+  }
+  if (has(co, 'patent')) good.push('품질 보증 비용 −30%');
+  if (co.energy) good.push('리튬 공급 2배');
+  return `<div class="fitk"><div class="g"><span>잘 맞는 카드</span><b>${good.join(' · ') || '특별히 없음'}</b></div><div class="b"><span>안 맞는 카드</span><b>${bad.join(' · ') || '특별히 없음'}</b></div></div>`;
+}
+function cardHTML(card, i, opts = {}) {
+  const co = opts.co, cost = cardCost(card, co);
+  const costTxt = cost !== card.cost ? `<s>${card.cost}</s>${cost}억` : `${card.cost}억`;
+  const fit = cardFitTxt(card);
+  return `<div class="card k-${card.kind} r-${card.rarity} ${opts.sel ? 'sel' : ''} ${opts.dim ? 'dim' : ''}" data-card="${i}">
+    <div class="top"><span data-tip="${KIND[card.kind].term}: ${KIND[card.kind].desc}">${KIND[card.kind].name}</span><span class="cost">${costTxt}</span></div>
+    <div class="aw">${cardArt(card.art, card.kind)}</div>
+    <div class="cn">${card.name}</div>
+    <div class="ab">${card.about}</div>
+    <div class="ct">${card.text.map(t => `<div>${t}</div>`).join('')}</div>
+    ${fit ? `<div class="fit"><b>잘 맞음</b> ${fit}</div>` : ''}
+    <div class="rr">${RARITY[card.rarity].name}</div></div>`;
+}
+
+function renderHeader() {
+  if (scene !== 'play') { setHTML($('hdr'), ''); $('hdr').style.display = 'none'; return; }
+  $('hdr').style.display = '';
+  const q = state.quarter;
+  const my = mine();
+  const qg = co => co.value / (state.qStart[co.id] || co.start) - 1;
+  const others = existing().filter(c => c.status !== 'mine');
+  const myG = avg(my.map(qg)), dropG = avg(others.map(qg));
+  const ranking = existing().slice().sort((a, b) => b.value - a.value);
+  const best = my.length ? Math.min(...my.map(c => ranking.indexOf(c) + 1)) : 0;
+  const allocTotal = state.alloc.reduce((s, a) => s + a.v, 0);
+  const cheapest = Math.min(...state.hand.map(id => CARD[id].cost), 999);
+  const nearGoal = state.phase === 'lobby' ? '지원 기업 입장 · 지원서 접수를 지켜보고 심사 시작'
+    : state.phase === 'audition' ? `지원서를 보고 ${state.need}곳 PICK (${state.picks.length}/${state.need})`
+    : state.phase === 'ceremony' ? '분기 성과 발표: 순위와 다음 분기 예산 확인'
+    : state.phase === 'nominate' ? '결승 진출 기업 중 국가대표 후보 1곳 지명'
+    : state.anim ? '결산 중: 이번 달 기업가치 변화 확인'
+    : state.budget >= cheapest ? `카드로 기업을 지원하고 '다음 달' (남은 카드 ${state.hand.length}장)` : `예산이 모자랍니다: '다음 달'로 넘어가기`;
+  const qGoal = q === 4 ? `국가대표 후보를 전체 1위로 (현재 ${state.nominee ? ranking.indexOf(state.cos[state.nominee]) + 1 + '위' : '-'})`
+    : `내 기업이 포기한 기업보다 많이 자라면 다음 분기 예산 증가 · 분기 성장률 내 기업 <span class="${cls(myG - dropG)}">${fmtP(myG)}</span> vs 포기한 기업 ${fmtP(dropG)}`;
+  const finalGoal = `4분기 말 국가대표 1곳이 전체 1위 · 내 최고 순위 ${best ? best + '위' : '-'} / ${ranking.length}곳`;
+  setHTML($('hdr'), `
+    <div class="brand"><span class="t1">혁신기업 키움 리그</span><span class="t2">${q}분기 · ${monthName(state.turn)} · 턴 ${Math.min(12, state.turn + 1)} / 12</span></div>
+    <div class="hbox"><span class="lbl">남은 예산</span><span class="val">${Math.round(state.budget)}억</span>
+      <div class="budget-bar"><i style="width:${clamp(state.budget / Math.max(1, allocTotal) * 100, 0, 100)}%"></i></div></div>
+    <div class="hbox money"><span>${state.alloc.map(a => `${a.k} ${a.v >= 0 ? '+' : '−'}${Math.abs(Math.round(a.v))}억`).join(' · ')}</span><span>이번 분기 카드 지출 −${Math.round(state.spentQ)}억</span></div>
+    <div class="goals"><div><span class="gk">지금 할 일</span><span>${nearGoal}</span></div><div><span class="gk">분기 목표</span><span>${qGoal}</span></div><div><span class="gk">최종 목표</span><span>${finalGoal}</span></div></div>
+    <div class="hbtns"><button class="hbtn" data-act="help">도움말 (H)</button><button class="hbtn" data-act="mute">${muted ? '소리 켜기' : '소리 끄기'} (M)</button></div>`);
+}
+// 위쪽 시세판 줄은 뺐다: 같은 정보가 월 운영 화면의 '현재 순위' 칸에 있다
+function renderTicker() { setHTML($('tick'), ''); }
+function renderTitle() {
+  const steps = [
+    ['심사장 · 오디션', productArt('drone'), '지원 기업이 심사장에 모여 지원서를 냅니다. 능력치와 장단점을 보고 키울 기업을 <b>PICK</b>합니다.'],
+    ['조달 지원 카드', '<img class="art img-art" src="assets/card/firetruck.png" alt="">', "매달 예산으로 카드를 사서 기업에 씁니다. 공공기관이 <b>먼저 사서 써 보는</b> 시범구매, 나라가 <b>품질을 보증하는</b> 인증, <b>팔 곳을 넓혀 주는</b> 판로 지원 등이 있습니다."],
+    ['분기 성과 발표', '<img class="art img-art" src="assets/stage/medal_gold.png" alt="">', '3달마다 내가 뽑은 기업과 포기한 기업이 함께 순위를 겨룹니다. 성과에 따라 다음 분기 예산이 정해집니다.'],
+  ];
+  const how = steps.map(([t, ic, d], i) => `${i ? '<div class="arrow" aria-hidden="true"></div>' : ''}<div class="panel step"><span class="no">${i + 1}</span><div class="ic">${ic}</div><div><b class="st">${t}</b><div>${d}</div></div></div>`).join('');
+  return `<div class="title-wrap">
+    <span class="kicker">조달청 혁신조달 시뮬레이션</span>
+    <h1>혁신기업 <span>키움</span> 리그</h1>
+    <div class="sub">뽑고, 키우고, 겨루는 공공조달 이야기 · 심사위원이 되어 스타트업을 뽑고 조달 지원으로 키워 국가대표 혁신기업 1곳을 가려내세요.</div>
+    ${mcHead('', '', [['narmi', '안녕하세요! 혁신기업 키움 리그의 진행을 맡은 MC 나르미입니다.'], ['dali', '저는 MC 달이예요. 심사위원님, 심사장으로 들어가 볼까요?']])}
+    <div class="how">${how}</div>
+    <div class="loop">1~3번을 분기마다 반복합니다 (1~4분기, 12달) · 4분기에는 국가대표 후보 1곳을 지명해 최종 순위를 겨룹니다</div>
+    <div class="controls">${CONTROLS.map(c => `<div>${c}</div>`).join('')}</div>
+    <div class="row" style="justify-content:center"><button class="btn pink" data-act="start">심사장 입장 (Enter)</button><button class="btn ghost" data-act="help">도움말 (H)</button></div>
+  </div>`;
+}
+/** 지원서 상세: 육각형 능력치, 핵심 역량, 장단점, 잘 맞는 카드. 오디션·지명·기업 자세히 보기에서 쓴다. */
+function appDetail(co, o = {}) {
+  return `<div class="detail ${o.picked ? 'picked' : ''} ${o.focus ? 'focus' : ''}" ${o.act ? `data-act="${o.act}" data-id="${co.id}"` : ''}>
+    ${o.picked ? (o.stamp ? `<span class="stamp">${o.stamp}</span>` : stampMark(co.id, true)) : ''}
+    <div class="head"><div class="pic">${productArt(co.art)}</div><div class="hd"><div class="nm">${co.name}</div><div class="pd">${co.product} · ${co.sector}${co.energy ? ' · 에너지 업종' : ''}</div>${o.badges ? `<div class="row">${badgeChips(co)}</div>` : ''}</div>
+      <div class="val"><span>${o.valueLabel || '예상 시작 기업가치'}</span><b>${fmtV(o.value ?? co.value)}</b></div></div>
+    <div class="hexwrap">${hexagon(co.stats, { size: o.hexSize || 390, core: co.core, color: o.picked ? '#1f3a5f' : '#2a6f97' })}<button class="hlp" data-act="help" data-id="stats">육각형 읽는 법 (H)</button></div>
+    <div class="side"><div class="corerow"><span class="lbl" data-tip="${CORE_TIP}">핵심 역량</span>${coreChips(co)}</div>
+      <div class="traits">${traitList(co)}</div>${fitKinds(co)}${o.extra || ''}${o.button || ''}</div></div>`;
+}
+/** 심사장: 지원 기업이 차례로 무대에 올라 서고, 지원서를 심사위원석 서류함에 낸다 */
+function renderLobby() {
+  const q = state.quarter, L = state.lobby, ids = state.applicants, n = ids.length, T = lobbyTimes(n);
+  const age = clamp(state.t - L.t0, 0, T.end), gap = Math.min(250, 1360 / n);
+  const xs = ids.map((_, i) => 800 + (i - (n - 1) / 2) * gap);
+  const cos = ids.map((id, i) => {
+    const co = state.cos[id];
+    return `<div class="appl" style="left:${xs[i]}px;--t:${T.enter(i).toFixed(2)}s"><div class="pp">${productArt(co.art)}</div><img class="pl" src="assets/stage/plinth.png" alt="" draggable="false"><div class="tagn"><span>No.${String(i + 1).padStart(2, '0')}</span>${co.name}</div></div>`;
+  }).join('');
+  const folders = ids.map((_, i) => `<img class="fold" src="assets/stage/folder.png" alt="" draggable="false" style="left:${xs[i] - 30}px;--t:${T.send(i).toFixed(2)}s;--dx:${(1200 - xs[i]).toFixed(0)}px">`).join('');
+  const sheets = ids.map((_, i) => `<i style="--t:${T.land(i).toFixed(2)}s;bottom:${54 + i * 5}px"></i>`).join('');
+  const talk = [
+    ['narmi', q === 1 ? `혁신기업 키움 리그 심사장에 오신 것을 환영합니다! 1분기 지원 기업 <b>${n}곳</b>이 입장합니다.` : `${q}분기 추가 지원 기업 <b>${n}곳</b>이 심사장에 들어옵니다!`],
+    ['dali', L.done ? `지원서 ${n}장이 모두 접수됐어요. '심사 시작'을 눌러 지원서를 살펴보세요!` : '기업들이 심사위원석으로 지원서를 내고 있어요.'],
+  ];
+  return `${mcHead(`${q}분기 심사장`, `지원 기업 ${n}곳 입장 · 지원서 접수`, talk)}
+    <div class="lobby" style="--age:${age.toFixed(3)}s">${cos}${folders}<div class="tray"><img src="assets/stage/tray.png" alt="" draggable="false">${sheets}<span class="cnt">${L.done ? `접수 ${n} / ${n}` : '접수 중'}</span></div></div>
+    ${desk(L.done ? `<span class="info">지원서 <b>${n}장</b> 접수 완료</span><button class="btn pink" data-act="confirm-lobby">심사 시작 (Enter)</button>`
+      : `<span class="info">지원서를 접수하고 있습니다</span><button class="btn ghost" data-act="confirm-lobby">건너뛰기 (Enter)</button>`)}`;
+}
+function renderAudition() {
+  const q = state.quarter, my = mine();
+  const lineup = my.length ? `<div class="lineup">현재 내 기업: ${my.map(c => `<span class="chip">${c.name} ${fmtV(c.value)}</span>`).join('')}</div>` : '';
+  const tiles = state.applicants.map((id, i) => {
+    const co = state.cos[id], picked = state.picks.includes(id);
+    return `<div class="tile ${picked ? 'picked' : ''} ${state.focus === i ? 'focus' : ''}" data-act="focus" data-id="${id}">
+      ${picked ? stampMark(id) : ''}
+      <div class="pcol"><div class="no">No.${String(i + 1).padStart(2, '0')}</div><div class="pic">${productArt(co.art)}</div></div>
+      <div class="info"><div class="nm">${co.name}</div><div class="pd">${co.product}</div><div class="sec">${co.sector}</div>
+        <div class="ev"><span>예상 가치</span><b>${fmtV(co.value)}</b></div></div>
+      <div class="corebox"><span class="lbl" data-tip="${CORE_TIP}">핵심 역량</span>${coreChips(co)}</div>
+      <div class="row tr">${traitChips(co)}</div></div>`;
+  }).join('');
+  const fid = state.applicants[state.focus], fco = state.cos[fid], fp = state.picks.includes(fid);
+  const detail = fco ? appDetail(fco, { picked: fp, button: `<button class="btn ${fp ? 'ghost' : 'pink'}" data-act="pick" data-id="${fid}">${fp ? 'PICK 취소 (Space)' : 'PICK (Space)'}</button>` }) : '';
+  const n = state.applicants.length, full = state.picks.length === state.need;
+  const talk = [
+    ['narmi', q === 1 ? `첫 오디션을 시작합니다! 1분기 혁신조달 예산 <b>${Math.round(state.budget)}억</b>이 배정되었습니다.`
+      : `${q}분기 추가 오디션입니다! 새 지원 기업 ${n}곳의 지원서가 도착했습니다.`],
+    ['dali', full ? `${state.need}곳을 모두 고르셨네요. 심사위원석의 '선발 확정'을 눌러 주세요!`
+      : `지원서 ${n}장 중 ${state.need}곳을 PICK해 주세요. 뽑지 않은 기업도 시장에서 스스로 자라 성과 발표에서 함께 겨룹니다.`],
+  ];
+  return `${mcHead(`${q}분기 혁신제품 오디션`, `지원서 ${n}장 중 ${state.need}곳을 PICK하세요`, talk)}
+    <div class="aud"><div>${lineup}<div class="tiles">${tiles}</div></div>${detail}</div>
+    ${desk(`<span class="info">PICK <b>${state.picks.length} / ${state.need}</b> · 지원서를 고르고 PICK을 누르세요</span>
+      <button class="btn pink" data-act="confirm-audition" ${full ? '' : 'disabled'}>선발 확정 (Enter)</button>`, fco ? { id: fid, on: fp } : null)}`;
+}
+/** 기업가치 차트. 한 달 구간을 SUB칸으로 나눠 오르내림을 그리고, 결산 연출 중에는 마지막 달을 진행도만큼만 그린다. */
+function chartSVG() {
+  const MOB = document.body.classList.contains('mobile'), Wc = MOB ? 460 : 712, Hc = MOB ? 210 : 200, pl = 46, pr = 10, pt = 12, pb = 26;
+  const plotted = all().filter(c => c.everPicked);
+  const others = existing().filter(c => !c.everPicked || c.status === 'eliminated');
+  const maxT = 12;
+  const S = new Map(existing().map(c => [c.id, series(c)]));
+  let vals = [];
+  plotted.forEach(c => S.get(c.id).forEach(([, v]) => vals.push(v)));
+  const acc = new Map(); // 포기한 기업 평균: 같은 시점끼리 모아 평균
+  for (const c of others) for (const [t, v] of S.get(c.id)) { const k = Math.round(t * SUB); const a = acc.get(k) || [t, 0, 0]; a[1] += v; a[2]++; acc.set(k, a); }
+  const dropAvg = [...acc.values()].sort((a, b) => a[0] - b[0]).map(([t, sum, n]) => [t, sum / n]);
+  dropAvg.forEach(([, v]) => vals.push(v));
+  if (!vals.length) vals = [100];
+  let lo = Math.min(...vals), hi = Math.max(...vals);
+  if (hi - lo < 20) { hi += 10; lo -= 10; }
+  const x = t => pl + (Wc - pl - pr) * t / maxT;
+  const y = v => pt + (Hc - pt - pb) * (1 - (v - lo) / (hi - lo));
+  let g = '';
+  for (let i = 0; i <= 4; i++) {
+    const v = lo + (hi - lo) * i / 4;
+    g += `<line x1="${pl}" x2="${Wc - pr}" y1="${y(v)}" y2="${y(v)}" stroke="#e9ecef"/><text x="${pl - 6}" y="${y(v) + 5}" text-anchor="end" font-size="14" fill="#535c68">${Math.round(v)}</text>`;
+  }
+  for (let q = 1; q <= 4; q++) {
+    g += `<line x1="${x(q * 3)}" x2="${x(q * 3)}" y1="${pt}" y2="${Hc - pb}" stroke="#dee2e6" stroke-dasharray="3 4"/><text x="${x(q * 3 - 1.5)}" y="${Hc - 6}" text-anchor="middle" font-size="14" fill="#535c68">${q}분기</text>`;
+  }
+  const line = (pts, color, w, dash = '') => pts.length ? `<polyline points="${pts.map(([t, v]) => `${x(t).toFixed(1)},${y(v).toFixed(1)}`).join(' ')}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linejoin="round" ${dash ? `stroke-dasharray="${dash}"` : ''}/>` : '';
+  g += line(dropAvg, '#868e96', 2.5, '6 5');
+  for (const c of plotted) {
+    const pts = S.get(c.id) || [], out = c.status === 'eliminated';
+    g += line(pts, out ? '#adb5bd' : colorOf(c), out ? 1.5 : 3);
+    const lp = pts[pts.length - 1];
+    if (!out && lp) g += `<circle cx="${x(lp[0])}" cy="${y(lp[1])}" r="${state.anim ? 6 : 4.5}" fill="${colorOf(c)}" stroke="#fff" stroke-width="2"/>`;
+  }
+  return `<svg viewBox="0 0 ${Wc} ${Hc}">${g}</svg>`;
+}
+/** 월 운영 화면의 기업 카드 값: 결산 연출 중에는 오르내리는 중간값을 보여 준다 */
+function vvHTML(co) {
+  const prev = co.hist[state.turn - 1] ?? co.start, v = valNow(co), ch = v / prev - 1;
+  return `${fmtV(v)}<small class="${cls(ch)}">${fmtP(ch)}</small>`;
+}
+/** 현재 순위표(포기한 기업 포함). 내 기업은 순위 밖이어도 아래에 붙인다. */
+function rankRows() {
+  const ranking = existing().slice().sort((a, b) => valNow(b) - valNow(a));
+  let rows = ranking.slice(0, 7);
+  for (const co of mine()) if (!rows.includes(co)) rows = rows.slice(0, -1).concat(co);
+  return rows.map(co => {
+    const r = ranking.indexOf(co) + 1, prev = co.hist[state.turn - 1] ?? co.start, ch = valNow(co) / prev - 1;
+    const tag = co.status === 'mine' ? '<span class="tag my">MY</span>' : co.status === 'eliminated' ? '<span class="tag elim">탈락</span>' : '<span class="tag drop">포기</span>';
+    return `<div class="${co.status === 'mine' ? 'mine' : ''}"><span class="r">${r}</span>${tag}<span class="nm">${co.name}</span><b>${fmtV(valNow(co))}</b><span class="${cls(ch)}">${fmtP(ch)}</span></div>`;
+  }).join('');
+}
+/** 결산 연출 중 매 프레임: 화면 전체를 다시 그리지 않고 차트·기업가치·순위만 바꾼다 */
+function animTick() {
+  const c = document.querySelector('.chart .plot'); if (c) c.innerHTML = chartSVG();
+  for (const co of mine()) { const n = document.querySelector(`[data-vv="${co.id}"]`); if (n) n.innerHTML = vvHTML(co); }
+  const r = document.querySelector('.rankp .rows'); if (r) r.innerHTML = rankRows();
+}
+function renderMonth() {
+  const sel = state.selected != null ? CARD[state.hand[state.selected]] : null;
+  const my = mine(), anim = !!state.anim;
+  let cos = my.map((co, i) => {
+    let why = '';
+    if (sel) {
+      const r = cardCond(sel, co);
+      why = r ? `<div class="why no">${r}</div>` : `<div class="why ok">지원 가능 · ${effectTxt(co, sel)}${sel.link && linkOk(sel.link, co) ? ' + 연계 보너스' : ''}${cardCost(sel, co) !== sel.cost ? ` · 비용 ${cardCost(sel, co)}억` : ''}</div>`;
+    }
+    const eff = co.effects.length ? `<div class="eff">지속 효과 ${co.effects.map(e => `매달 +${(e.pct * 100).toFixed(1)}% (${e.left}개월 남음)`).join(', ')}</div>` : '';
+    const flash = co.flash && co.flash.until > state.t ? `<div class="flash">${co.flash.text}</div>` : '';
+    const ok = sel && !cardCond(sel, co);
+    return `<div class="co ${state.target === i ? 'target' : ''} ${sel ? (ok ? 'ok' : 'no') : ''}" data-co="${co.id}" data-act="co">
+      ${flash}<div class="pic">${productArt(co.art)}</div>
+      <div class="mid"><div class="nm"><i class="sw" style="background:${colorOf(co)}"></i>${co.name}</div><div class="pd">${co.product}</div>
+        <div class="vv" data-vv="${co.id}">${vvHTML(co)}</div></div>
+      ${statBars(co, { diff: true })}
+      <div class="chips">${badgeChips(co)}${traitChips(co)}</div>${why || eff}
+      <button class="more" data-act="codetail" data-id="${co.id}">자세히 (I)</button></div>`;
+  }).join('');
+  if (my.length < 4 && state.quarter < 4) cos += `<div class="co empty">다음 분기 오디션에서 기업을 더 뽑을 수 있습니다</div>`;
+  const legend = mineOrder().map(id => state.cos[id]).map(c => `<span><i style="background:${c.status === 'eliminated' ? '#adb5bd' : colorOf(c)}"></i>${c.name}${c.status === 'eliminated' ? ' (탈락)' : ''}</span>`).join('') + `<span><i style="background:repeating-linear-gradient(90deg,#868e96 0 6px,transparent 6px 10px)"></i>포기한 기업 평균</span>`;
+  const report = anim ? `<div>${monthName(state.turn - 1)} 결산 중입니다…</div>`
+    : state.report.length ? state.report.map(r => `<div><b>${r.name}</b> <span class="${cls(r.g)}">${fmtP(r.g)}</span> · ${r.why.join(' · ')}</div>`).join('') : '<div>첫 달입니다.</div><div>카드를 지원하고 다음 달로 넘어가면</div><div>기업별 성장 결산이 여기에 나옵니다.</div>';
+  const hand = state.hand.map((id, i) => cardHTML(CARD[id], i, { sel: state.selected === i, dim: CARD[id].cost > state.budget })).join('') || '<div class="panel">이번 달 카드를 모두 썼습니다.</div>';
+  const last = state.turn % 3 === 2;
+  return `<div class="month ${anim ? 'animating' : ''}">
+    <div class="cos" data-keep="cos">${cos}</div>
+    <div class="center">
+      <div class="panel chart"><h3>기업가치 차트 <small>${anim ? `<b class="live">${monthName(state.turn - 1)} 결산 중</b>` : '단위: 억 원 · 선이 오르면 기업가치 상승'}</small></h3><div class="plot">${chartSVG()}</div><div class="legend">${legend}</div></div>
+      <div class="twocol"><div class="panel report"><h3><span class="av"><img src="${MASCOT.narmi.src}" alt="">비서 나르미의 지난달 결산</span></h3>${report}</div>
+        <div class="panel rankp"><h3>현재 순위 <small>포기한 기업 포함 ${existing().length}곳</small></h3><div class="rows">${rankRows()}</div></div></div>
+    </div></div>
+    <div class="handwrap"><div class="hand" data-keep="hand">${hand}</div>
+      <div class="panel side-box"><div class="sec"><img src="${MASCOT.dali.src}" alt="비서 달이"><div class="sbub"><span class="who dali">비서 달이</span>${secretaryLine(sel)}</div></div>
+        <div class="bud">남은 예산 <b>${Math.round(state.budget)}억</b><span class="hint">${last ? '이번 달이 끝나면 분기 성과 발표' : `분기 성과 발표까지 ${3 - state.turn % 3}개월`}</span></div>
+        <div class="row nowrap"><button class="btn ghost small" data-act="reroll" ${anim || state.rerolled || state.budget < tune.rerollCost ? 'disabled' : ''}>카드 새로 받기 (${tune.rerollCost}억)</button><button class="btn ghost small" data-act="help" data-id="cards">카드 도움말</button></div>
+        <button class="btn next" data-act="next">${anim ? '결산 건너뛰기 (Enter)' : last ? '분기 성과 발표로 (Enter)' : '다음 달 (Enter)'}</button></div></div>`;
+}
+/** 분기 성과 발표: 왼쪽 시상대(1~3위), 가운데 전체 순위 막대, 오른쪽 예산 결과와 진출 결정 */
+function renderCeremony() {
+  const c = state.cer;
+  const n = c.ranking.length;
+  const shown = i => i >= n - c.revealed;
+  const vals = c.ranking.map(id => state.cos[id].value), maxV = Math.max(...vals), lo = Math.min(...vals) * 0.85;
+  const tagOf = (co, id) => co.status === 'mine' ? (state.nominee === id ? '<span class="tag nom">국가대표 후보</span>' : '<span class="tag my">MY PICK</span>')
+    : co.status === 'eliminated' ? '<span class="tag elim">탈락</span>' : '<span class="tag drop">포기</span>';
+  const rowH = Math.min(62, Math.floor(430 / n));
+  const bars = c.ranking.map((id, i) => {
+    const co = state.cos[id];
+    return `<div class="br r${i + 1} ${co.status === 'mine' ? 'mine' : co.status === 'eliminated' ? 'gone' : 'out'} ${shown(i) ? '' : 'hide'}" style="height:${rowH}px;--rh:${rowH}px">
+      <span class="n">${i + 1}</span><span class="pic">${productArt(co.art)}</span><span class="nm">${co.name}</span>${tagOf(co, id)}
+      <span class="track"><i style="width:${(8 + 92 * (co.value - lo) / Math.max(1, maxV - lo)).toFixed(1)}%"></i></span>
+      <span class="vv">${fmtV(co.value)}</span><span class="g ${cls(c.growth[id])}">${fmtP(c.growth[id])}</span></div>`;
+  }).join('');
+  const medal = ['gold', 'silver', 'bronze'];
+  const pod = [1, 0, 2].map(i => {
+    const id = c.ranking[i]; if (!id) return '';
+    const co = state.cos[id];
+    return `<div class="pod p${i + 1} ${shown(i) ? 'on' : ''}">${shown(i)
+      ? `<div class="pn">${co.name}</div><div class="pv">${fmtV(co.value)} ${tagOf(co, id)}</div><div class="pp">${productArt(co.art)}<img class="md" src="assets/stage/medal_${medal[i]}.png" alt=""></div>`
+      : '<div class="pq">?</div>'}<span class="pr">${i + 1}</span></div>`;
+  }).join('');
+  const done = c.revealed >= n;
+  const lines = `<div class="lines"><div><span>기본 배정</span><b>${tune.budgetBase}억</b></div>
+    <div><span data-tip="내 기업과 포기한 기업의 분기 성장률 차이 1%p마다 ${tune.budgetPerPoint}억씩 더하거나 뺍니다">성과 평가 (${c.diffPts >= 0 ? '+' : '−'}${Math.abs(c.diffPts).toFixed(1)}%p × ${tune.budgetPerPoint}억)</span><b class="${cls(c.perf)}">${c.perf >= 0 ? '+' : '−'}${Math.abs(c.perf)}억</b></div>
+    <div><span>전체 1위 기업 보유</span><b>${c.top ? '+' + c.top + '억' : '없음'}</b></div>
+    <div><span>남은 예산 이월 (${Math.round(tune.budgetCarry * 100)}%)</span><b>+${c.carry}억</b></div>
+    <div class="total"><span>다음 분기 예산</span><span>${c.next}억</span></div></div>`;
+  const vs = (a, b) => `<div class="vs"><div><div class="big ${cls(c.myG)}">${fmtP(c.myG)}</div><div class="l">${a}</div></div><div class="mid">VS</div><div><div class="big ${cls(c.dropG)}">${fmtP(c.dropG)}</div><div class="l">${b}</div></div></div>`;
+  let side;
+  if (!done) side = `<div class="panel judge"><h3>순위 공개 중</h3><p>하위권부터 순위를 공개합니다. 시상대에는 1~3위가 오릅니다.</p>${vs('내가 뽑은 기업 분기 성장', '포기한 기업 분기 성장')}</div>`;
+  else if (c.final) {
+    const nom = state.cos[state.nominee];
+    const r = c.ranking.indexOf(state.nominee) + 1;
+    side = `<div class="panel judge"><h3>최종 결과</h3><p style="font-size:19px">국가대표 후보 <b>${nom ? nom.name : '-'}</b>의 최종 순위는 <b style="color:#0c8599;font-size:28px">${r}위</b> / ${n}곳입니다.</p>${vs('내 기업 분기 성장', '포기한 기업 분기 성장')}</div>`;
+  } else {
+    const adv = c.eliminating ? `<div class="panel"><h3>다음 라운드 진출 <small>${c.advance.length} / ${c.keep}곳</small></h3>
+      <div class="advhint">올려보낼 기업 <b>${c.keep}곳</b>을 고르세요. 탈락한 기업은 시장에서 계속 자랍니다.</div>
+      <div class="adv">${mine().map((co, i) => { const on = c.advance.includes(co.id); return `<div class="advc ${on ? 'on' : ''} ${state.focus === i ? 'focus' : ''}" data-act="advance" data-id="${co.id}">
+        <span class="pic">${productArt(co.art)}</span><div><b>${co.name}</b> ${c.ranking.indexOf(co.id) + 1}위 · ${fmtV(co.value)}<div class="sm">${co.traits.map(t => TRAITS[t].name).join(' · ')}</div></div><span class="st">${on ? '진출' : '탈락'}</span></div>`; }).join('')}</div></div>` : '';
+    side = `<div class="panel judge"><h3>예산 심사 결과</h3>${vs('내가 뽑은 기업 평균', '포기한 기업 평균')}${lines}</div>${adv}`;
+  }
+  const btn = desk(!done ? `<span class="info">순위를 하위권부터 공개하고 있습니다</span><button class="btn ghost" data-act="skip">바로 보기 (Space)</button>`
+    : `${c.eliminating ? `<span class="info">진출 <b>${c.advance.length} / ${c.keep}</b>곳 선택</span>` : ''}<button class="btn pink" data-act="confirm-ceremony" ${c.eliminating && c.advance.length !== c.keep ? 'disabled' : ''}>${c.final ? '성적표 보기 (Enter)' : c.eliminating ? '결과 확정 (Enter)' : '다음 분기로 (Enter)'}</button>`);
+  const nomCo = state.cos[state.nominee], nomR = c.ranking.indexOf(state.nominee) + 1, gap = Math.abs(c.diffPts).toFixed(1);
+  const talk = !done
+    ? [['narmi', c.final ? '결승 최종 발표입니다! 국가대표 후보의 최종 순위를 공개합니다.' : `${c.q}분기 성과 발표! 내가 뽑은 기업과 포기한 기업 ${n}곳의 순위를 하위권부터 공개합니다.`],
+       ['dali', '심사위원님이 뽑은 기업은 시상대에 오를 수 있을까요?']]
+    : c.final
+    ? [['narmi', `국가대표 후보 ${josa(nomCo ? nomCo.name : '-', '은', '는')} 전체 ${n}곳 중 최종 <b>${nomR}위</b>를 기록했습니다!`],
+       ['dali', nomR === 1 ? '전체 1위예요! 축하드려요, 심사위원님!' : '성적표에서 자세한 평가를 확인해 보세요.']]
+    : [['narmi', c.diffPts >= 0 ? `심사위원님이 뽑은 기업이 포기한 기업보다 평균 <b>${gap}%p</b> 더 성장했습니다! 다음 분기 예산은 <b>${c.next}억</b>입니다.`
+        : `아쉽게도 포기한 기업이 평균 <b>${gap}%p</b> 더 성장했습니다. 다음 분기 예산은 <b>${c.next}억</b>입니다.`],
+       ['dali', c.eliminating ? `이제 다음 라운드로 올려보낼 ${c.keep}곳을 정해 주세요. 탈락한 기업도 시장에서 계속 자랍니다.` : '다음 분기에도 우리 기업들을 잘 부탁드려요!']];
+  // 무대 조명 빛줄기만 남긴다 (예전의 장식용 주가 그래프 선은 실제 데이터가 아니어서 뺐다)
+  const beams = `<div class="beams"><i></i><i></i><i></i><i></i><i></i></div>`;
+  return `${beams}${mcHead(`${c.final ? '결승' : c.q + '분기'} 성과 발표`, c.final ? '국가대표 혁신기업 최종 발표' : `${c.q}분기 기업가치 순위`, talk)}
+    <div class="ceremony"><div class="podwrap">${pod}<img class="podium" src="assets/stage/podium.webp" alt="" draggable="false"></div>
+      <div class="panel bars"><h3>전체 순위 <small>막대가 길수록 기업가치가 큽니다 · 오른쪽은 분기 성장률</small></h3>${bars}</div>
+      <div class="side-col">${side}</div></div>${btn}`;
+}
+/** 도움말: 능력치·특성 / 지원 카드 / 용어 풀이 */
+function helpHTML() {
+  const tab = state.help;
+  const tabs = [['stats', '능력치·특성'], ['cards', '지원 카드'], ['terms', '용어 풀이']].map(([k, l]) => `<button class="tab ${tab === k ? 'on' : ''}" data-act="help-tab" data-id="${k}">${l}</button>`).join('');
+  let body = '';
+  if (tab === 'stats') {
+    body = `<h4>능력치 6가지: 지원서의 육각형</h4>
+      <div class="hrow"><div class="hexdemo">${hexagon({ tech: 80, pub: 60, qual: 50, prod: 40, fin: 55, mkt: 70 }, { size: 300, core: ['tech', 'mkt'] })}</div>
+      <div><p>꼭짓점이 바깥으로 갈수록 그 능력치가 높습니다 (0~100). 칠해진 면적이 넓을수록 고르게 강한 기업입니다.</p>
+      <p><b class="core">분홍색 글씨</b>는 <b>핵심 역량</b>입니다. ${CORE_TIP.replace('핵심 역량: ', '')}이라, 핵심 역량이 높을수록 매달 더 빨리 자랍니다.</p>
+      <div class="hgrid">${STATS.map(s => `<div class="hitem"><b>${s.name}</b><span>${s.desc}</span><small>올려 주는 카드: ${s.up}</small></div>`).join('')}</div></div></div>
+      <h4>특성: 장점과 단점</h4><p>지원서마다 특성이 3개씩 있습니다. 특성은 카드 효과를 키우거나 줄이고, 매달 기업가치에도 영향을 줍니다.</p>
+      <div class="hgrid two">${Object.values(TRAITS).map(t => `<div class="hitem ${t.good ? 'good' : 'bad'}"><b>${t.good ? '장점' : '단점'} · ${t.name}</b><span>${t.desc}</span></div>`).join('')}</div>`;
+  } else if (tab === 'cards') {
+    body = `<h4>카드 분야 8가지</h4><div class="hgrid two">${Object.entries(KIND).map(([k, v]) => `<div class="hitem kind"><b><i style="background:${KIND_COLOR[k]}"></i>${v.name} <small>(${v.term})</small></b><span>${v.desc}</span>${fitTraitsOf(k).length ? `<small>효과가 커지는 특성: ${fitTraitsOf(k).join(', ')}</small>` : ''}</div>`).join('')}</div>
+      <h4>카드 ${CARDS.length}장</h4><div class="hcards">${CARDS.map(c => `<div class="hc"><div class="ha">${cardArt(c.art, c.kind)}</div><div><b>${c.name}</b> <small>${KIND[c.kind].name} · ${RARITY[c.rarity].name} · ${c.cost}억</small><div class="hab">${c.about}</div><div class="hct">${c.text.join(' · ')}</div>${cardFitTxt(c) ? `<div class="hfit">잘 맞는 기업: ${cardFitTxt(c)}</div>` : ''}</div></div>`).join('')}</div>`;
+  } else {
+    const T = [
+      ['기업가치', '기업이 얼마짜리인지 보여 주는 값(억 원)입니다. 순위는 기업가치로 정합니다.'],
+      ['효과 2배 / 절반', `카드에 적힌 효과가 기업 특성에 따라 커지거나 줄어듭니다. 잘 맞으면 ${tune.goodFactor}배, 안 맞으면 절반입니다. 국가대표 후보는 ${tune.nomineeFactor}배가 더 붙습니다.`],
+      ['즉시 / 지속 n개월', '즉시: 카드를 쓰는 순간 바로 오릅니다. 지속: 적힌 달 수만큼 매달 기업가치가 더 오릅니다.'],
+      ['배지 (지정)', '혁신제품·우수조달·G-PASS·벤처나라 같은 공식 지정입니다. 한 번 받으면 매달 기업가치가 더 오릅니다.'],
+      ['연계', '정해진 배지나 업종을 가진 기업에 쓰면 붙는 추가 보너스입니다.'],
+      ['조건', '이 조건을 갖춘 기업에만 쓸 수 있습니다. 조건이 안 맞는 기업은 회색으로 표시됩니다.'],
+      ['포기한 기업', '오디션에서 뽑지 않은 기업입니다. 시장에서 스스로 자라며, 내 기업과 함께 순위를 겨룹니다.'],
+      ['분기 성과 발표', '3달마다 모든 기업의 순위를 공개하고, 내 기업이 포기한 기업보다 얼마나 더 자랐는지로 다음 분기 예산을 정합니다.'],
+      ['이월', '쓰지 않은 예산의 일부는 다음 분기로 넘어갑니다.'],
+      ['국가대표 후보', '4분기에 내 기업 중 1곳을 지명합니다. 이 기업의 최종 순위가 성적에 가장 크게 반영됩니다.'],
+    ];
+    body = `<div class="terms">${T.map(([k, v]) => `<div><b>${k}</b><span>${v}</span></div>`).join('')}</div>`;
+  }
+  return `<div class="ovbox help"><div class="ovhead"><h3>도움말</h3><div class="tabs">${tabs}</div><button class="x" data-act="close-ov">닫기 (Esc)</button></div><div class="ovbody">${body}</div></div>`;
+}
+/** 월 운영 화면에서 기업 하나를 크게 보는 창: 육각형, 장단점, 잘 맞는 카드, 지속 효과, 지난달 결산 */
+function coDetailHTML(co) {
+  const eff = co.effects.length ? co.effects.map(e => `매달 +${(e.pct * 100).toFixed(1)}% (${e.left}개월 남음)`).join(' · ') : '없음';
+  const extra = `<div class="kv2"><span>지속 효과</span><b>${eff}</b></div>
+    <div class="kv2"><span>지난달 성장</span><b>${co.lastWhy.length ? `<span class="${cls(co.lastG)}">${fmtP(co.lastG)}</span> · ${co.lastWhy.join(' · ')}` : '아직 없음'}</b></div>
+    <div class="kv2"><span>시작 → 지금</span><b>${fmtV(co.start)} → ${fmtV(co.value)} · 들인 예산 ${Math.round(co.spent)}억</b></div>`;
+  return `<div class="ovbox codet"><div class="ovhead"><h3>기업 자세히 보기</h3><button class="x" data-act="close-ov">닫기 (Esc)</button></div>${appDetail(co, { valueLabel: '현재 기업가치', badges: true, extra })}</div>`;
+}
+function renderOverlay() {
+  const co = state && state.coDetail && state.cos[state.coDetail];
+  const h = state && state.help ? helpHTML() : co ? coDetailHTML(co) : '';
+  setHTML($('ov'), h ? `<div class="ovbg" data-act="close-ov"></div>${h}` : '');
+}
+function renderNominate() {
+  const my = mine();
+  const cards = my.map((co, i) => appDetail(co, {
+    picked: state.nomPick === co.id, focus: state.focus === i, act: 'nom', stamp: '국가대표', valueLabel: '현재 기업가치', badges: true, hexSize: 300,
+    button: `<button class="btn ${state.nomPick === co.id ? 'ghost' : 'pink'}" data-act="nom" data-id="${co.id}">${state.nomPick === co.id ? '지명됨' : '국가대표 후보로 지명 (Space)'}</button>`,
+  })).join('');
+  const talk = [['narmi', '드디어 4분기 결승입니다! 남은 기업 중 국가대표 후보 한 곳을 지명해 주세요.'],
+    ['dali', `지명된 기업은 4분기 동안 카드 효과가 x${tune.nomineeFactor}로 커져요. 포기한 기업까지 포함한 전체 1위에 올라야 최고 등급입니다.`]];
+  return `${mcHead('4분기 결승', '국가대표 후보를 지명하세요', talk)}
+    <div class="finalists">${cards}</div>
+    ${desk(`<button class="btn pink" data-act="confirm-nom" ${state.nomPick ? '' : 'disabled'}>지명 확정 (Enter)</button>`)}`;
+}
+function renderResults() {
+  const r = state.result;
+  const nom = state.cos[r.nom];
+  const top = r.ranking.slice(0, 5).map((id, i) => { const co = state.cos[id]; return `<div class="rk r${i + 1} ${co.everPicked ? 'mine' : 'out'}"><span class="n">${i + 1}</span><span class="pic">${productArt(co.art)}</span><div><div class="nm">${co.name} ${id === r.nom ? '<span class="tag nom">국가대표</span>' : co.everPicked ? '<span class="tag my">MY PICK</span>' : '<span class="tag drop">포기</span>'}</div><div class="sub">${co.product} · 시작 ${fmtV(co.start)}</div></div><span class="vv">${fmtV(co.value)}</span></div>`; }).join('');
+  return `<div class="stage-title"><span class="ep">조달청장 성적표</span><h2>${r.grade.title}</h2></div>
+    <div class="result"><div class="grade"><div class="g">${r.grade.g}</div><div class="gt">${r.grade.title}</div><p>${r.grade.text}</p><b>총점 ${r.total} / 100</b></div>
+      <div class="panel"><h3>평가 내역</h3><div class="lines">
+        <div><span>국가대표 ${nom.name}의 최종 순위 ${r.rank}위</span><b>${r.rankPts} / 40</b></div>
+        <div><span>내 기업 성장 배수 ÷ 포기한 기업 성장 배수 = ${r.R.toFixed(2)}</span><b>${Math.round(r.portPts)} / 30</b></div>
+        <div><span>예산 효율: 지출 ${Math.round(state.spentTotal)}억으로 기업가치 ${fmtV(r.created)} 창출</span><b>${Math.round(r.effPts)} / 20</b></div>
+        <div><span>국가대표의 지정 배지 (${nom.badges.map(b => BADGES[b].name).join(', ') || '없음'})</span><b>${r.badgePts} / 10</b></div>
+        <div class="total"><span>총점</span><span>${r.total}</span></div></div>
+        <h3 style="margin-top:12px">최종 순위 상위 5곳</h3><div class="ranks">${top}</div></div></div>
+    ${desk(`<button class="btn pink" data-act="restart">다시 하기 (Enter)</button>`)}`;
+}
+function renderFigures() {
+  const prods = COMPANIES.map(d => `<div class="fig"><div class="pic">${productArt(d.art)}</div>${d.name}<br><span style="font-weight:500">${d.product}</span></div>`).join('');
+  const cards = CARDS.map(c => `<div class="fig"><div class="pic">${cardArt(c.art, c.kind)}</div>${c.name}</div>`).join('');
+  return `<div class="stage-title"><h2>제품 14종</h2></div><div class="figs">${prods}</div><div class="stage-title"><h2>카드 그림 25종</h2></div><div class="figs">${cards}</div>`;
+}
+function render() {
+  const app = $('app');
+  const stage = scene === 'title' || scene === 'results' || (scene === 'play' && state.phase !== 'month');
+  const dim = scene === 'play' && (state.phase === 'audition' || state.phase === 'nominate');
+  if (scene !== 'play' || state.phase !== 'month') state.coDetail = null;
+  app.className = (stage ? 'stage' : 'office') + (dim ? ' dim' : '') + (scene === 'play' && state.phase === 'lobby' ? ' lobby-on' : '');
+  renderHeader(); renderTicker();
+  let html = '';
+  if (scene === 'title') html = renderTitle();
+  else if (scene === 'figures') html = renderFigures();
+  else if (scene === 'results') html = renderResults();
+  else if (state.phase === 'lobby') html = renderLobby();
+  else if (state.phase === 'audition') html = renderAudition();
+  else if (state.phase === 'month') html = renderMonth();
+  else if (state.phase === 'ceremony') html = renderCeremony();
+  else if (state.phase === 'nominate') html = renderNominate();
+  setHTML($('main'), html);
+  renderOverlay();
+  const t = state.toast && state.toast.until > state.t ? `<div class="toast">${state.toast.text}</div>` : '';
+  setHTML($('toast'), t);
+}
+
+// ---- 화면 맞춤: 데스크톱은 1600x900 무대를 창에 맞춰 축소·확대, 좁은 세로 화면은 스크롤 레이아웃 ----
+let FIT = 1;
+function fit() {
+  const app = $('app');
+  if (innerWidth <= 860) {
+    document.body.classList.add('mobile'); app.style.transform = ''; app.style.left = app.style.top = ''; FIT = 1; return;
+  }
+  document.body.classList.remove('mobile');
+  FIT = Math.min(innerWidth / 1600, innerHeight / 900);
+  app.style.transform = `scale(${FIT})`;
+  app.style.left = Math.max(0, (innerWidth - 1600 * FIT) / 2) + 'px';
+  app.style.top = Math.max(0, (innerHeight - 900 * FIT) / 2) + 'px';
+}
+addEventListener('resize', fit); fit();
+
+// ---- 무대 배경 시차: 마우스를 따라 뒤 겹은 조금, 앞 겹은 많이 움직여 입체감을 준다 ----
+const BG = ['.bg-back', '.bg-seats', '.bg-floor'].map((s, i) => ({ el: document.querySelector('#bg ' + s), k: [6, 14, 24][i] }));
+addEventListener('pointermove', e => {
+  if (document.body.classList.contains('mobile')) return;
+  const nx = e.clientX / innerWidth - 0.5, ny = e.clientY / innerHeight - 0.5;
+  for (const { el, k } of BG) el.style.transform = `translate(${(-nx * k).toFixed(1)}px, ${(-ny * k * 0.4).toFixed(1)}px)`;
+});
+
+// ---- 말풍선 도움말: data-tip이 붙은 곳에 마우스를 올리면 짧은 설명을 띄운다 ----
+addEventListener('pointermove', e => {
+  const tip = $('tip'), t = e.target.closest && e.target.closest('[data-tip]');
+  if (!t || drag) { tip.style.display = 'none'; return; }
+  if (tip._for !== t) { tip.textContent = t.dataset.tip; tip._for = t; }
+  tip.style.display = 'block';
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  tip.style.left = Math.min(innerWidth - w - 8, e.clientX + 14) + 'px';
+  tip.style.top = (e.clientY + 18 + h > innerHeight ? e.clientY - h - 12 : e.clientY + 18) + 'px';
+});
+
+// ---- 클릭 · 끌어다 놓기 -----------------------------------------------------------------------
+let drag = null, justDragged = false;
+$('app').addEventListener('pointerdown', e => {
+  startAudio();
+  const el = e.target.closest('[data-card]');
+  if (el && scene === 'play' && state.phase === 'month' && !state.anim && !state.help && !state.coDetail) drag = { idx: +el.dataset.card, x: e.clientX, y: e.clientY, el, ghost: null, hover: null };
+});
+addEventListener('pointermove', e => {
+  if (!drag) return;
+  if (!drag.ghost && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 10) {
+    state.selected = drag.idx; render();
+    const src = document.querySelector(`[data-card="${drag.idx}"]`) || drag.el;
+    drag.ghost = src.cloneNode(true); drag.ghost.classList.add('drag-ghost');
+    drag.ghost.style.transform = `scale(${FIT}) rotate(-4deg)`;
+    document.body.appendChild(drag.ghost);
+  }
+  if (drag.ghost) {
+    drag.ghost.style.left = (e.clientX - 90 * FIT) + 'px'; drag.ghost.style.top = (e.clientY - 60 * FIT) + 'px';
+    const over = document.elementFromPoint(e.clientX, e.clientY);
+    const co = over && over.closest('[data-co]');
+    if (drag.hover && drag.hover !== co) drag.hover.classList.remove('hover');
+    if (co) co.classList.add('hover');
+    drag.hover = co;
+  }
+});
+addEventListener('pointerup', e => {
+  if (!drag) return;
+  if (drag.ghost) {
+    drag.ghost.remove();
+    const over = document.elementFromPoint(e.clientX, e.clientY);
+    const co = over && over.closest('[data-co]');
+    if (co) playCard(drag.idx, co.dataset.co); else { state.selected = null; mark(); }
+    justDragged = true; setTimeout(() => { justDragged = false; }, 0);
+  }
+  drag = null;
+});
+$('app').addEventListener('click', e => {
+  if (justDragged) return;
+  const cardEl = e.target.closest('[data-card]');
+  if (cardEl && scene === 'play' && state.phase === 'month' && !state.anim && !state.help && !state.coDetail) {
+    const i = +cardEl.dataset.card;
+    state.selected = state.selected === i ? null : i; mark(); return;
+  }
+  const a = e.target.closest('[data-act]');
+  if (!a) return;
+  const act = a.dataset.act, id = a.dataset.id;
+  if (act === 'close-ov') { state.help = null; state.coDetail = null; mark(); return; }
+  if (act === 'help') { state.help = id || (scene === 'play' && state.phase === 'month' ? 'cards' : 'stats'); mark(); return; }
+  if (act === 'help-tab') { state.help = id; mark(); return; }
+  if (state.help || state.coDetail) return;
+  if (act === 'start') startGame();
+  else if (act === 'confirm-lobby') confirmLobby();
+  else if (act === 'codetail') { state.coDetail = id; mark(); }
+  else if (act === 'mute') setMuted(!muted);
+  else if (act === 'pick') { togglePick(id); state.focus = state.applicants.indexOf(id); }
+  else if (act === 'focus') {
+    state.focus = state.applicants.indexOf(id); render(); dirty = false;
+    const d = document.querySelector('.detail');
+    if (document.body.classList.contains('mobile') && d) d.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  else if (act === 'confirm-audition') confirmAudition();
+  else if (act === 'co') {
+    if (state.anim) return;
+    const coId = a.dataset.co; state.target = mine().findIndex(c => c.id === coId);
+    if (state.selected != null) playCard(state.selected, coId);
+    mark();
+  }
+  else if (act === 'next') nextMonth();
+  else if (act === 'reroll') reroll();
+  else if (act === 'skip') { state.cer.revealed = state.cer.ranking.length; mark(); }
+  else if (act === 'advance') toggleAdvance(id);
+  else if (act === 'confirm-ceremony') confirmCeremony();
+  else if (act === 'nom') { state.nomPick = id; state.focus = mine().findIndex(c => c.id === id); sfx.pick(); mark(); }
+  else if (act === 'confirm-nom') confirmNominate();
+  else if (act === 'restart') startGame();
+});
+function reroll() {
+  if (state.rerolled || state.budget < tune.rerollCost) return;
+  state.budget -= tune.rerollCost; state.spentQ += tune.rerollCost; state.spentTotal += tune.rerollCost;
+  state.rerolled = true; drawHand(); sfx.next(); mark();
+}
+function toggleAdvance(id) {
+  const c = state.cer; const i = c.advance.indexOf(id);
+  if (i >= 0) { c.advance.splice(i, 1); sfx.unpick(); }
+  else if (c.advance.length < c.keep) { c.advance.push(id); sfx.pick(); }
+  else { toast(`${c.keep}곳까지만 올려보낼 수 있습니다`); sfx.no(); }
+  mark();
+}
+
+// ---- Scenes -------------------------------------------------------------------------------
+const scenes = {
+  figures: { update(dt) { state.t += dt; }, draw() { if (dirty) { render(); dirty = false; } } },
+  title: {
+    update() { if (pressed('Enter') || pressed('Space')) startGame(); },
+    draw() { if (dirty) { render(); dirty = false; } },
+  },
+  play: {
+    update(dt) {
+      state.t += dt;
+      const ph = state.phase;
+      const arrows = (n, cur) => {
+        if (pressed('ArrowRight') || pressed('ArrowDown')) { mark(); return (cur + 1) % Math.max(1, n); }
+        if (pressed('ArrowLeft') || pressed('ArrowUp')) { mark(); return (cur - 1 + n) % Math.max(1, n); }
+        return cur;
+      };
+      // 도장 연출(0.9초)이 끝나면 한 번 다시 그려 도장 그림을 치운다
+      if (state.stampFx && !state.stampFx.done && state.t - state.stampFx.t >= 1) { state.stampFx.done = true; mark(); }
+      if (ph === 'lobby') {
+        const L = state.lobby;
+        if (!L.done && state.t - L.t0 >= lobbyTimes(state.applicants.length).end) { L.done = true; mark(); }
+        if (pressed('Enter') || pressed('Space')) confirmLobby();
+      } else if (ph === 'month' && state.anim) {
+        if (animP() >= 1) finishMonthAnim();
+        else if (pressed('Enter') || pressed('Space')) finishMonthAnim();
+      } else if (ph === 'audition') {
+        state.focus = arrows(state.applicants.length, state.focus);
+        if (pressed('Space')) togglePick(state.applicants[state.focus]);
+        if (pressed('Enter')) confirmAudition();
+      } else if (ph === 'month') {
+        for (let k = 1; k <= 7; k++) if (pressed('Digit' + k) && k <= state.hand.length) { state.selected = state.selected === k - 1 ? null : k - 1; mark(); }
+        state.target = arrows(mine().length, state.target);
+        if (pressed('Space')) {
+          const co = mine()[state.target];
+          if (state.selected == null && state.hand.length) { state.selected = 0; mark(); }
+          else if (co && state.selected != null) playCard(state.selected, co.id);
+        }
+        if (pressed('KeyR')) reroll();
+        if (pressed('KeyI') && mine()[state.target]) { state.coDetail = mine()[state.target].id; mark(); }
+        if (pressed('Enter')) nextMonth();
+      } else if (ph === 'ceremony') {
+        const c = state.cer;
+        const want = Math.min(c.ranking.length, Math.floor((state.t - c.start) / 0.32) + 1);
+        if (want > c.revealed) { c.revealed = want; sfx.reveal(); mark(); }
+        if (c.revealed >= c.ranking.length && c.eliminating) {
+          state.focus = arrows(mine().length, state.focus);
+          if (pressed('Space')) toggleAdvance(mine()[state.focus].id);
+        } else if (pressed('Space')) { c.revealed = c.ranking.length; mark(); }
+        if (pressed('Enter')) confirmCeremony();
+      } else if (ph === 'nominate') {
+        const my = mine();
+        state.focus = arrows(my.length, state.focus);
+        if (pressed('Space') && my[state.focus]) { state.nomPick = my[state.focus].id; sfx.pick(); mark(); }
+        if (pressed('Enter')) { if (!state.nomPick && my[state.focus]) state.nomPick = my[state.focus].id; confirmNominate(); }
+      }
+      for (const co of all()) if (co.flash && co.flash.until <= state.t) { co.flash = null; mark(); }
+      if (state.toast && state.toast.until <= state.t) { state.toast = null; mark(); }
+    },
+    draw() { if (dirty) { render(); dirty = false; } else if (state.anim) animTick(); },
+  },
+  results: {
+    update(dt) { state.t += dt; if (pressed('Enter')) startGame(); },
+    draw() { if (dirty) { render(); dirty = false; } },
+  },
+};
+
+// ---- Loop: fixed step, frame time clamped ---------------------------------------------
+let lastScene = null;
+function step() {
+  if (pressed('KeyM')) { setMuted(!muted); hit.delete('KeyM'); }
+  if (state && scene !== 'figures') {
+    if (pressed('KeyH')) { state.help = state.help ? null : (scene === 'play' && state.phase === 'month' ? 'cards' : 'stats'); mark(); hit.clear(); }
+    if (state.help || state.coDetail) { if (pressed('Escape')) { state.help = null; state.coDetail = null; mark(); } hit.clear(); }
+  }
+  scenes[scene].update(STEP); hit.clear();
+  const key = scene + (state && state.phase) + (state && state.quarter);
+  if (key !== lastScene) { lastScene = key; mark(); scrollTo(0, 0); $('main').scrollTop = 0; }
+}
+let last, acc = 0, ALPHA = 1;
+function tick() {
+  const now = clock.now();
+  acc += Math.min(now - last, 0.25); last = now;
+  while (acc >= STEP) { step(); acc -= STEP; }
+  ALPHA = acc / STEP;
+  drawFrame();
+}
+function drawFrame() { scenes[scene].draw(); }
+function frame() { tick(); requestAnimationFrame(frame); }
+function timer() { if (document.visibilityState === 'visible' && clock.now() - last > 0.1) tick(); }
+
+// ---- What a check can read and drive (?manual=1 stops the loop; players never see it) ----
+window.game = {
+  get scene() { return scene; },
+  get state() { return state; },
+  press(code) { hit.add(code); },
+  hold(code, on) { on ? down.add(code) : down.delete(code); },
+  get events() { return events; },
+  step(n = 1, draw = true, alpha = 1) {
+    for (let i = 0; i < n; i++) step();
+    if (draw) { ALPHA = alpha; drawFrame(); }
+  },
+};
+
+reset();
+scene = params.get('scene') || 'title';
+if (scene === 'play') startGame();
+last = clock.now();
+if (params.get('manual') === '1') drawFrame();
+else { requestAnimationFrame(frame); setInterval(timer, 50); }
+</script>
+</body>
+</html>

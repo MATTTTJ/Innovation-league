@@ -1,0 +1,380 @@
+# Where each file in assets/ and vendor/ came from, one entry per file. The field names are the
+# provenance record's, so the entries carry over when the game grows.
+# - path: assets/hit.wav      # relative to this game's folder
+#   origin: ai                # ai | bought | cc0 | you | outsourced | template | plugin | licensed | code | unknown
+#   tool: "what made or fetched it: the generator, or the script for code"
+#   model: "the model ID, when a model made it or an AI wrote its code"
+#   source: {vendor: "who made or sold it", product: "its name", url: "where from"}   # a download
+#   licence: {id: CC0-1.0}    # a download: the SPDX id where one exists
+#   date: 2026-01-31
+#   ships: true               # false for a file only the build uses
+#   placeholder: true         # until it is replaced; leave the line out otherwise
+- path: assets/narmi.png
+  origin: you
+  tool: "PowerShell System.Drawing: cropped and resized from the person's file"
+  source: {vendor: "조달청", product: "조달청 마스코트 나르미 (3D)", url: "조달청 나르미와 달이 3D.png, the person's file"}
+  date: 2026-11-14
+  ships: true
+- path: assets/dali.png
+  origin: you
+  tool: "PowerShell System.Drawing: cropped and resized from the person's file"
+  source: {vendor: "조달청", product: "조달청 마스코트 달이 (3D)", url: "조달청 나르미와 달이 3D.png, the person's file"}
+  date: 2026-11-14
+  ships: true
+- path: assets/prod/drone.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/prod/ess.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/prod/sensor.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/prod/aibot.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/prod/filter.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/prod/robotarm.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/prod/ecg.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/prod/charger.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/prod/helmet.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/prod/carbon.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/prod/cctv.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/prod/h2tank.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/prod/streetlight.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/prod/printer.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/seal.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/medal.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/globe.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/gauge.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/bulb.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/firetruck.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/school.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/cityhall.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/clipboard.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/stall.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/shop.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/contract.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/handshake.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/plane.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/flask.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/factory.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/rocket.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/magnifier.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/coins.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/mentor.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/ingot.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/cells.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/crate.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/megaphone.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/card/nodes.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png; trimmed and resized to 256px by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/stage/stage_back.webp
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png, card/medal.png, prod/drone.png; cropped/trimmed by PowerShell System.Drawing, WebP by ffmpeg"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/stage/stage_seats.webp
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png, card/medal.png, prod/drone.png; cropped/trimmed by PowerShell System.Drawing, WebP by ffmpeg"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/stage/stage_floor.webp
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png, card/medal.png, prod/drone.png; cropped/trimmed by PowerShell System.Drawing, WebP by ffmpeg"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/stage/desk_top.webp
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png, card/medal.png, prod/drone.png; cropped/trimmed by PowerShell System.Drawing, WebP by ffmpeg"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/stage/mic.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png, card/medal.png, prod/drone.png; cropped/trimmed by PowerShell System.Drawing, WebP by ffmpeg"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/stage/nameplate.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png, card/medal.png, prod/drone.png; cropped/trimmed by PowerShell System.Drawing, WebP by ffmpeg"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/stage/pick_button.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png, card/medal.png, prod/drone.png; cropped/trimmed by PowerShell System.Drawing, WebP by ffmpeg"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/stage/stamp.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png, card/medal.png, prod/drone.png; cropped/trimmed by PowerShell System.Drawing, WebP by ffmpeg"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/stage/stamp_ink.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png, card/medal.png, prod/drone.png; cropped/trimmed by PowerShell System.Drawing, WebP by ffmpeg"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/stage/clip.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png, card/medal.png, prod/drone.png; cropped/trimmed by PowerShell System.Drawing, WebP by ffmpeg"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/stage/plinth.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png, card/medal.png, prod/drone.png; cropped/trimmed by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/stage/folder.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png, card/medal.png, prod/drone.png; cropped/trimmed by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/stage/tray.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png, card/medal.png, prod/drone.png; cropped/trimmed by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/stage/podium.webp
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png, card/medal.png, prod/drone.png; cropped/trimmed by PowerShell System.Drawing, WebP by ffmpeg"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/stage/medal_gold.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png, card/medal.png, prod/drone.png; cropped/trimmed by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/stage/medal_silver.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png, card/medal.png, prod/drone.png; cropped/trimmed by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: assets/stage/medal_bronze.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/dali.png, card/medal.png, prod/drone.png; cropped/trimmed by PowerShell System.Drawing"
+  model: "Codex built-in image_gen"
+  date: 2026-11-14
+  ships: true
+- path: vendor/PretendardVariable.woff2
+  origin: licensed
+  tool: "downloaded from the jsDelivr npm mirror"
+  source: {vendor: "Kil Hyung-jin (orioncactus)", product: "Pretendard Variable 1.3.9", url: "https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/woff2/PretendardVariable.woff2"}
+  licence: {id: OFL-1.1}
+  date: 2026-11-14
+  ships: true
+- path: vendor/GmarketSansMedium.woff
+  origin: licensed
+  tool: "downloaded from the noonnu jsDelivr mirror"
+  source: {vendor: "Gmarket (G마켓)", product: "Gmarket Sans Medium", url: "https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff"}
+  licence: {name: "Gmarket Sans license: free for personal and commercial use, embedding allowed, no resale of the font itself"}
+  date: 2026-11-14
+  ships: true
+- path: vendor/GmarketSansBold.woff
+  origin: licensed
+  tool: "downloaded from the noonnu jsDelivr mirror"
+  source: {vendor: "Gmarket (G마켓)", product: "Gmarket Sans Bold", url: "https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff"}
+  licence: {name: "Gmarket Sans license: free for personal and commercial use, embedding allowed, no resale of the font itself"}
+  date: 2026-11-14
+  ships: true
