@@ -381,6 +381,11 @@
   /* 타이틀: 1 → 2 → 3 순서가 보이게 */
   .title-wrap { padding: 22px 20px; }
   .title-wrap h1 { font-size: 60px; margin: 10px 0 4px; }
+  /* 조달청 로고: 타이틀 위, 상단 바 왼쪽(흰 바탕 칩) */
+  .title-wrap .org { margin-bottom: 10px; } .title-wrap .org img { height: 44px; display: inline-block; box-sizing: content-box; background: #fff; padding: 6px 16px; border-radius: 10px; box-shadow: 0 2px 10px rgba(20,48,79,0.15); }
+  .org-chip { flex: none; display: flex; align-items: center; background: #fff; border-radius: 8px; padding: 4px 10px; }
+  .org-chip img { height: 30px; display: block; }
+  body.mobile .org-chip img { height: 22px; }
   .how { grid-template-columns: 1fr 44px 1fr 44px 1fr; gap: 0; margin: 18px 0 10px; align-items: stretch; }
   .how .arrow { display: flex; align-items: center; justify-content: center; }
   .how .arrow::before { content: ""; border-left: 18px solid #0c8599; border-top: 13px solid transparent; border-bottom: 13px solid transparent; }
@@ -1262,6 +1267,7 @@ function renderHeader() {
     : `내 기업이 포기한 기업보다 많이 자라면 다음 분기 예산 증가 · 분기 성장률 내 기업 <span class="${cls(myG - dropG)}">${fmtP(myG)}</span> vs 포기한 기업 ${fmtP(dropG)}`;
   const finalGoal = `4분기 말 국가대표 1곳이 전체 1위 · 내 최고 순위 ${best ? best + '위' : '-'} / ${ranking.length}곳`;
   setHTML($('hdr'), `
+    <div class="org-chip"><img src="assets/brand/pps_h.png" alt="조달청" draggable="false"></div>
     <div class="brand"><span class="t1">혁신기업 키움 리그</span><span class="t2">${q}분기 · ${monthName(state.turn)} · 턴 ${Math.min(12, state.turn + 1)} / 12</span></div>
     <div class="hbox"><span class="lbl">남은 예산</span><span class="val">${Math.round(state.budget)}억</span>
       <div class="budget-bar"><i style="width:${clamp(state.budget / Math.max(1, allocTotal) * 100, 0, 100)}%"></i></div></div>
@@ -1279,6 +1285,7 @@ function renderTitle() {
   ];
   const how = steps.map(([t, ic, d], i) => `${i ? '<div class="arrow" aria-hidden="true"></div>' : ''}<div class="panel step"><span class="no">${i + 1}</span><div class="ic">${ic}</div><div><b class="st">${t}</b><div>${d}</div></div></div>`).join('');
   return `<div class="title-wrap">
+    <div class="org"><img src="assets/brand/pps_h.png" alt="조달청" draggable="false"></div>
     <span class="kicker">조달청 혁신조달 시뮬레이션</span>
     <h1>혁신기업 <span>키움</span> 리그</h1>
     <div class="sub">뽑고, 키우고, 겨루는 공공조달 이야기 · 심사위원이 되어 스타트업을 뽑고 조달 지원으로 키워 국가대표 혁신기업 1곳을 가려내세요.</div>

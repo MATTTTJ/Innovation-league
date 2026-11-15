@@ -378,3 +378,9 @@
   licence: {name: "Gmarket Sans license: free for personal and commercial use, embedding allowed, no resale of the font itself"}
   date: 2026-11-14
   ships: true
+- path: assets/brand/pps_h.png
+  origin: you
+  tool: "ffmpeg colorkey (white to transparent), trimmed and resized by PowerShell System.Drawing"
+  source: {vendor: "조달청", product: "조달청 로고 (국문 좌우형)", url: "조달청_국_좌우.jpg, the person's file"}
+  date: 2026-11-15
+  ships: true
