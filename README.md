@@ -11,8 +11,6 @@
 - H: 도움말 · I: 기업 자세히 보기 · M: 소리 켜기/끄기
 - 밸런스 값은 모두 `config.js`에 있습니다.
 
-## 문서
+## 출처
 
-- 기획과 변경 기록: [brief.md](brief.md)
 - 그림·글꼴 출처: [assets/provenance.yaml](assets/provenance.yaml)
-- 스크린샷: `evidence/`
