@@ -44,7 +44,7 @@ window.CONFIG = {
   // ---- 연출 (초) ----
   monthAnim: { value: 1.8, min: 0, max: 4, step: 0.1 },        // 다음 달로 넘어갈 때 차트가 오르내리는 결산 연출 길이
   lobbyEnterGap: { value: 0.22, min: 0.05, max: 1, step: 0.01 },// 심사장에 기업이 한 곳씩 입장하는 간격
-  lobbyPitchGap: { value: 1.7, min: 0.6, max: 4, step: 0.1 }, // 동물 대표가 한 명씩 회사를 소개하는 시간 (소개 뒤 지원서 제출)
+  lobbyPitchGap: { value: 1.0, min: 0.5, max: 4, step: 0.1 }, // 동물 대표가 차례로 회사를 소개하는 간격 (말풍선은 이 간격의 1.6배 동안 보인다)
 
   // ---- 엔딩 등급 경계 (100점 만점) ----
   gradeS: { value: 80, min: 50, max: 100, step: 1 },
@@ -52,5 +52,6 @@ window.CONFIG = {
   gradeB: { value: 50, min: 30, max: 100, step: 1 },
   gradeC: { value: 35, min: 20, max: 100, step: 1 },
   gradeD: { value: 20, min: 0, max: 100, step: 1 },
-  effPoints: { value: 15, min: 1, max: 40, step: 1 },          // 1억 지출당 만든 기업가치 1억이 주는 효율 점수
+  effPoints: { value: 30, min: 1, max: 80, step: 1 },          // 예산 효율 점수: (포기한 기업보다 더 키운 가치 ÷ 지출) 1당 점수, 20점 만점
+  effMinSpend: { value: 150, min: 0, max: 400, step: 10 },     // 예산 효율을 잴 때 지출이 이보다 적으면 이 값으로 나눈다 (거의 안 쓰고 만점 받기 방지)
 };

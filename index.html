@@ -84,7 +84,7 @@
   .btn.small { padding: 6px 14px; font-size: 15px; }
   .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .art { width: 100%; height: 100%; }
-  .toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); background: #212529; color: #fff; padding: 10px 18px; border-radius: 10px; font-size: 16px; z-index: 50; box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+  .toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); background: #212529; color: #fff; padding: 10px 18px; border-radius: 10px; font-size: 16px; z-index: 50; box-shadow: 0 6px 20px rgba(0,0,0,0.3); width: max-content; max-width: min(820px, 92vw); text-align: center; }
   .bar-bottom { display: flex; justify-content: center; gap: 14px; padding: 10px; margin-top: 12px; align-items: center; flex-wrap: wrap; }
   .bar-bottom .info { font-size: 16px; color: #3b3f52; }
 
@@ -193,7 +193,7 @@
   .legend i { width: 18px; height: 4px; border-radius: 2px; display: inline-block; }
   .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; min-height: 0; }
   .twocol .panel { overflow: hidden; }
-  .report div, .news div { font-size: 14px; padding: 2px 0; border-bottom: 1px dashed var(--line2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .report div, .news div { font-size: 14px; padding: 2px 0; border-bottom: 1px dashed var(--line2); }
   .report div:last-child, .news div:last-child { border-bottom: none; }
   .news .tag { display: inline-block; background: #fff0f0; color: var(--bad); font-weight: 800; border-radius: 4px; padding: 0 5px; margin-right: 5px; }
   .handwrap { margin-top: 12px; display: grid; grid-template-columns: 1fr 340px; gap: 12px; }
@@ -395,6 +395,10 @@
   .how { grid-template-columns: 1fr 44px 1fr 44px 1fr; gap: 0; margin: 18px 0 10px; align-items: stretch; }
   .how .arrow { display: flex; align-items: center; justify-content: center; }
   .how .arrow::before { content: ""; border-left: 18px solid #0c8599; border-top: 13px solid transparent; border-bottom: 13px solid transparent; }
+  /* 순서 화살표: 무대 배경(남색)에 묻히지 않게 흰 원 안에 청록 화살표 */
+  .title-wrap .how .arrow { position: relative; z-index: 2; }
+  .title-wrap .how .arrow::after { content: ""; position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 50%; background: #fff; border: 2px solid #0c8599; box-shadow: 0 4px 12px rgba(15,34,56,0.35); z-index: -1; }
+  .title-wrap .how .arrow::before { border-left-width: 15px; border-top-width: 10px; border-bottom-width: 10px; margin-left: 5px; }
   .how .step { position: relative; padding: 14px 14px 10px; font-size: 15px; line-height: 1.45; }
   .step .no { position: absolute; top: -14px; left: -10px; width: 36px; height: 36px; border-radius: 50%; background: #0c8599; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; box-shadow: 0 3px 0 #075e6b; }
   .step .st { display: block; font-size: 18px; color: #14304f; margin-bottom: 3px; font-weight: 700; }
@@ -409,9 +413,14 @@
   .lobby .appl { top: 330px; }
   .appl .ceo { position: relative; width: 170px; height: 170px; margin: 0 auto -44px; z-index: 2; }
   .appl .ceo img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 10px 8px rgba(31,58,95,0.25)); }
+  /* 대표 몸통(얼굴 중심)을 단상 한가운데에 맞춘다: 그림 안 소품 때문에 그림 가운데와 몸 가운데가 다르다 */
+  .appl .ceo img { position: absolute; left: 50%; bottom: 0; width: auto; transform: translateX(calc(var(--cx, 0.5) * -100%)); }
+  /* 마우스를 올리면 그 대표의 말풍선이 다시 뜬다 */
+  .lobby .appl .ceo { pointer-events: auto; cursor: help; }
+  .appl:has(.ceo:hover) .say { animation: none; opacity: 1; z-index: 6; }
   .appl .ceo .prod { position: absolute; right: -6px; bottom: 30px; width: 58px; height: 58px; background: #fff; border-radius: 50%; border: 2px solid #cfdae6; padding: 4px; box-shadow: 0 4px 10px rgba(31,58,95,0.18); }
   .appl .say { position: absolute; left: 50%; bottom: calc(100% - 4px); width: 250px; margin-left: -125px; background: #fff; border: 2px solid #0c8599; border-radius: 14px; padding: 8px 12px; font-size: 16px; line-height: 1.4; color: #14304f; text-align: left; box-shadow: 0 6px 16px rgba(31,58,95,0.2); opacity: 0; z-index: 5; animation: say var(--dur) ease-out both; animation-delay: calc(var(--t) - var(--age)); }
-  .appl .say { text-wrap: balance; } .appl .say b { display: block; color: #0c8599; font-size: 14px; }
+  .appl .say { text-wrap: balance; width: 222px; margin-left: -111px; } .appl .say b { display: block; color: #0c8599; font-size: 14px; }
   .appl .say::after { content: ""; position: absolute; left: 50%; top: 100%; margin-left: -9px; border: 9px solid transparent; border-top-color: #0c8599; }
   @keyframes say { 0% { opacity: 0; transform: translateY(8px) scale(.92); } 10%, 88% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-4px); } }
   .appl .pl { width: 176px; display: block; margin: 0 auto; }
@@ -428,8 +437,9 @@
   }
   .lobby .tray { position: absolute; left: 1200px; bottom: 22px; width: 230px; margin-left: -115px; }
   .tray img { width: 100%; display: block; position: relative; }
-  .tray i { position: absolute; left: 50%; width: 140px; margin-left: -70px; height: 9px; background: #1f3a5f; border: 1px solid #0f2238; border-radius: 3px; opacity: 0; animation: land .3s ease-out both; animation-delay: calc(var(--t) - var(--age)); }
-  .tray i:nth-child(even) { rotate: -2deg; } .tray i:nth-child(odd) { rotate: 1.5deg; }
+  .tray img.nb { position: absolute; left: 50%; width: 150px; opacity: 0; filter: drop-shadow(0 3px 2px rgba(15,34,56,0.25)); animation: land .35s ease-out both; animation-delay: calc(var(--t) - var(--age)); }
+  /* 접수 배지: 서류함 위가 아니라 오른쪽 아래에 둔다 (기업이 4곳일 때 위쪽은 대표 이름표와 겹친다) */
+  .lobby .tray .cnt { top: auto; bottom: 14px; left: 100%; transform: none; margin-left: -6px; z-index: 2; }
   @keyframes land { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: none; } }
   .tray .cnt { position: absolute; left: 50%; top: -32px; transform: translateX(-50%); background: #0c8599; color: #fff; font-weight: 700; border-radius: 999px; padding: 3px 14px; white-space: nowrap; font-size: 15px; box-shadow: 0 3px 0 #075e6b; }
 
@@ -437,7 +447,6 @@
   .tile { grid-template-columns: 108px 1fr; gap: 6px 10px; padding: 10px 12px; }
   .tile .pcol { display: flex; flex-direction: column; gap: 2px; }
   .tile .inkmark { left: 26px; right: auto; top: 46px; width: 92px; height: 92px; } .tile .stamper { left: 30px; right: auto; top: -10px; }
-  .tile .info .pd { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tile .pic { width: 108px; height: 108px; padding: 4px; }
   .tile .info { min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 1px; }
   .tile .info .nm { font-size: 19px; font-weight: 700; grid-column: auto; }
@@ -481,7 +490,7 @@
   .co { grid-template-columns: 62px 1fr 176px; grid-template-rows: auto 1fr auto; }
   .co .pic { width: 62px; height: 62px; }
   .co .mid { min-width: 0; }
-  .co .pd { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .co .pd { line-height: 1.3; }
   .co .vv { white-space: nowrap; font-size: 20px; }
   .co .vv small { display: block; margin-left: 0; }
   .co .vv { font-weight: 700; }
@@ -496,6 +505,7 @@
   .sbars em small { color: #2b8a3e; margin-left: 2px; font-size: 11px; }
   .center { grid-template-rows: 268px 1fr; }
   .chart .plot svg { width: 100%; height: 200px; display: block; }
+  .month .chart { display: flex; flex-direction: column; min-height: 0; } .month .chart .plot { flex: 1; min-height: 0; } .month .chart .plot svg { height: 100%; }
   .live { color: #d6283b; animation: blink 0.8s ease-in-out infinite alternate; }
   @keyframes blink { from { opacity: 1; } to { opacity: 0.35; } }
   .rankp .rows div { display: grid; grid-template-columns: 22px 40px 1fr auto 58px; gap: 6px; font-size: 13.5px; align-items: center; padding: 1px 4px; border-bottom: 1px dashed var(--line2); border-radius: 4px; }
@@ -503,7 +513,7 @@
   .rankp .rows .mine { background: #eef6ff; font-weight: 700; }
   .rankp .r { font-weight: 700; color: #14304f; text-align: center; }
   .rankp .tag { font-size: 12px; text-align: center; padding: 0 4px; }
-  .rankp .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rankp .nm { white-space: nowrap; }
   .rankp .rows span:last-child { text-align: right; font-size: 13px; }
   .tag.my { background: #1f3a5f; color: #fff; }
   .month.animating .hand, .month.animating .co .more { opacity: 0.5; filter: grayscale(0.4); pointer-events: none; }
@@ -523,7 +533,7 @@
   .card .fit b { color: #0c8599; margin-right: 3px; }
 
   /* 분기 성과 발표: 시상대 + 전체 순위 막대 + 예산 결과 */
-  .ceremony { grid-template-columns: 470px 1fr 400px; gap: 14px; height: 476px; }
+  .ceremony { grid-template-columns: 470px 1fr 470px; gap: 14px; height: 476px; }
   .podwrap { position: relative; height: 476px; }
   .podwrap .podium { position: absolute; left: 0; bottom: 0; width: 470px; }
   .pod { position: absolute; width: 160px; margin-left: -80px; text-align: center; z-index: 2; }
@@ -546,7 +556,7 @@
   .br .n { font-size: 18px; font-weight: 700; color: #535c68; text-align: center; }
   .br.r1 .n { color: #b8860b; } .br.r2 .n { color: #7d8794; } .br.r3 .n { color: #a5582a; }
   .br .pic { width: min(48px, calc(var(--rh) - 10px)); height: min(48px, calc(var(--rh) - 10px)); }
-  .br .nm { font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .br .nm { font-weight: 800; white-space: nowrap; }
   .br .tag { font-size: 12px; justify-self: start; }
   .br .track { height: 16px; background: #eef1f4; border-radius: 8px; overflow: hidden; }
   .br .track i { display: block; height: 100%; background: #adb5bd; border-radius: 8px; transform-origin: left; animation: grow .8s ease-out both; }
@@ -560,7 +570,7 @@
   .judge p { margin: 4px 0; font-size: 15px; }
   .ceremony .lines div { font-size: 14px; padding: 2px 0; }
   .advhint { font-size: 14px; }
-  .advc { padding: 3px 8px; font-size: 14px; }
+  .advc { padding: 3px 8px; font-size: 14px; } .advc .sm { font-size: 13px; white-space: nowrap; }
   .advc.on { border-color: #1f3a5f; background: #eef6ff; } .advc.on .st { background: #1f3a5f; }
   .advc.focus { outline-color: #0c8599; }
 
@@ -577,18 +587,111 @@
   .podwrap, .bars { height: 516px; }
   .ceremony .side-col { max-height: 516px; height: 516px; display: flex; flex-direction: column; gap: 12px; }
   .ceremony .side-col > .panel:last-child { flex: 1; }
-  .ceremony .side-col > .judge:only-child { display: flex; flex-direction: column; justify-content: space-evenly; }
+  .ceremony .side-col > .judge:only-child { display: flex; flex-direction: column; }
+  .ceremony .side-col > .judge:only-child .vs { flex: 1; align-content: center; margin: 0; }
   .finalists { max-width: none; height: 516px; gap: 14px; }
   .finalists .detail { height: 100%; align-content: center; }
   .result { max-width: none; margin: 0; grid-template-columns: 470px 1fr; gap: 14px; height: 668px; }
   .result .grade { display: flex; flex-direction: column; justify-content: center; align-items: center; }
   .result > .panel { display: flex; flex-direction: column; }
   .result .ranks { flex: 1; align-content: space-between; }
-  .ceremony .side-col .advc .sm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .ceremony .side-col .advc > div { min-width: 0; }
   .ceremony .side-col > .judge:not(:only-child) { padding-bottom: 8px; } .ceremony .side-col > .judge:not(:only-child) .vs { display: none; }
   .result .grade .g { font-size: 200px; line-height: 1; } .result .grade .gt { font-size: 34px; } .result .grade p { font-size: 18px; max-width: 380px; }
   .handwrap { height: 300px; } .hand { align-items: stretch; }
+
+  /* 피드백 반영 (2026-11-15 오후): 결산 칩, 심사 일지, 빈 지출 경고 */
+  .rpt { width: 100%; border-collapse: collapse; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+  .rpt th { font-size: 12.5px; color: var(--muted); font-weight: 700; text-align: right; padding: 0 3px 3px; border-bottom: 1px solid var(--line2); }
+  .rpt td { text-align: right; padding: 4px 3px; border-bottom: 1px dashed var(--line2); white-space: nowrap; }
+  .rpt tr:last-child td { border-bottom: none; } .rpt td.nm { text-align: left; font-weight: 800; }
+  .report .rp { display: flex; flex-direction: column; gap: 2px; padding: 3px 0; }
+  .report .rh { font-size: 14.5px; }
+  .report .rw { display: flex; flex-wrap: wrap; gap: 3px 4px; }
+  .report .rw i { font-style: normal; font-size: 12.5px; background: #f1f3f5; border-radius: 5px; padding: 0 6px; color: #343a40; white-space: nowrap; }
+  .cos .news { margin: 0; overflow: hidden; } .cos .news.span2 { grid-column: 1 / -1; }
+  .cos .news h3 small { font-size: 13px; }
+  .news div { display: flex; gap: 8px; } .news .nt { flex: none; min-width: 34px; color: #0c8599; font-weight: 800; }
+  .btn.next.warn { background: #8a5a00; box-shadow: 0 3px 0 #5c3c00; }
+
+  /* 예산 심사 결과: 성장 비교 막대, 최고의 투자, 내 기업 표, 예산 계단 그래프 */
+  .judge.budget { display: flex; flex-direction: column; gap: 10px; }
+  .judge.budget h3 { margin: 0; } .judge.budget h3 small b { font-weight: 800; }
+  .gbars { display: flex; flex-direction: column; gap: 5px; }
+  .gb { display: grid; grid-template-columns: 96px 1fr 62px; align-items: center; gap: 8px; font-size: 14px; }
+  .gb span { color: #2b3a4e; font-weight: 700; } .gb em { font-style: normal; text-align: right; font-size: 15px; }
+  .gb i { height: 14px; background: #eef1f4; border-radius: 7px; overflow: hidden; }
+  .gb b { display: block; height: 100%; border-radius: 7px; transform-origin: left; animation: grow .8s ease-out both; }
+  .gb.my b { background: linear-gradient(90deg, #1f3a5f, #0c8599); } .gb.drop b { background: #adb5bd; }
+  .mvp { display: grid; grid-template-columns: 64px 1fr; gap: 12px; align-items: center; background: linear-gradient(100deg, #fff7d6, #fffdf4 70%); border: 2px solid #e8a400; border-radius: 12px; padding: 8px 12px; box-shadow: 0 4px 14px rgba(232,164,0,0.25); animation: pop .5s ease-out both; }
+  .mvp.none { display: block; background: #f8f9fa; border-color: #dee2e6; box-shadow: none; color: var(--muted); font-size: 14px; }
+  .mvp-pic { width: 64px; height: 64px; border-radius: 50%; overflow: hidden; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(31,58,95,0.25); display: block; }
+  .mvp-t { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 800; color: #8a5a00; } .mvp-t img { width: 20px; height: 20px; object-fit: contain; }
+  .mvp-n { font-family: var(--font-title); font-size: 19px; font-weight: 700; color: #14304f; line-height: 1.25; }
+  .mvp-d { font-size: 13.5px; color: #3b3f52; } .mvp-d b { font-weight: 800; }
+  .invt { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .invt th { font-size: 12px; color: var(--muted); font-weight: 700; text-align: right; padding: 0 4px 3px; border-bottom: 1px solid var(--line2); white-space: nowrap; }
+  .invt th:first-child, .invt td.nm { text-align: left; }
+  .invt td { text-align: right; padding: 4px; border-bottom: 1px dashed var(--line2); white-space: nowrap; }
+  .invt td.nm { font-weight: 800; } .invt tr.best td { background: #fff9e6; } .invt tr:last-child td { border-bottom: none; }
+  .invt td:last-child { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
+  .xb { width: 70px; height: 9px; background: #eef1f4; border-radius: 5px; overflow: hidden; display: inline-block; }
+  .xb i { display: block; height: 100%; border-radius: 5px; } .xb i.pos { background: #0c8599; } .xb i.neg { background: #e03131; }
+  .wf { display: flex; flex-direction: column; gap: 4px; border-top: 1px solid var(--line2); padding-top: 8px; }
+  .wr { display: grid; grid-template-columns: 132px 1fr 58px; align-items: center; gap: 8px; font-size: 13.5px; }
+  .wr span { color: #2b3a4e; white-space: nowrap; } .wr em { font-style: normal; text-align: right; font-weight: 800; }
+  .wr i { position: relative; height: 14px; background: #f1f3f5; border-radius: 4px; }
+  .wr b { position: absolute; top: 0; bottom: 0; border-radius: 4px; background: #1f3a5f; animation: grow .8s ease-out both; transform-origin: left; }
+  .wr b.pos { background: #0c8599; } .wr b.neg { background: #e03131; } .wr:first-child b { background: #1f3a5f; }
+  .wr.total { font-weight: 800; border-top: 1px dashed var(--line2); padding-top: 4px; } .wr.total span { font-weight: 800; color: #14304f; } .wr.total i { height: 16px; } .wr.total b { background: linear-gradient(90deg, #1f3a5f, #0c8599); } .wr.total em { font-size: 16px; color: #14304f; }
+  .judge.budget.compact { gap: 7px; } .compact .mvp { padding: 5px 10px; grid-template-columns: 52px 1fr; } .compact .mvp-pic { width: 52px; height: 52px; } .compact .mvp-n { font-size: 17px; }
+  .compact .wf { gap: 2px; padding-top: 5px; } .compact .wr { font-size: 13px; } .compact .wr i { height: 11px; }
+  .judge .finco + .mvp { margin-top: 10px; }
+  /* 월 운영 오른쪽 아래: 달이 대사 길이가 바뀌어도 아래 버튼들이 움직이지 않게, 대사 칸이 남는 높이를 모두 차지한다 */
+  .side-box { justify-content: flex-start; }
+  .side-box .sec { flex: 1 1 0; min-height: 0; align-items: start; }
+  .side-box .sbub { font-size: 14px; line-height: 1.42; }
+  .wf1 { display: flex; flex-direction: column; gap: 4px; }
+  .wf1h { display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; font-weight: 800; color: #14304f; } .wf1h b { font-size: 17px; font-family: var(--font-title); }
+  .wf1b { position: relative; display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: #f1f3f5; }
+  .wf1b i { display: block; height: 100%; } .wf1b i.cut { position: absolute; right: 0; top: 0; background: repeating-linear-gradient(45deg, #e03131 0 4px, #ff8787 4px 8px); }
+  .wf1 .base { background: #1f3a5f; } .wf1 .perf { background: #0c8599; } .wf1 .top { background: #e8a400; } .wf1 .carry { background: #74c0fc; }
+  .wf1l { font-size: 12.5px; color: #2b3a4e; display: flex; flex-wrap: wrap; gap: 2px 10px; }
+  .wf1l i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: 0; }
+  .wf1l i.cut { background: #e03131; }
+
+  /* 동물 대표 그림: 큰 칸은 전신, 작은 칸은 얼굴 쪽을 크게 */
+  .pic, .pp { position: relative; }
+  .ceo-pic { display: block; width: 100%; height: 100%; }
+  .ceo-pic > img { display: block; width: 100%; height: 100%; object-fit: contain; }
+  .ceo-pic.face { position: relative; overflow: hidden; border-radius: inherit; background: linear-gradient(180deg, #eef4f9, #dfe9f2); }
+  .ceo-pic.face > img { position: absolute; left: 50%; top: 50%; height: calc(100% / 0.44); width: auto; max-width: none; transform: translate(calc(var(--cx) * -100%), calc(var(--cy) * -100%)); object-fit: initial; }
+  .pic { overflow: hidden; }
+  .prod-badge { position: absolute; right: 3px; bottom: 3px; width: 38%; height: 38%; background: #fff; border-radius: 50%; border: 1.5px solid #cfdae6; padding: 2px; box-shadow: 0 2px 5px rgba(31,58,95,0.2); z-index: 1; }
+  .prod-badge svg, .prod-badge img { width: 100%; height: 100%; display: block; object-fit: contain; }
+  .tile .pic, .detail .pic, .co .pic { border-radius: 10px; }
+  .ceo-badge { position: absolute; right: 2px; bottom: 2px; width: 42%; height: 42%; border-radius: 50%; overflow: hidden; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(31,58,95,0.3); z-index: 1; }
+  .ceo-badge .ceo-pic.face { border-radius: 50%; }
+  /* 오디션 지원서 요약 카드: 두 줄이 심사위원석 위까지 다 들어가게 줄이고, 핵심 역량은 한 줄로 */
+  .stage .tiles { row-gap: 18px; }
+  .tile { grid-template-columns: 92px 1fr; gap: 5px 10px; padding: 9px 11px; }
+  .tile .pic { width: 92px; height: 92px; padding: 3px; }
+  .tile .inkmark { left: 18px; top: 36px; width: 84px; height: 84px; } .tile .stamper { left: 22px; top: -14px; }
+  .tile .corebox { flex-wrap: nowrap; gap: 4px; } .tile .corebox .lbl { font-size: 12px; white-space: nowrap; flex: none; }
+  .tile .corechip { font-size: 13px; padding: 0 7px; }
+  .tile .tr { gap: 4px; } .tile .tr .chip { font-size: 13px; padding: 0 7px; }
+  .tile .info { justify-content: flex-start; padding-top: 14px; } /* 이름이 클립 그림에 가리지 않게 */
+  .tile .sec { white-space: nowrap; }
+  .br .pic, .advc .pic, .rk .pic { border-radius: 50%; overflow: hidden; }
+  .pod .pp { width: 116px; height: 138px; } .pod.p1 .pp { width: 136px; height: 160px; }
+  .pod .md { right: -18px; bottom: 6px; width: 40px; }
+  .finco { display: flex; align-items: center; gap: 14px; }
+  .finco .ceo-pic { width: 150px; height: 180px; flex: none; }
+  .finco p { font-size: 19px; margin: 0; } .finco .fr { color: #0c8599; font-size: 30px; }
+  .result .grade .gtop { display: flex; align-items: center; justify-content: center; gap: 18px; }
+  .gceo { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .gceo .ceo-pic { width: 170px; height: 200px; }
+  .gceo span { font-size: 14px; color: #535c68; font-weight: 700; text-align: center; line-height: 1.35; }
 
   /* 도움말 · 기업 자세히 보기 창 */
   #ov { position: absolute; inset: 0; z-index: 40; pointer-events: none; }
@@ -767,7 +870,7 @@ const CARD = Object.fromEntries(CARDS.map(c => [c.id, c]));
 const LINE_COLORS = ['#d6283b', '#2a7f75', '#6a3fe0', '#e8890c', '#1c6ed6'];
 let dirty = true;
 function mark() { dirty = true; }
-function toast(text) { state.toast = { text, until: state.t + 2.2 }; mark(); }
+function toast(text, dur = 2.2) { state.toast = { text, until: state.t + dur }; mark(); }
 
 // ---- Game state -------------------------------------------------------------------------
 let scene, state;
@@ -778,7 +881,7 @@ function reset() {
     phase: 'audition', quarter: 1, turn: 0,
     cos: {}, order: [], qStart: {},
     budget: tune.budgetQ1, alloc: [{ k: '1분기 배정 예산', v: tune.budgetQ1 }], spentQ: 0, spentTotal: 0,
-    hand: [], selected: null, target: 0, rerolled: false,
+    hand: [], selected: null, target: 0, rerolled: false, monthPlays: 0, warnEmpty: false,
     applicants: [], picks: [], need: 0, focus: 0,
     cer: null, nominee: null, nomPick: null,
     news: [], report: [], toast: null, result: null,
@@ -804,7 +907,7 @@ function makeCompany(def) {
     id: def.id, name: def.name, product: def.product, sector: def.sector, art: def.art, ceo: def.ceo, pitch: def.pitch, energy: !!def.energy,
     core: def.core, traits: def.traits, stats, prevStats: { ...stats }, badges: [], effects: [],
     status: 'applicant', everPicked: false, joined: state.turn, hist: [], path: [], trialQuarter: 0,
-    cardsThisMonth: 0, stockThisMonth: false, flash: null, spent: 0, lastG: 0, lastWhy: [],
+    cardsThisMonth: 0, stockThisMonth: false, flash: null, spent: 0, qSpent: {}, lastG: 0, lastWhy: [],
   };
   co.value = co.start = Math.round(tune.startValue * (0.5 + score(co)) * 10) / 10;
   co.hist[state.turn] = co.value;
@@ -877,8 +980,9 @@ function playCard(handIdx, coId) {
     t.flash = { text: jn(out.map(glue)), until: state.t + 2.6 };
     t.hist[state.turn] = t.value;
     t.spent += cost / targets.length;
+    t.qSpent[state.quarter] = (t.qSpent[state.quarter] || 0) + cost / targets.length;
   }
-  co.cardsThisMonth++;
+  co.cardsThisMonth++; state.monthPlays++; state.warnEmpty = false;
   if (card.kind === 'trial') co.trialQuarter = state.quarter;
   if (card.kind === 'stock') co.stockThisMonth = true;
   state.hand.splice(handIdx, 1);
@@ -908,34 +1012,34 @@ function drawHand() {
 // ---- 성장 엔진 ----------------------------------------------------------------------------
 function simulateMonth() {
   for (const co of existing()) {
-    const why = [];
+    const why = [], parts = {};
     if (co.status !== 'mine') { // 시장에서 스스로 자란다
       for (const k of co.core) addStat(co, k, rng() * tune.selfStatDrift * 2);
     }
     if (has(co, 'qa')) co.stats.qual = Math.min(100, co.stats.qual + 1);
     let g = tune.growthBase + tune.growthPerStat * (score(co) - 0.5);
-    why.push(`역량 ${fmtP(g)}`);
+    why.push(`역량 ${fmtP(g)}`); parts.cap = g;
     if (co.status !== 'mine') g += tune.selfGrowth;
     let b = 0;
     for (const k of co.badges) b += tune[BADGES[k].tune];
-    if (b) { g += b; why.push(`배지 ${fmtP(b)}`); }
+    if (b) { g += b; why.push(`배지 ${fmtP(b)}`); parts.badge = b; }
     let e = 0;
     for (const ef of co.effects) { e += ef.pct; ef.left--; }
     co.effects = co.effects.filter(ef => ef.left > 0);
-    if (e) { g += e; why.push(`지원 효과 ${fmtP(e)}`); }
+    if (e) { g += e; why.push(`지원 효과 ${fmtP(e)}`); parts.eff = e; }
     let tr = 0;
     for (const t of co.traits) if (TRAITS[t].monthly) tr += TRAITS[t].monthly;
     if (has(co, 'cashpoor') && co.stats.fin < 40) tr -= 0.02;
     if (has(co, 'late')) tr += state.quarter <= 2 ? -0.01 : 0.03;
     if (has(co, 'material') && !co.stockThisMonth) tr -= 0.01;
-    if (tr) { g += tr; why.push(`특성 ${fmtP(tr)}`); }
+    if (tr) { g += tr; why.push(`특성 ${fmtP(tr)}`); parts.trait = tr; }
     let vol = tune.growthNoise;
     if (has(co, 'steady')) vol *= 0.5;
     if (has(co, 'volatile')) vol *= 2;
     const n = (rng() * 2 - 1) * vol;
-    g += n; why.push(`시장 ${fmtP(n)}`);
+    g += n; why.push(`시장 ${fmtP(n)}`); parts.mkt = n;
     co.value = Math.max(5, co.value * (1 + g));
-    co.lastG = g; co.lastWhy = why;
+    co.lastG = g; co.lastWhy = why; co.lastParts = parts;
     co.cardsThisMonth = 0; co.stockThisMonth = false;
   }
 }
@@ -960,11 +1064,12 @@ function audition(q) {
 /** 심사장 연출의 시간표(초): 기업이 차례로 입장한 뒤, 차례로 지원서를 심사위원석 서류함에 낸다 */
 /** 심사장 연출 시각(초): 입장 → 대표가 한 명씩 회사 소개(말풍선) → 소개가 끝나면 지원서 제출 */
 function lobbyTimes(n) {
-  const gap = tune.lobbyPitchGap;
-  const enter = i => i * tune.lobbyEnterGap, talkStart = enter(n - 1) + 0.9;
+  const gap = tune.lobbyPitchGap, say = gap * 1.6; // 말풍선은 다음 대표가 말을 시작한 뒤에도 잠시 남는다
+  const enter = i => i * tune.lobbyEnterGap, talkStart = enter(n - 1) + 0.6;
   const talk = i => talkStart + i * gap;
   const send = i => talk(i) + gap * 0.6;
-  return { enter, talk, send, land: i => send(i) + 0.9, end: send(n - 1) + 1.2 };
+  const land = i => send(i) + 0.9;
+  return { enter, talk, send, land, say, end: Math.max(land(n - 1), talk(n - 1) + say) + 0.2 };
 }
 /** 심사장: 연출 중이면 끝 장면으로 건너뛰고, 다 끝났으면 오디션(지원서 심사)으로 넘어간다 */
 function confirmLobby() {
@@ -992,18 +1097,28 @@ function confirmAudition() {
 }
 function snapshotQuarter() { for (const co of existing()) state.qStart[co.id] = co.value; }
 function startMonth() {
-  state.phase = 'month'; state.rerolled = false; state.target = 0;
+  state.phase = 'month'; state.rerolled = false; state.target = 0; state.monthPlays = 0; state.warnEmpty = false;
   drawHand();
   mark();
 }
+/** 이번 달 카드를 한 장도 쓰지 않았을 때의 안내: 쓰지 않은 예산은 전부 이월되지 않는다는 점을 강조한다 */
+function emptyWarnText() {
+  const lost = Math.round((1 - tune.budgetCarry) * 100), b = Math.round(state.budget);
+  const tail = '그대로 넘어가려면 한 번 더 누르세요.';
+  if (state.quarter >= 4) return `이번 달은 아직 지원하지 않으셨어요. 4분기 예산은 다음으로 넘어가지 않아요. 남은 ${b}억은 결승이 끝나면 사라집니다. ${tail}`;
+  if (state.turn % 3 === 2) return `이번 달은 아직 지원하지 않으셨어요. 이번 달이 분기 마지막 달이라, 남은 ${b}억 중 ${lost}%(${Math.round(b * (1 - tune.budgetCarry))}억)는 이월되지 않고 사라집니다. ${tail}`;
+  return `이번 달은 아직 지원하지 않으셨어요. 쓰지 않은 예산은 분기가 끝나면 ${lost}%가 이월되지 않고 사라집니다. ${tail}`;
+}
 function nextMonth() {
   if (state.anim) { finishMonthAnim(); return; }
+  const canPlay = state.hand.some(id => mine().some(co => !cardCond(CARD[id], co)));
+  if (state.monthPlays === 0 && canPlay && !state.warnEmpty) { state.warnEmpty = true; toast('이번 달 지원 없이 넘어가려면 한 번 더 누르세요. 남은 예산 안내는 비서 달이가 알려 드려요.', 3); sfx.no(); return; }
   for (const co of mine()) co.prevStats = { ...co.stats };
   const from = Object.fromEntries(existing().map(co => [co.id, co.value]));
   simulateMonth();
   state.turn++;
   for (const co of existing()) { co.hist[state.turn] = co.value; co.path[state.turn] = wiggle(co, from[co.id], co.value); }
-  state.report = mine().map(co => ({ name: co.name, g: co.lastG, why: co.lastWhy }));
+  state.report = mine().map(co => ({ name: co.name, g: co.lastG, why: co.lastWhy, parts: co.lastParts }));
   events.push({ type: 'month', turn: state.turn });
   state.selected = null;
   state.anim = { t0: state.t };
@@ -1062,12 +1177,19 @@ function ceremony() {
   const carry = Math.round(state.budget * tune.budgetCarry);
   const next = clamp(tune.budgetBase + perf + top + carry, tune.budgetMin, tune.budgetMax);
   const keep = q === 2 ? 3 : q === 3 ? 2 : my.length;
+  // 투자 성과: 이번 분기 지원 금액, 기업가치 증가, 포기한 기업 평균만큼 자랐을 때보다 더 키운 가치(excess)
+  const inv = my.map(co => {
+    const v0 = state.qStart[co.id] || co.start;
+    return { id: co.id, spent: co.qSpent[q] || 0, gain: co.value - v0, excess: co.value - v0 * (1 + dropG), g: qg(co) };
+  }).sort((a, b) => b.excess - a.excess);
+  const paid = inv.filter(r => r.spent > 0);
+  const best = paid.length ? paid.reduce((a, b) => b.excess / b.spent > a.excess / a.spent ? b : a) : null;
   state.cer = {
     q, ranking: ranking.map(c => c.id), growth: Object.fromEntries(ranking.map(c => [c.id, qg(c)])),
     myG, dropG, diffPts, perf, top, carry, next, keep: Math.min(keep, my.length),
     eliminating: q === 2 || q === 3,
     advance: my.slice(0, Math.min(keep, my.length)).map(c => c.id),
-    start: state.t, revealed: 0, final: q === 4,
+    start: state.t, revealed: 0, final: q === 4, inv, best,
   };
   state.phase = 'ceremony'; state.focus = 0;
   sfx.fanfare(); mark();
@@ -1111,8 +1233,11 @@ function finish() {
   const mult = c => c.value / c.start;
   const R = avg(picked.map(mult)) / Math.max(0.01, avg(dropped.map(mult)));
   const portPts = clamp((R - 1) * 60, 0, 30);
-  const created = picked.reduce((s, c) => s + (c.value - c.start), 0);
-  const eff = created / Math.max(1, state.spentTotal);
+  // 예산 효율: 내 기업이 포기한 기업의 평균 성장만큼만 자랐다고 볼 때보다 더 키운 가치(created) ÷ 지출.
+  // 지출이 effMinSpend보다 적으면 effMinSpend로 나눠, 예산을 거의 안 쓰고 만점을 받지 못하게 한다.
+  const dropMult = dropped.length ? avg(dropped.map(mult)) : 1;
+  const created = picked.reduce((s, c) => s + c.value - c.start * dropMult, 0);
+  const eff = created / Math.max(1, tune.effMinSpend, state.spentTotal);
   const effPts = clamp(eff * tune.effPoints, 0, 20);
   const bw = { innov: 2, excel: 3, gpass: 4, venture: 1 };
   const badgePts = clamp(nom.badges.reduce((s, b) => s + (bw[b] || 0), 0), 0, 10);
@@ -1165,6 +1290,32 @@ function stampMark(id, big) {
   if (age >= 1) return `<span class="inkmark ${big ? 'big' : ''}"><b>PICK</b></span>`;
   const d = `style="--d:-${age.toFixed(3)}s"`;
   return `<span class="inkmark fresh ${big ? 'big' : ''}" ${d}><b>PICK</b></span><img class="stamper" src="assets/stage/stamp.png" alt="" ${d}>`;
+}
+/**
+ * 동물 대표 그림. mood: '' 보통, 'happy' 기쁨, 'sad' 아쉬움.
+ * o.face: 작은 칸에서는 얼굴 쪽을 크게 잘라 보여 준다. o.prod: 오른쪽 아래에 제품 그림 배지.
+ */
+function ceoPic(co, mood = '', o = {}) {
+  const alt = `${co.ceo} 대표${mood === 'happy' ? ' (기쁨)' : mood === 'sad' ? ' (아쉬움)' : ''}`;
+  const key = co.id + (mood ? '_' + mood : ''), f = CEO_FACE[key] || [0.5, 0.3];
+  const st = o.face ? ` style="--cx:${f[0]};--cy:${f[1]}"` : '';
+  return `<span class="ceo-pic ${o.face ? 'face' : ''}"${st} data-tip="${co.ceo} 대표: ${ceoLine(co, mood)}"><img src="assets/ceo/${key}.png" alt="${alt}" draggable="false"></span>${o.prod ? `<span class="prod-badge">${productArt(co.art)}</span>` : ''}`;
+}
+/** 대표가 하는 말: 보통은 회사 소개, 기쁠 때와 아쉬울 때는 그 기분에 맞는 한마디 */
+function ceoLine(co, mood = '') {
+  if (mood === 'happy') return '심사위원님 덕분입니다! 더 크게 자라 보겠습니다.';
+  if (mood === 'sad') return '아쉽지만 여기서 멈추지 않겠습니다. 꼭 다시 증명해 보이겠습니다.';
+  return co.pitch.split('|').join(' ');
+}
+/** 회사 사진: 제품 그림을 크게, 대표 얼굴은 오른쪽 아래 작은 원형 배지로 (지원 대상은 회사라는 점이 먼저 보이게) */
+function coPic(co, mood = '') {
+  return `${productArt(co.art)}<span class="ceo-badge">${ceoPic(co, mood, { face: true })}</span>`;
+}
+/** 월 운영 화면의 대표 표정: 방금 지원을 받았거나 지난달 2% 넘게 컸으면 기쁨, 지난달 줄었으면 아쉬움 */
+function moodOf(co) {
+  if (co.flash && co.flash.until > state.t) return 'happy';
+  if (!co.lastWhy.length) return '';
+  return co.lastG >= 0.02 ? 'happy' : co.lastG < 0 ? 'sad' : '';
 }
 /** 효과 배율을 말로: 1배는 '그대로', 0.5배는 '절반', 나머지는 'n배' */
 const mulTxt = m => Math.abs(m - 1) < 0.005 ? '그대로' : Math.abs(m - 0.5) < 0.005 ? '절반' : `${+m.toFixed(2)}배`;
@@ -1238,12 +1389,13 @@ function secretaryLine(sel) {
   if (state.anim) return `${monthName(state.turn - 1)} 결산 중이에요. 차트에서 기업가치가 오르내리는 모습을 지켜보세요! (Enter로 건너뛰기)`;
   const cheapest = Math.min(...state.hand.map(id => CARD[id].cost), 999);
   if (sel) return cardAdvice(sel);
+  if (state.warnEmpty) return `<b>잠깐만요!</b> ${emptyWarnText()}`;
   if (!state.hand.length) return '이번 달 카드를 모두 쓰셨어요. 다음 달로 넘어가시죠.';
-  if (state.budget < cheapest) return `예산이 모자랍니다. 남은 예산의 ${Math.round(tune.budgetCarry * 100)}%는 다음 분기로 넘어가요.`;
+  if (state.budget < cheapest) return state.quarter >= 4 ? '예산이 모자랍니다. 다음 달로 넘어가 결승 발표를 기다려 보시죠.' : `예산이 모자랍니다. 남은 예산의 ${Math.round(tune.budgetCarry * 100)}%는 다음 분기로 넘어가요.`;
   const tip = bestPairTip();
   if (state.turn === 0) return `심사위원님, 비서 달이입니다! 카드를 고르시면 어느 기업에 맞는지 알려 드릴게요. ${tip}`;
   if (state.turn % 3 === 0 && state.spentQ === 0) return `${state.quarter}분기 예산 ${Math.round(state.budget)}억이 배정되었습니다. ${tip}`;
-  if (state.turn % 3 === 2) return `이번 달이 끝나면 분기 성과 발표예요. 포기한 기업보다 많이 키워야 예산이 늘어요. ${tip}`;
+  if (state.turn % 3 === 2) return state.quarter >= 4 ? `이번 달이 끝나면 결승 최종 발표예요. 국가대표 후보를 1위로 올려 주세요. ${tip}` : `이번 달이 끝나면 분기 성과 발표예요. 포기한 기업보다 많이 키워야 예산이 늘어요. ${tip}`;
   return tip || '카드를 고르시면 어느 기업에 맞는지 알려 드릴게요.';
 }
 function badgeChips(co) {
@@ -1311,7 +1463,7 @@ function renderHeader() {
   const cheapest = Math.min(...state.hand.map(id => CARD[id].cost), 999);
   const nearGoal = state.phase === 'lobby' ? '지원 기업 입장 · 지원서 접수를 지켜보고 심사 시작'
     : state.phase === 'audition' ? `지원서를 보고 ${state.need}곳 PICK (${state.picks.length}/${state.need})`
-    : state.phase === 'ceremony' ? '분기 성과 발표: 순위와 다음 분기 예산 확인'
+    : state.phase === 'ceremony' ? (state.cer && state.cer.final ? '결승 발표: 국가대표 후보의 최종 순위 확인 후 성적표 보기' : '분기 성과 발표: 순위와 다음 분기 예산 확인')
     : state.phase === 'nominate' ? '결승 진출 기업 중 국가대표 후보 1곳 지명'
     : state.anim ? '결산 중: 이번 달 기업가치 변화 확인'
     : state.budget >= cheapest ? `카드로 기업을 지원하고 '다음 달' (남은 카드 ${state.hand.length}장)` : `예산이 모자랍니다: '다음 달'로 넘어가기`;
@@ -1321,9 +1473,11 @@ function renderHeader() {
   setHTML($('hdr'), `
     <div class="org-chip"><img src="assets/brand/pps_h.png" alt="조달청" draggable="false"></div>
     <div class="brand"><span class="t1">혁신기업 키움 리그</span><span class="t2">${q}분기 · ${monthName(state.turn)} · 턴 ${Math.min(12, state.turn + 1)} / 12</span></div>
-    <div class="hbox"><span class="lbl">남은 예산</span><span class="val">${Math.round(state.budget)}억</span>
+    <div class="hbox"><span class="lbl">${q >= 4 ? '남은 예산 (이월 없음)' : '남은 예산'}</span><span class="val">${Math.round(state.budget)}억</span>
       <div class="budget-bar"><i style="width:${clamp(state.budget / Math.max(1, allocTotal) * 100, 0, 100)}%"></i></div></div>
-    <div class="hbox money"><span>${jn(state.alloc.map(a => `${a.k} ${a.v >= 0 ? '+' : '−'}${Math.abs(Math.round(a.v))}억`))}</span><span>이번 분기 카드 지출 −${Math.round(state.spentQ)}억</span></div>
+    <div class="hbox money">${state.phase === 'ceremony' && state.cer && state.cer.final
+      ? `<span>4분기 예산 집행 마감</span><span>1년 카드 지출 −${Math.round(state.spentTotal)}억</span>`
+      : `<span>${jn(state.alloc.map(a => `${a.k} ${a.v >= 0 ? '+' : '−'}${Math.abs(Math.round(a.v))}억`))}</span><span>이번 분기 카드 지출 −${Math.round(state.spentQ)}억</span>`}</div>
     <div class="goals"><div><span class="gk">지금 할 일</span><span>${nearGoal}</span></div><div><span class="gk">분기 목표</span><span>${qGoal}</span></div><div><span class="gk">최종 목표</span><span>${finalGoal}</span></div></div>
     <div class="hbtns"><button class="hbtn" data-act="help">도움말 (H)</button><button class="hbtn" data-act="mute">${muted ? '소리 켜기' : '소리 끄기'} (M)</button></div>`);
 }
@@ -1331,7 +1485,7 @@ function renderHeader() {
 function renderTicker() { setHTML($('tick'), ''); }
 function renderTitle() {
   const steps = [
-    ['심사장 · 오디션', productArt('drone'), '지원 기업이 심사장에 모여 지원서를 냅니다. 능력치와 장단점을 보고 키울 기업을 <b>PICK</b>합니다.'],
+    ['심사장 · 오디션', '<img class="art img-art" src="assets/ceo/c01.png" alt="미어캣 대표">', '동물 대표들이 심사장에서 회사를 소개하고 지원서를 냅니다. 능력치와 장단점을 보고 키울 기업을 <b>PICK</b>합니다.'],
     ['조달 지원 카드', '<img class="art img-art" src="assets/card/firetruck.png" alt="">', "매달 예산으로 카드를 사서 기업에 씁니다. 공공기관이 <b class=\"nw\">먼저 사서 써 보는</b> 시범구매, 나라가 <b class=\"nw\">품질을 보증하는</b> 인증, <b class=\"nw\">판매처를 넓히는</b> 판로 지원 등이 있습니다."],
     ['분기 성과 발표', '<img class="art img-art" src="assets/stage/medal_gold.png" alt="">', '3달마다 내가 뽑은 기업과 포기한 기업이 함께 순위를 겨룹니다. 성과에 따라 다음 분기 예산이 정해집니다.'],
   ];
@@ -1352,7 +1506,7 @@ function renderTitle() {
 function appDetail(co, o = {}) {
   return `<div class="detail ${o.picked ? 'picked' : ''} ${o.focus ? 'focus' : ''}" ${o.act ? `data-act="${o.act}" data-id="${co.id}"` : ''}>
     ${o.picked ? (o.stamp ? `<span class="stamp">${o.stamp}</span>` : stampMark(co.id, true)) : ''}
-    <div class="head"><div class="pic">${productArt(co.art)}</div><div class="hd"><div class="nm">${co.name}</div><div class="pd">${co.product} · ${co.sector}${co.energy ? ' · 에너지 업종' : ''}</div>${o.badges ? `<div class="row">${badgeChips(co)}</div>` : ''}</div>
+    <div class="head"><div class="pic">${coPic(co, o.mood || '')}</div><div class="hd"><div class="nm">${co.name}</div><div class="pd">${co.product} · ${co.sector}${co.energy ? ' · 에너지 업종' : ''} · <span class="nw">대표 ${co.ceo}</span></div>${o.badges ? `<div class="row">${badgeChips(co)}</div>` : ''}</div>
       <div class="val"><span>${o.valueLabel || '예상 시작 기업가치'}</span><b>${fmtV(o.value ?? co.value)}</b></div></div>
     <div class="hexwrap">${hexagon(co.stats, { size: o.hexSize || 390, core: co.core, color: o.picked ? '#1f3a5f' : '#2a6f97' })}<button class="hlp" data-act="help" data-id="stats">육각형 읽는 법 (H)</button></div>
     <div class="side"><div class="corerow"><span class="lbl" data-tip="${CORE_TIP}">핵심 역량</span>${coreChips(co)}</div>
@@ -1366,20 +1520,21 @@ function renderLobby() {
   const cos = ids.map((id, i) => {
     const co = state.cos[id];
     return `<div class="appl" style="left:${xs[i]}px;--t:${T.enter(i).toFixed(2)}s">
-      <div class="say" style="--t:${T.talk(i).toFixed(2)}s;--dur:${tune.lobbyPitchGap}s"><b>${co.ceo} 대표</b>${co.pitch}</div>
-      <div class="ceo"><img src="assets/ceo/${co.id}.png" alt="${co.ceo} 대표" draggable="false"><span class="prod">${productArt(co.art)}</span></div>
+      <div class="say" style="--t:${T.talk(i).toFixed(2)}s;--dur:${T.say.toFixed(2)}s"><b>${co.ceo} 대표</b>${co.pitch.split('|').join('<br>')}</div>
+      <div class="ceo" style="--cx:${(CEO_FACE[co.id] || [0.5])[0]}"><img src="assets/ceo/${co.id}.png" alt="${co.ceo} 대표" draggable="false"><span class="prod">${productArt(co.art)}</span></div>
       <img class="pl" src="assets/stage/plinth.png" alt="" draggable="false"><div class="tagn"><span>No.${String(i + 1).padStart(2, '0')}</span>${co.name}</div></div>`;
   }).join('');
   const folders = ids.map((_, i) => `<img class="fold" src="assets/stage/folder.png" alt="" draggable="false" style="left:${xs[i] - 30}px;--t:${T.send(i).toFixed(2)}s;--dx:${(1200 - xs[i]).toFixed(0)}px">`).join('');
-  const sheets = ids.map((_, i) => `<i style="--t:${T.land(i).toFixed(2)}s;bottom:${54 + i * 5}px"></i>`).join('');
+  // 서류함에 지원서가 닿을 때마다 수첩이 한 권씩 떨어져 차곡차곡 쌓인다 (조금씩 비뚤게)
+  const stack = ids.map((_, i) => `<img class="nb" src="assets/stage/notebook.png" alt="" draggable="false" style="--t:${T.land(i).toFixed(2)}s;bottom:${40 + i * 10}px;margin-left:${-75 + [0, 4, -3, 5, -4, 2][i % 6]}px;rotate:${[0, -2, 1.5, -1, 2, -1.5][i % 6]}deg">`).join('');
   const talk = [
-    ['narmi', q === 1 ? `혁신기업 키움 리그 심사장에 오신 것을 환영합니다! 1분기 지원 기업 <b>${n}곳</b>이 입장합니다.` : `${q}분기 추가 지원 기업 <b>${n}곳</b>이 심사장에 들어옵니다!`],
-    ['dali', L.done ? `지원서 ${n}장이 모두 접수됐어요. '심사 시작'을 눌러 지원서를 살펴보세요!` : '대표님들이 회사를 소개하고 지원서를 내고 있어요.'],
+    ['narmi', q === 1 ? '혁신기업 키움 리그 심사장에 오신 것을 환영합니다! 대표님들의 회사 소개를 들어 볼까요?' : `${q}분기에도 새 대표님들이 찾아왔습니다. 회사 소개를 들어 볼까요?`],
+    ['dali', L.done ? "지원서가 모두 들어왔어요. '심사 시작'을 눌러 꼼꼼히 살펴보세요!" : '소개를 마친 대표님은 지원서를 심사위원석으로 보내요.'],
   ];
   return `${mcHead(`${q}분기 심사장`, `지원 기업 ${n}곳 입장 · 지원서 접수`, talk)}
-    <div class="lobby" style="--age:${age.toFixed(3)}s">${cos}${folders}<div class="tray"><img src="assets/stage/tray.png" alt="" draggable="false">${sheets}<span class="cnt">${L.done ? `접수 ${n} / ${n}` : '접수 중'}</span></div></div>
-    ${desk(L.done ? `<span class="info">지원서 <b>${n}장</b> 접수 완료</span><button class="btn pink" data-act="confirm-lobby">심사 시작 (Enter)</button>`
-      : `<span class="info">지원서를 접수하고 있습니다</span><button class="btn ghost" data-act="confirm-lobby">건너뛰기 (Enter)</button>`)}`;
+    <div class="lobby" style="--age:${age.toFixed(3)}s">${cos}${folders}<div class="tray"><img src="assets/stage/tray_empty.png" alt="" draggable="false">${stack}<span class="cnt">접수 ${L.done ? n : L.landed || 0} / ${n}</span></div></div>
+    ${desk(L.done ? `<button class="btn pink" data-act="confirm-lobby">심사 시작 (Enter)</button>`
+      : `<button class="btn ghost" data-act="confirm-lobby">건너뛰기 (Enter)</button>`)}`;
 }
 function renderAudition() {
   const q = state.quarter, my = mine();
@@ -1388,24 +1543,24 @@ function renderAudition() {
     const co = state.cos[id], picked = state.picks.includes(id);
     return `<div class="tile ${picked ? 'picked' : ''} ${state.focus === i ? 'focus' : ''}" data-act="focus" data-id="${id}">
       ${picked ? stampMark(id) : ''}
-      <div class="pcol"><div class="no">No.${String(i + 1).padStart(2, '0')}</div><div class="pic">${productArt(co.art)}</div></div>
+      <div class="pcol"><div class="no">No.${String(i + 1).padStart(2, '0')}</div><div class="pic">${coPic(co, picked ? 'happy' : '')}</div></div>
       <div class="info"><div class="nm">${co.name}</div><div class="pd">${co.product}</div><div class="sec">${co.sector}</div>
         <div class="ev"><span>예상 가치</span><b>${fmtV(co.value)}</b></div></div>
       <div class="corebox"><span class="lbl" data-tip="${CORE_TIP}">핵심 역량</span>${coreChips(co)}</div>
       <div class="row tr">${traitChips(co)}</div></div>`;
   }).join('');
   const fid = state.applicants[state.focus], fco = state.cos[fid], fp = state.picks.includes(fid);
-  const detail = fco ? appDetail(fco, { picked: fp, button: `<button class="btn ${fp ? 'ghost' : 'pink'}" data-act="pick" data-id="${fid}">${fp ? 'PICK 취소 (Space)' : 'PICK (Space)'}</button>` }) : '';
+  const detail = fco ? appDetail(fco, { picked: fp, mood: fp ? 'happy' : '', button: `<button class="btn ${fp ? 'ghost' : 'pink'}" data-act="pick" data-id="${fid}">${fp ? 'PICK 취소 (Space)' : 'PICK (Space)'}</button>` }) : '';
   const n = state.applicants.length, full = state.picks.length === state.need;
   const talk = [
     ['narmi', q === 1 ? `첫 오디션을 시작합니다! 1분기 혁신조달 예산 <b>${Math.round(state.budget)}억</b>이 배정되었습니다.`
       : `${q}분기 추가 오디션입니다! 새 지원 기업 ${n}곳의 지원서가 도착했습니다.`],
     ['dali', full ? `${state.need}곳을 모두 고르셨네요. 심사위원석의 '선발 확정'을 눌러 주세요!`
-      : `지원서 ${n}장 중 ${state.need}곳을 PICK해 주세요. 뽑지 않은 기업도 시장에서 스스로 자라 성과 발표에서 함께 겨룹니다.`],
+      : '뽑지 않은 기업도 시장에서 스스로 자라 성과 발표에서 함께 겨뤄요. 장단점을 꼼꼼히 비교해 보세요!'],
   ];
   return `${mcHead(`${q}분기 혁신제품 오디션`, `지원서 ${n}장 중 ${state.need}곳을 PICK하세요`, talk)}
     <div class="aud"><div>${lineup}<div class="tiles">${tiles}</div></div>${detail}</div>
-    ${desk(`<span class="info">PICK <b>${state.picks.length} / ${state.need}</b> · 지원서를 고르고 PICK을 누르세요</span>
+    ${desk(`<span class="info">PICK <b>${state.picks.length} / ${state.need}</b></span>
       <button class="btn pink" data-act="confirm-audition" ${full ? '' : 'disabled'}>선발 확정 (Enter)</button>`, fco ? { id: fid, on: fp } : null)}`;
 }
 /** 기업가치 차트. 한 달 구간을 SUB칸으로 나눠 오르내림을 그리고, 결산 연출 중에는 마지막 달을 진행도만큼만 그린다. */
@@ -1424,11 +1579,14 @@ function chartSVG() {
   if (!vals.length) vals = [100];
   let lo = Math.min(...vals), hi = Math.max(...vals);
   if (hi - lo < 20) { hi += 10; lo -= 10; }
+  // 눈금 간격은 1·2·5·10 × 10ⁿ 중 4칸 안팎이 되는 값. 위아래 끝을 눈금에 맞춰 늘린다
+  const raw = (hi - lo) / 4, mag = 10 ** Math.floor(Math.log10(raw));
+  const stepV = [1, 2, 5, 10].map(m => m * mag).find(v => v >= raw);
+  lo = Math.floor(lo / stepV) * stepV; hi = Math.ceil(hi / stepV) * stepV;
   const x = t => pl + (Wc - pl - pr) * t / maxT;
   const y = v => pt + (Hc - pt - pb) * (1 - (v - lo) / (hi - lo));
   let g = '';
-  for (let i = 0; i <= 4; i++) {
-    const v = lo + (hi - lo) * i / 4;
+  for (let v = lo; v <= hi + stepV / 2; v += stepV) {
     g += `<line x1="${pl}" x2="${Wc - pr}" y1="${y(v)}" y2="${y(v)}" stroke="#e9ecef"/><text x="${pl - 6}" y="${y(v) + 5}" text-anchor="end" font-size="14" fill="#535c68">${Math.round(v)}</text>`;
   }
   for (let q = 1; q <= 4; q++) {
@@ -1466,6 +1624,10 @@ function animTick() {
   for (const co of mine()) { const n = document.querySelector(`[data-vv="${co.id}"]`); if (n) n.innerHTML = vvHTML(co); }
   const r = document.querySelector('.rankp .rows'); if (r) r.innerHTML = rankRows();
 }
+/** 지난달 결산 표의 열: [항목, 머리말, 설명] */
+const RPT_COLS = [['cap', '역량', '핵심 역량이 높을수록 오르는 기본 성장'], ['badge', '배지', '혁신제품·우수조달 같은 지정 배지의 매달 보너스'], ['eff', '지원', '카드로 받은 지속 효과'], ['trait', '특성', '장점·단점 특성의 영향'], ['mkt', '시장', '시장 상황에 따른 오르내림']];
+/** 비율을 부호 붙은 % 숫자 하나로: 0.012 → +1.2 */
+const pct1 = x => `${x >= 0 ? '+' : '−'}${Math.abs(x * 100).toFixed(1)}`;
 function renderMonth() {
   const sel = state.selected != null ? CARD[state.hand[state.selected]] : null;
   const my = mine(), anim = !!state.anim;
@@ -1479,31 +1641,38 @@ function renderMonth() {
     const flash = co.flash && co.flash.until > state.t ? `<div class="flash">${co.flash.text}</div>` : '';
     const ok = sel && !cardCond(sel, co);
     return `<div class="co ${state.target === i ? 'target' : ''} ${sel ? (ok ? 'ok' : 'no') : ''}" data-co="${co.id}" data-act="co">
-      ${flash}<div class="pic">${productArt(co.art)}</div>
+      ${flash}<div class="pic">${coPic(co, moodOf(co))}</div>
       <div class="mid"><div class="nm"><i class="sw" style="background:${colorOf(co)}"></i>${co.name}</div><div class="pd">${co.product}</div>
         <div class="vv" data-vv="${co.id}">${vvHTML(co)}</div></div>
       ${statBars(co, { diff: true })}
       <div class="chips">${badgeChips(co)}${traitChips(co)}</div>${why || eff}
       <button class="more" data-act="codetail" data-id="${co.id}">자세히 (I)</button></div>`;
   }).join('');
-  if (my.length < 4 && state.quarter < 4) cos += `<div class="co empty">다음 분기 오디션에서 기업을 더 뽑을 수 있습니다</div>`;
-  const legend = mineOrder().map(id => state.cos[id]).map(c => `<span><i style="background:${c.status === 'eliminated' ? '#adb5bd' : colorOf(c)}"></i>${c.name}${c.status === 'eliminated' ? ' (탈락)' : ''}</span>`).join('') + `<span><i style="background:repeating-linear-gradient(90deg,#868e96 0 6px,transparent 6px 10px)"></i>포기한 기업 평균</span>`;
+  // 기업이 4곳보다 적으면 남는 칸에 심사 일지(최근 소식)를 둔다
+  const slots = my.length % 2 ? 1 : my.length < 4 ? 2 : 0;
+  if (slots) cos += `<div class="panel news span${slots}"><h3>심사 일지 <small>${state.quarter < 4 && my.length < 4 ? '다음 분기 오디션에서 기업을 더 뽑을 수 있습니다' : '최근 소식'}</small></h3>
+    ${state.news.slice(0, 6).map(n => `<div><span class="nt">${monthName(n.turn)}</span>${n.text}</div>`).join('')}</div>`;
+  // 범례: 지금 내 기업은 이름별로, 탈락한 기업은 회색 한 칸으로 묶는다
+  const gone = mineOrder().filter(id => state.cos[id].status === 'eliminated').length;
+  const legend = mine().map(c => `<span><i style="background:${colorOf(c)}"></i>${c.name}</span>`).join('')
+    + (gone ? `<span><i style="background:#adb5bd"></i>탈락한 기업 ${gone}곳</span>` : '')
+    + `<span><i style="background:repeating-linear-gradient(90deg,#868e96 0 6px,transparent 6px 10px)"></i>포기한 기업 평균</span>`;
   const report = anim ? `<div>${monthName(state.turn - 1)} 결산 중입니다…</div>`
-    : state.report.length ? state.report.map(r => `<div><b>${r.name}</b> <span class="${cls(r.g)}">${fmtP(r.g)}</span> · ${jn(r.why.map(glue))}</div>`).join('') : '<div>첫 달입니다.</div><div>카드를 지원하고 다음 달로 넘어가면</div><div>기업별 성장 결산이 여기에 나옵니다.</div>';
+    : state.report.length ? `<table class="rpt"><tr><th></th><th>합계</th>${RPT_COLS.map(([, l, tip]) => `<th data-tip="${tip}">${l}</th>`).join('')}</tr>${state.report.map(r => `<tr><td class="nm">${r.name}</td><td class="${cls(r.g)}">${pct1(r.g)}</td>${RPT_COLS.map(([k]) => `<td>${r.parts[k] == null ? '·' : pct1(r.parts[k])}</td>`).join('')}</tr>`).join('')}</table>` : '<div>첫 달입니다.</div><div>카드를 지원하고 다음 달로 넘어가면</div><div>기업별 성장 결산이 여기에 나옵니다.</div>';
   const hand = state.hand.map((id, i) => cardHTML(CARD[id], i, { sel: state.selected === i, dim: CARD[id].cost > state.budget })).join('') || '<div class="panel">이번 달 카드를 모두 썼습니다.</div>';
   const last = state.turn % 3 === 2;
   return `<div class="month ${anim ? 'animating' : ''}">
     <div class="cos" data-keep="cos">${cos}</div>
     <div class="center">
       <div class="panel chart"><h3>기업가치 차트 <small>${anim ? `<b class="live">${monthName(state.turn - 1)} 결산 중</b>` : '단위: 억 원 · 선이 오르면 기업가치 상승'}</small></h3><div class="plot">${chartSVG()}</div><div class="legend">${legend}</div></div>
-      <div class="twocol"><div class="panel report"><h3><span class="av"><img src="${MASCOT.narmi.src}" alt="">비서 나르미의 지난달 결산</span></h3>${report}</div>
+      <div class="twocol"><div class="panel report"><h3><span class="av"><img src="${MASCOT.narmi.src}" alt="">비서 나르미의 지난달 결산</span>${state.report.length && !anim ? '<small>성장률, 단위 %</small>' : ''}</h3>${report}</div>
         <div class="panel rankp"><h3>현재 순위 <small>포기한 기업 포함 ${existing().length}곳</small></h3><div class="rows">${rankRows()}</div></div></div>
     </div></div>
     <div class="handwrap"><div class="hand" data-keep="hand">${hand}</div>
       <div class="panel side-box"><div class="sec"><img src="${MASCOT.dali.src}" alt="비서 달이"><div class="sbub"><span class="who dali">비서 달이</span>${secretaryLine(sel)}</div></div>
-        <div class="bud">남은 예산 <b>${Math.round(state.budget)}억</b><span class="hint">${last ? '이번 달이 끝나면 분기 성과 발표' : `분기 성과 발표까지 ${3 - state.turn % 3}개월`}</span></div>
+        <div class="bud">이번 달 지원 <b>${state.monthPlays}건</b><span class="hint">${last ? (state.quarter >= 4 ? '이번 달이 끝나면 결승 발표' : '이번 달이 끝나면 분기 성과 발표') : `${state.quarter >= 4 ? '결승 발표' : '분기 성과 발표'}까지 ${3 - state.turn % 3}개월`}</span></div>
         <div class="row nowrap"><button class="btn ghost small" data-act="reroll" ${anim || state.rerolled || state.budget < tune.rerollCost ? 'disabled' : ''}>카드 새로 받기 (${tune.rerollCost}억)</button><button class="btn ghost small" data-act="help" data-id="cards">카드 도움말</button></div>
-        <button class="btn next" data-act="next">${anim ? '결산 건너뛰기 (Enter)' : last ? '분기 성과 발표로 (Enter)' : '다음 달 (Enter)'}</button></div></div>`;
+        <button class="btn next ${state.warnEmpty ? 'warn' : ''}" data-act="next">${anim ? '결산 건너뛰기 (Enter)' : state.warnEmpty ? '지원 없이 넘어가기 (Enter)' : last ? (state.quarter >= 4 ? '결승 발표로 (Enter)' : '분기 성과 발표로 (Enter)') : '다음 달 (Enter)'}</button></div></div>`;
 }
 /** 분기 성과 발표: 왼쪽 시상대(1~3위), 가운데 전체 순위 막대, 오른쪽 예산 결과와 진출 결정 */
 function renderCeremony() {
@@ -1517,7 +1686,7 @@ function renderCeremony() {
   const bars = c.ranking.map((id, i) => {
     const co = state.cos[id];
     return `<div class="br r${i + 1} ${co.status === 'mine' ? 'mine' : co.status === 'eliminated' ? 'gone' : 'out'} ${shown(i) ? '' : 'hide'}" style="height:${rowH}px;--rh:${rowH}px">
-      <span class="n">${i + 1}</span><span class="pic">${productArt(co.art)}</span><span class="nm">${co.name}</span>${tagOf(co, id)}
+      <span class="n">${i + 1}</span><span class="pic">${ceoPic(co, i < 3 ? 'happy' : c.growth[id] < 0 ? 'sad' : '', { face: true })}</span><span class="nm">${co.name}</span>${tagOf(co, id)}
       <span class="track"><i style="width:${(8 + 92 * (co.value - lo) / Math.max(1, maxV - lo)).toFixed(1)}%"></i></span>
       <span class="vv">${fmtV(co.value)}</span><span class="g ${cls(c.growth[id])}">${fmtP(c.growth[id])}</span></div>`;
   }).join('');
@@ -1526,7 +1695,7 @@ function renderCeremony() {
     const id = c.ranking[i]; if (!id) return '';
     const co = state.cos[id];
     return `<div class="pod p${i + 1} ${shown(i) ? 'on' : ''}">${shown(i)
-      ? `<div class="pn">${co.name}</div><div class="pv">${fmtV(co.value)} ${tagOf(co, id)}</div><div class="pp">${productArt(co.art)}<img class="md" src="assets/stage/medal_${medal[i]}.png" alt=""></div>`
+      ? `<div class="pn">${co.name}</div><div class="pv">${fmtV(co.value)} ${tagOf(co, id)}</div><div class="pp">${ceoPic(co, 'happy')}<img class="md" src="assets/stage/medal_${medal[i]}.png" alt=""></div>`
       : '<div class="pq">?</div>'}<span class="pr">${i + 1}</span></div>`;
   }).join('');
   const done = c.revealed >= n;
@@ -1535,32 +1704,68 @@ function renderCeremony() {
     <div><span>전체 1위 기업 보유</span><b>${c.top ? '+' + c.top + '억' : '없음'}</b></div>
     <div><span>남은 예산 이월 (${Math.round(tune.budgetCarry * 100)}%)</span><b>+${c.carry}억</b></div>
     <div class="total"><span>다음 분기 예산</span><span>${c.next}억</span></div></div>`;
+  // 예산 심사 결과 그림: 성장 비교 막대, 최고의 투자, 내 기업 표, 예산 계단 그래프
+  const sg = x => `${x >= 0 ? '+' : '−'}${Math.abs(x).toFixed(1)}억`;
+  const gmax = Math.max(Math.abs(c.myG), Math.abs(c.dropG), 0.001);
+  const gbars = `<div class="gbars">${[['내가 뽑은 기업', c.myG, 'my'], ['포기한 기업', c.dropG, 'drop']].map(([l, v, k]) =>
+    `<div class="gb ${k}"><span>${l}</span><i><b style="width:${(Math.abs(v) / gmax * 100).toFixed(1)}%"></b></i><em class="${cls(v)}">${fmtP(v)}</em></div>`).join('')}</div>`;
+  const bco = c.best && state.cos[c.best.id];
+  const mvp = bco ? `<div class="mvp"><span class="mvp-pic">${ceoPic(bco, 'happy', { face: true })}</span><div class="mvp-b">
+      <div class="mvp-t"><img src="assets/stage/medal_gold.png" alt="">${c.best.excess > 0 ? `${c.final ? '4분기' : '이번 분기'} 최고의 투자` : `${c.final ? '4분기' : '이번 분기'} 가장 선방한 투자`}</div>
+      <div class="mvp-n">${bco.name}</div>
+      <div class="mvp-d"><span class="nw">지원 ${Math.round(c.best.spent)}억 →</span> <span class="nw">기업가치 <b class="${cls(c.best.gain)}">${sg(c.best.gain)}</b></span> <span class="nw">(포기한 기업보다 ${sg(c.best.excess)})</span></div></div></div>`
+    : `<div class="mvp none">이번 분기에는 카드로 지원한 기업이 없습니다.</div>`;
+  const xmax = Math.max(...c.inv.map(r => Math.abs(r.excess)), 1);
+  const invTable = `<table class="invt"><tr><th>내 기업</th><th>지원</th><th>분기 성장</th><th>포기한 기업보다 더 키운 가치</th></tr>${c.inv.map(r => {
+    const co = state.cos[r.id];
+    return `<tr class="${c.best && c.best.id === r.id ? 'best' : ''}"><td class="nm">${co.name}</td><td>${Math.round(r.spent)}억</td><td class="${cls(r.g)}">${fmtP(r.g)}</td>
+      <td><span class="xb"><i class="${r.excess >= 0 ? 'pos' : 'neg'}" style="width:${(Math.abs(r.excess) / xmax * 100).toFixed(1)}%"></i></span><b class="${cls(r.excess)}">${sg(r.excess)}</b></td></tr>`;
+  }).join('')}</table>`;
+  // 예산 계단 그래프: 항목마다 앞 항목이 끝난 자리에서 이어 그린다 (빼는 항목은 빨강)
+  const parts = [['기본 배정', tune.budgetBase, ''], ['성과 평가', c.perf, `내 기업과 포기한 기업의 분기 성장률 차이 ${c.diffPts >= 0 ? '+' : '−'}${Math.abs(c.diffPts).toFixed(1)}%p × ${tune.budgetPerPoint}억`],
+    ['전체 1위 기업 보유', c.top, ''], [`남은 예산 이월 (${Math.round(tune.budgetCarry * 100)}%)`, c.carry, '']];
+  let run = 0, peak = 0;
+  for (const [, v] of parts) { run += v; peak = Math.max(peak, run); }
+  const wmax = Math.max(peak, c.next, 1);
+  run = 0;
+  const wf = `<div class="wf">${parts.map(([l, v, tip]) => {
+    const a = run; run += v;
+    return `<div class="wr"><span ${tip ? `data-tip="${tip}"` : ''}>${l}</span><i><b class="${v >= 0 ? 'pos' : 'neg'}" style="left:${(Math.min(a, run) / wmax * 100).toFixed(1)}%;width:${(Math.abs(v) / wmax * 100).toFixed(1)}%"></b></i><em class="${v < 0 ? 'down' : ''}">${v >= 0 ? '+' : '−'}${Math.abs(v)}억</em></div>`;
+  }).join('')}<div class="wr total"><span>다음 분기 예산${c.next !== run ? ' (상·하한 적용)' : ''}</span><i><b style="left:0;width:${(c.next / wmax * 100).toFixed(1)}%"></b></i><em>${c.next}억</em></div></div>`;
+  // 좁은 자리(진출 선택이 함께 나올 때)용: 예산 항목을 한 줄 누적 막대로. 빼는 항목은 끝에서 빨갛게 덜어 낸다
+  const posSum = parts.reduce((a, [, v]) => a + Math.max(0, v), 0) || 1;
+  const segCls = ['base', 'perf', 'top', 'carry'];
+  const wf1 = `<div class="wf1"><div class="wf1h"><span>다음 분기 예산${c.next !== run ? ' (상·하한 적용)' : ''}</span><b>${c.next}억</b></div>
+    <div class="wf1b">${parts.map(([, v], i) => v > 0 ? `<i class="${segCls[i]}" style="width:${(v / posSum * 100).toFixed(1)}%"></i>` : '').join('')}${c.perf < 0 ? `<i class="cut" style="width:${(-c.perf / posSum * 100).toFixed(1)}%"></i>` : ''}</div>
+    <div class="wf1l">${parts.map(([l, v, tip], i) => v ? `<span class="nw" ${tip ? `data-tip="${tip}"` : ''}><i class="${v < 0 ? 'cut' : segCls[i]}"></i>${l.replace(/ \(.*\)/, '')} ${v > 0 ? '+' : '−'}${Math.abs(v)}</span>` : '').join(' ')}</div></div>`;
   const vs = (a, b) => `<div class="vs"><div><div class="big ${cls(c.myG)}">${fmtP(c.myG)}</div><div class="l">${a}</div></div><div class="mid">VS</div><div><div class="big ${cls(c.dropG)}">${fmtP(c.dropG)}</div><div class="l">${b}</div></div></div>`;
   let side;
-  if (!done) side = `<div class="panel judge"><h3>순위 공개 중</h3><p>하위권부터 순위를 공개합니다. 시상대에는 1~3위가 오릅니다.</p>${vs('내가 뽑은 기업 분기 성장', '포기한 기업 분기 성장')}</div>`;
+  if (!done) side = `<div class="panel judge"><h3>순위 공개 중</h3><p>시상대에는 1~3위가 오릅니다.</p>${vs('내가 뽑은 기업 분기 성장', '포기한 기업 분기 성장')}</div>`;
   else if (c.final) {
     const nom = state.cos[state.nominee];
     const r = c.ranking.indexOf(state.nominee) + 1;
-    side = `<div class="panel judge"><h3>최종 결과</h3><p style="font-size:19px">국가대표 후보 <b>${nom ? nom.name : '-'}</b>의 최종 순위는 <span class="nw">전체 ${n}곳 중</span> <b style="color:#0c8599;font-size:28px">${r}위</b>입니다.</p>${vs('내 기업 분기 성장', '포기한 기업 분기 성장')}</div>`;
+    side = `<div class="panel judge"><h3>최종 결과</h3><div class="finco">${nom ? ceoPic(nom, r === 1 ? 'happy' : r <= 3 ? '' : 'sad') : ''}<p>국가대표 후보 <b>${nom ? nom.name : '-'}</b>의 최종 순위는 <span class="nw">전체 ${n}곳 중</span> <b class="fr">${r}위</b>입니다.</p></div>${mvp}${vs('내 기업 분기 성장', '포기한 기업 분기 성장')}</div>`;
   } else {
     const adv = c.eliminating ? `<div class="panel"><h3>다음 라운드 진출 <small>${c.advance.length} / ${c.keep}곳</small></h3>
-      <div class="advhint">올려보낼 기업 <b>${c.keep}곳</b>을 고르세요. 탈락한 기업은 시장에서 계속 자랍니다.</div>
+      <div class="advhint">눌러서 진출과 탈락을 바꿀 수 있습니다.</div>
       <div class="adv">${mine().map((co, i) => { const on = c.advance.includes(co.id); return `<div class="advc ${on ? 'on' : ''} ${state.focus === i ? 'focus' : ''}" data-act="advance" data-id="${co.id}">
-        <span class="pic">${productArt(co.art)}</span><div><b>${co.name}</b> ${c.ranking.indexOf(co.id) + 1}위 · ${fmtV(co.value)}<div class="sm">${jn(co.traits.map(t => TRAITS[t].name))}</div></div><span class="st">${on ? '진출' : '탈락'}</span></div>`; }).join('')}</div></div>` : '';
-    side = `<div class="panel judge"><h3>예산 심사 결과</h3>${vs('내가 뽑은 기업 평균', '포기한 기업 평균')}${lines}</div>${adv}`;
+        <span class="pic">${ceoPic(co, on ? '' : 'sad', { face: true })}</span><div><b>${co.name}</b> ${c.ranking.indexOf(co.id) + 1}위 · ${fmtV(co.value)}<div class="sm">${jn(co.traits.map(t => TRAITS[t].name))}</div></div><span class="st">${on ? '진출' : '탈락'}</span></div>`; }).join('')}</div></div>` : '';
+    side = c.eliminating
+      ? `<div class="panel judge budget compact"><h3>예산 심사 결과 <small>분기 성장 내 기업 <b class="${cls(c.myG)}">${fmtP(c.myG)}</b> · 포기한 기업 <b class="${cls(c.dropG)}">${fmtP(c.dropG)}</b></small></h3>${mvp}${wf1}</div>${adv}`
+      : `<div class="panel judge budget"><h3>예산 심사 결과 <small>이번 분기 성장률</small></h3>${gbars}${mvp}${invTable}${wf}</div>`;
   }
-  const btn = desk(!done ? `<span class="info">순위를 하위권부터 공개하고 있습니다</span><button class="btn ghost" data-act="skip">바로 보기 (Space)</button>`
+  const btn = desk(!done ? `<button class="btn ghost" data-act="skip">바로 보기 (Space)</button>`
     : `${c.eliminating ? `<span class="info">진출 <b>${c.advance.length} / ${c.keep}</b>곳 선택</span>` : ''}<button class="btn pink" data-act="confirm-ceremony" ${c.eliminating && c.advance.length !== c.keep ? 'disabled' : ''}>${c.final ? '성적표 보기 (Enter)' : c.eliminating ? '결과 확정 (Enter)' : '다음 분기로 (Enter)'}</button>`);
   const nomCo = state.cos[state.nominee], nomR = c.ranking.indexOf(state.nominee) + 1, gap = Math.abs(c.diffPts).toFixed(1);
   const talk = !done
     ? [['narmi', c.final ? '결승 최종 발표입니다! 국가대표 후보의 최종 순위를 공개합니다.' : `${c.q}분기 성과 발표! 내가 뽑은 기업과 포기한 기업 ${n}곳의 순위를 하위권부터 공개합니다.`],
        ['dali', '심사위원님이 뽑은 기업은 시상대에 오를 수 있을까요?']]
     : c.final
-    ? [['narmi', `국가대표 후보 ${josa(nomCo ? nomCo.name : '-', '은', '는')} 전체 ${n}곳 중 최종 <b>${nomR}위</b>를 기록했습니다!`],
+    ? [['narmi', nomR === 1 ? '결승 순위가 모두 공개되었습니다! 국가대표 후보가 정상에 올랐습니다!' : nomR <= 3 ? '결승 순위가 모두 공개되었습니다! 국가대표 후보가 시상대에 올랐습니다.' : '결승 순위가 모두 공개되었습니다. 아쉽게도 국가대표 후보는 시상대에 오르지 못했습니다.'],
        ['dali', nomR === 1 ? '전체 1위예요! 축하드려요, 심사위원님!' : '성적표에서 자세한 평가를 확인해 보세요.']]
     : [['narmi', c.diffPts >= 0 ? `심사위원님이 뽑은 기업이 포기한 기업보다 평균 <b>${gap}%p</b> 더 성장했습니다! 다음 분기 예산은 <b>${c.next}억</b>입니다.`
         : `아쉽게도 포기한 기업이 평균 <b>${gap}%p</b> 더 성장했습니다. 다음 분기 예산은 <b>${c.next}억</b>입니다.`],
-       ['dali', c.eliminating ? `이제 다음 라운드로 올려보낼 ${c.keep}곳을 정해 주세요. 탈락한 기업도 시장에서 계속 자랍니다.` : '다음 분기에도 우리 기업들을 잘 부탁드려요!']];
+       ['dali', c.eliminating ? `다음 라운드에는 ${c.keep}곳만 올라가요. 탈락한 기업도 시장에서 계속 자랍니다.` : '다음 분기에도 우리 기업들을 잘 부탁드려요!']];
   // 무대 조명 빛줄기만 남긴다 (예전의 장식용 주가 그래프 선은 실제 데이터가 아니어서 뺐다)
   const beams = `<div class="beams"><i></i><i></i><i></i><i></i><i></i></div>`;
   return `${beams}${mcHead(`${c.final ? '결승' : c.q + '분기'} 성과 발표`, c.final ? '국가대표 혁신기업 최종 발표' : `${c.q}분기 기업가치 순위`, talk)}
@@ -1607,7 +1812,7 @@ function coDetailHTML(co) {
   const extra = `<div class="kv2"><span>지속 효과</span><b>${eff}</b></div>
     <div class="kv2"><span>지난달 성장</span><b>${co.lastWhy.length ? `<span class="${cls(co.lastG)}">${fmtP(co.lastG)}</span> · ${jn(co.lastWhy.map(glue))}` : '아직 없음'}</b></div>
     <div class="kv2"><span>시작 → 지금</span><b>${fmtV(co.start)} → ${fmtV(co.value)} · 들인 예산 ${Math.round(co.spent)}억</b></div>`;
-  return `<div class="ovbox codet"><div class="ovhead"><h3>기업 자세히 보기</h3><button class="x" data-act="close-ov">닫기 (Esc)</button></div>${appDetail(co, { valueLabel: '현재 기업가치', badges: true, extra })}</div>`;
+  return `<div class="ovbox codet"><div class="ovhead"><h3>기업 자세히 보기</h3><button class="x" data-act="close-ov">닫기 (Esc)</button></div>${appDetail(co, { valueLabel: '현재 기업가치', badges: true, extra, mood: moodOf(co) })}</div>`;
 }
 function renderOverlay() {
   const co = state && state.coDetail && state.cos[state.coDetail];
@@ -1617,10 +1822,10 @@ function renderOverlay() {
 function renderNominate() {
   const my = mine();
   const cards = my.map((co, i) => appDetail(co, {
-    picked: state.nomPick === co.id, focus: state.focus === i, act: 'nom', stamp: '국가대표', valueLabel: '현재 기업가치', badges: true, hexSize: 300,
+    picked: state.nomPick === co.id, focus: state.focus === i, act: 'nom', stamp: '국가대표', valueLabel: '현재 기업가치', badges: true, hexSize: 300, mood: state.nomPick === co.id ? 'happy' : '',
     button: `<button class="btn ${state.nomPick === co.id ? 'ghost' : 'pink'}" data-act="nom" data-id="${co.id}">${state.nomPick === co.id ? '지명됨' : '국가대표 후보로 지명 (Space)'}</button>`,
   })).join('');
-  const talk = [['narmi', '드디어 4분기 결승입니다! 남은 기업 중 국가대표 후보 한 곳을 지명해 주세요.'],
+  const talk = [['narmi', '드디어 4분기 결승입니다! 마지막 3개월은 한 기업에 힘을 모을 차례예요.'],
     ['dali', `지명된 기업은 4분기 동안 카드 효과가 x${tune.nomineeFactor}로 커져요. 포기한 기업까지 포함한 전체 1위에 올라야 최고 등급입니다.`]];
   return `${mcHead('4분기 결승', '국가대표 후보를 지명하세요', talk)}
     <div class="finalists">${cards}</div>
@@ -1629,15 +1834,15 @@ function renderNominate() {
 function renderResults() {
   const r = state.result;
   const nom = state.cos[r.nom];
-  const top = r.ranking.slice(0, 6).map((id, i) => { const co = state.cos[id]; return `<div class="rk r${i + 1} ${co.everPicked ? 'mine' : 'out'}"><span class="n">${i + 1}</span><span class="pic">${productArt(co.art)}</span><div><div class="nm">${co.name} ${id === r.nom ? '<span class="tag nom">국가대표</span>' : co.everPicked ? '<span class="tag my">MY PICK</span>' : '<span class="tag drop">포기</span>'}</div><div class="sub">${co.product} · 시작 ${fmtV(co.start)}</div></div><span class="vv">${fmtV(co.value)}</span></div>`; }).join('');
-  return `<div class="stage-title"><span class="ep">조달청장 성적표</span><h2>${r.grade.title}</h2></div>
-    <div class="result"><div class="grade"><div class="g">${r.grade.g}</div><div class="gt">${r.grade.title}</div><p>${r.grade.text}</p><b>총점 ${r.total} / 100</b></div>
+  const top = r.ranking.slice(0, 6).map((id, i) => { const co = state.cos[id]; return `<div class="rk r${i + 1} ${co.everPicked ? 'mine' : 'out'}"><span class="n">${i + 1}</span><span class="pic">${ceoPic(co, i < 3 ? 'happy' : '', { face: true })}</span><div><div class="nm">${co.name} ${id === r.nom ? '<span class="tag nom">국가대표</span>' : co.everPicked ? '<span class="tag my">MY PICK</span>' : '<span class="tag drop">포기</span>'}</div><div class="sub">${co.product} · 시작 ${fmtV(co.start)}</div></div><span class="vv">${fmtV(co.value)}</span></div>`; }).join('');
+  return `<div class="stage-title"><span class="ep">1년 심사 결과</span><h2>조달청장 성적표</h2></div>
+    <div class="result"><div class="grade"><div class="gtop"><div class="g">${r.grade.g}</div><div class="gceo">${ceoPic(nom, ['S', 'A'].includes(r.grade.g) ? 'happy' : r.grade.g === 'B' ? '' : 'sad')}<span>국가대표 ${nom.name}<br>${nom.ceo} 대표</span></div></div><div class="gt">${r.grade.title}</div><p>${r.grade.text}</p></div>
       <div class="panel"><h3>평가 내역</h3><div class="lines">
         <div><span>국가대표 ${nom.name}의 최종 순위 ${r.rank}위</span><b>${r.rankPts} / 40</b></div>
         <div><span>내 기업 성장 배수 ÷ 포기한 기업 성장 배수 = ${r.R.toFixed(2)}</span><b>${Math.round(r.portPts)} / 30</b></div>
-        <div><span>예산 효율: 지출 ${Math.round(state.spentTotal)}억으로 기업가치 ${fmtV(r.created)} 창출</span><b>${Math.round(r.effPts)} / 20</b></div>
+        <div><span>예산 효율: 카드 지출 ${Math.round(state.spentTotal)}억, 포기한 기업보다 더 키운 기업가치 ${r.created >= 0 ? fmtV(r.created) : '없음'}</span><b>${Math.round(r.effPts)} / 20</b></div>
         <div><span>국가대표의 지정 배지 (${nom.badges.map(b => BADGES[b].name).join(', ') || '없음'})</span><b>${r.badgePts} / 10</b></div>
-        <div class="total"><span>총점</span><span>${r.total}</span></div></div>
+        <div class="total"><span>총점</span><span>${r.total} / 100</span></div></div>
         <h3 style="margin-top:12px">최종 순위 상위 6곳</h3><div class="ranks">${top}</div></div></div>
     ${desk(`<button class="btn pink" data-act="restart">다시 하기 (Enter)</button>`)}`;
 }
@@ -1811,7 +2016,10 @@ const scenes = {
       if (state.stampFx && !state.stampFx.done && state.t - state.stampFx.t >= 1) { state.stampFx.done = true; mark(); }
       if (ph === 'lobby') {
         const L = state.lobby;
-        if (!L.done && state.t - L.t0 >= lobbyTimes(state.applicants.length).end) { L.done = true; mark(); }
+        const T = lobbyTimes(state.applicants.length), age = state.t - L.t0;
+        const landed = state.applicants.filter((_, i) => T.land(i) <= age).length;
+        if (landed !== L.landed) { L.landed = landed; mark(); }
+        if (!L.done && age >= T.end) { L.done = true; mark(); }
         if (pressed('Enter') || pressed('Space')) confirmLobby();
       } else if (ph === 'month' && state.anim) {
         if (animP() >= 1) finishMonthAnim();

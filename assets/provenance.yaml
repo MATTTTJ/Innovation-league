@@ -454,3 +454,153 @@
   tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), style reference assets/narmi.png, assets/dali.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
   date: 2026-11-15
   ships: true
+- path: assets/ceo/c01_happy.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (happy) of reference assets/ceo/c01.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c02_happy.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (happy) of reference assets/ceo/c02.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c03_happy.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (happy) of reference assets/ceo/c03.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c04_happy.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (happy) of reference assets/ceo/c04.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c05_happy.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (happy) of reference assets/ceo/c05.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c06_happy.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (happy) of reference assets/ceo/c06.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c07_happy.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (happy) of reference assets/ceo/c07.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c08_happy.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (happy) of reference assets/ceo/c08.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c09_happy.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (happy) of reference assets/ceo/c09.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c10_happy.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (happy) of reference assets/ceo/c10.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c11_happy.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (happy) of reference assets/ceo/c11.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c12_happy.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (happy) of reference assets/ceo/c12.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c13_happy.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (happy) of reference assets/ceo/c13.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c14_happy.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (happy) of reference assets/ceo/c14.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c01_sad.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (sad) of reference assets/ceo/c01.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c02_sad.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (sad) of reference assets/ceo/c02.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c03_sad.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (sad) of reference assets/ceo/c03.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c04_sad.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (sad) of reference assets/ceo/c04.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c05_sad.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (sad) of reference assets/ceo/c05.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c06_sad.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (sad) of reference assets/ceo/c06.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c07_sad.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (sad) of reference assets/ceo/c07.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c08_sad.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (sad) of reference assets/ceo/c08.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c09_sad.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (sad) of reference assets/ceo/c09.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c10_sad.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (sad) of reference assets/ceo/c10.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c11_sad.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (sad) of reference assets/ceo/c11.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c12_sad.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (sad) of reference assets/ceo/c12.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c13_sad.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (sad) of reference assets/ceo/c13.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/ceo/c14_sad.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), expression variant (sad) of reference assets/ceo/c14.png; speck cleanup, trim and resize to 320px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/stage/tray_empty.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), empty version of reference assets/stage/tray.png; speck cleanup, trim and resize to 360px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
+- path: assets/stage/notebook.png
+  origin: ai
+  tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), one notebook from reference assets/stage/tray.png at the same angle; speck cleanup, trim and resize to 300px by PowerShell System.Drawing"
+  date: 2026-11-15
+  ships: true
