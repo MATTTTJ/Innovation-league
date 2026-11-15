@@ -50,6 +50,7 @@
   .goals { flex: 1; min-width: 0; font-size: 14px; display: flex; flex-direction: column; justify-content: center; }
   .goals div { display: flex; gap: 8px; }
   .goals .gk { color: #ffd43b; font-weight: 800; min-width: 62px; flex: none; }
+  .goals div > span:last-child { flex: 1 1 auto; min-width: 0; }
   .hbtn { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); color: #fff; border-radius: 8px; padding: 6px 12px; font-size: 14px; align-self: center; flex: none; }
 
   /* ---------- 시세판 ---------- */
@@ -381,6 +382,11 @@
   /* 타이틀: 1 → 2 → 3 순서가 보이게 */
   .title-wrap { padding: 22px 20px; }
   .title-wrap h1 { font-size: 60px; margin: 10px 0 4px; }
+  /* 한글 줄바꿈: 단어(어절) 중간에서 끊지 않는다. 너무 긴 어절만 예외로 끊는다 */
+  body { word-break: keep-all; overflow-wrap: break-word; line-break: strict; }
+  h1, h2, h3, .sub, .stage-title h2, .loop { text-wrap: balance; }
+  p, li, .bubble, .mc, .step, .detail, .card, .co, .panel, .ov-body, .tip, #tip { text-wrap: pretty; }
+  .nw { display: inline-block; max-width: 100%; }
   /* 조달청 로고: 타이틀 위, 상단 바 왼쪽(흰 바탕 칩) */
   .title-wrap .org { margin-bottom: 10px; } .title-wrap .org img { height: 44px; display: inline-block; box-sizing: content-box; background: #fff; padding: 6px 16px; border-radius: 10px; box-shadow: 0 2px 10px rgba(20,48,79,0.15); }
   .org-chip { flex: none; display: flex; align-items: center; background: #fff; border-radius: 8px; padding: 4px 10px; }
@@ -400,12 +406,19 @@
   .lobby { position: absolute; inset: 0; pointer-events: none; z-index: 4; }
   #bg .bg-seats { transition: opacity .5s ease, filter .6s ease; } #app.lobby-on #bg .bg-seats { opacity: 0; }
   .lobby .appl { position: absolute; top: 400px; width: 190px; margin-left: -95px; text-align: center; animation: enter .7s cubic-bezier(.2,.8,.3,1.15) both; animation-delay: calc(var(--t) - var(--age)); }
-  .appl .pp { width: 124px; height: 124px; margin: 0 auto -40px; position: relative; z-index: 2; filter: drop-shadow(0 10px 8px rgba(31,58,95,0.25)); }
+  .lobby .appl { top: 330px; }
+  .appl .ceo { position: relative; width: 170px; height: 170px; margin: 0 auto -44px; z-index: 2; }
+  .appl .ceo img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 10px 8px rgba(31,58,95,0.25)); }
+  .appl .ceo .prod { position: absolute; right: -6px; bottom: 30px; width: 58px; height: 58px; background: #fff; border-radius: 50%; border: 2px solid #cfdae6; padding: 4px; box-shadow: 0 4px 10px rgba(31,58,95,0.18); }
+  .appl .say { position: absolute; left: 50%; bottom: calc(100% - 4px); width: 250px; margin-left: -125px; background: #fff; border: 2px solid #0c8599; border-radius: 14px; padding: 8px 12px; font-size: 16px; line-height: 1.4; color: #14304f; text-align: left; box-shadow: 0 6px 16px rgba(31,58,95,0.2); opacity: 0; z-index: 5; animation: say var(--dur) ease-out both; animation-delay: calc(var(--t) - var(--age)); }
+  .appl .say { text-wrap: balance; } .appl .say b { display: block; color: #0c8599; font-size: 14px; }
+  .appl .say::after { content: ""; position: absolute; left: 50%; top: 100%; margin-left: -9px; border: 9px solid transparent; border-top-color: #0c8599; }
+  @keyframes say { 0% { opacity: 0; transform: translateY(8px) scale(.92); } 10%, 88% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-4px); } }
   .appl .pl { width: 176px; display: block; margin: 0 auto; }
   .appl .tagn { margin-top: 6px; display: inline-block; background: #fff; border: 1px solid #cfdae6; border-radius: 8px; padding: 3px 12px; font-weight: 800; color: #14304f; font-size: 16px; box-shadow: 0 4px 10px rgba(31,58,95,0.12); white-space: nowrap; }
   .appl .tagn span { color: #0c8599; margin-right: 6px; font-size: 13px; }
   @keyframes enter { from { opacity: 0; transform: translateY(-70px) scale(.8); } to { opacity: 1; transform: none; } }
-  .lobby .fold { position: absolute; top: 400px; width: 60px; opacity: 0; --dy: 280px; animation: fly .9s ease-in-out both; animation-delay: calc(var(--t) - var(--age)); filter: drop-shadow(0 6px 6px rgba(0,0,0,0.25)); }
+  .lobby .fold { position: absolute; top: 420px; width: 60px; opacity: 0; --dy: 280px; animation: fly .9s ease-in-out both; animation-delay: calc(var(--t) - var(--age)); filter: drop-shadow(0 6px 6px rgba(0,0,0,0.25)); }
   @keyframes fly {
     0% { opacity: 0; transform: translate(0, 40px) scale(.5); }
     18% { opacity: 1; transform: translate(0, -46px) scale(1) rotate(-10deg); }
@@ -551,6 +564,32 @@
   .advc.on { border-color: #1f3a5f; background: #eef6ff; } .advc.on .st { background: #1f3a5f; }
   .advc.focus { outline-color: #0c8599; }
 
+  /* 화면 배치 (2026-11-15): 내용 칸을 화면 끝과 심사위원석 위까지 채우고, 좌우 여백을 14px로 맞춘다 */
+  .title-wrap { max-width: none; height: 876px; padding: 20px 56px 24px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
+  .title-wrap .how { width: 100%; grid-template-columns: 1fr 52px 1fr 52px 1fr; margin: 0; }
+  .title-wrap .how .step { padding: 18px 20px; font-size: 17px; }
+  .title-wrap .how .step .st { font-size: 21px; }
+  .title-wrap .how .ic { width: 110px; height: 110px; } .title-wrap .how .step { align-items: center; min-height: 170px; }
+  .title-wrap .mc-row { width: 100%; max-width: 1300px; margin: 0; }
+  .title-wrap .sub { max-width: 1100px; }
+  .title-wrap .loop, .title-wrap .controls { margin: 0; }
+  .ceremony { height: 516px; }
+  .podwrap, .bars { height: 516px; }
+  .ceremony .side-col { max-height: 516px; height: 516px; display: flex; flex-direction: column; gap: 12px; }
+  .ceremony .side-col > .panel:last-child { flex: 1; }
+  .ceremony .side-col > .judge:only-child { display: flex; flex-direction: column; justify-content: space-evenly; }
+  .finalists { max-width: none; height: 516px; gap: 14px; }
+  .finalists .detail { height: 100%; align-content: center; }
+  .result { max-width: none; margin: 0; grid-template-columns: 470px 1fr; gap: 14px; height: 668px; }
+  .result .grade { display: flex; flex-direction: column; justify-content: center; align-items: center; }
+  .result > .panel { display: flex; flex-direction: column; }
+  .result .ranks { flex: 1; align-content: space-between; }
+  .ceremony .side-col .advc .sm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ceremony .side-col .advc > div { min-width: 0; }
+  .ceremony .side-col > .judge:not(:only-child) { padding-bottom: 8px; } .ceremony .side-col > .judge:not(:only-child) .vs { display: none; }
+  .result .grade .g { font-size: 200px; line-height: 1; } .result .grade .gt { font-size: 34px; } .result .grade p { font-size: 18px; max-width: 380px; }
+  .handwrap { height: 300px; } .hand { align-items: stretch; }
+
   /* 도움말 · 기업 자세히 보기 창 */
   #ov { position: absolute; inset: 0; z-index: 40; pointer-events: none; }
   #ov:empty { display: none; }
@@ -589,6 +628,7 @@
   body.mobile { overflow: auto; height: auto; background: #e9ecef; }
   body.mobile #app { position: static; width: auto; height: auto; min-height: 100vh; transform: none !important; overflow: visible; }
   body.mobile #hdr { flex-wrap: wrap; padding: 8px 10px; gap: 6px; }
+  body.mobile #hdr { width: 100%; max-width: 100vw; box-sizing: border-box; min-width: 0; } body.mobile #hdr > * { min-width: 0; max-width: 100%; }
   body.mobile .brand { min-width: 0; flex: 1 1 100%; flex-direction: row; gap: 8px; align-items: baseline; }
   body.mobile .money { display: none; }
   body.mobile .goals { flex: 1 1 100%; order: 9; }
@@ -608,6 +648,11 @@
   body.mobile .detail .hexwrap { display: flex; justify-content: center; }
   body.mobile .cos { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; }
   body.mobile .co { min-width: 300px; height: 210px; scroll-snap-align: start; }
+  /* 휴대폰: 기업 카드가 좁아 이름이 세로로 쪼개지지 않게 폭을 넓히고 능력치 막대를 줄인다 */
+  body.mobile .co { min-width: 360px; height: auto; min-height: 210px; grid-template-columns: 54px minmax(0, 1fr) 150px; }
+  body.mobile .co .pic { width: 54px; height: 54px; }
+  body.mobile .co .nm { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 16px; display: block; }
+  body.mobile .co .sbars div { grid-template-columns: 46px 1fr 26px; gap: 4px; font-size: 12px; }
   body.mobile .center { grid-template-rows: auto auto; }
   body.mobile .twocol { grid-template-columns: 1fr; }
   body.mobile .hand { overflow-x: auto; padding: 10px 2px 6px; scroll-snap-type: x mandatory; }
@@ -756,7 +801,7 @@ function makeCompany(def) {
   const stats = {};
   for (const st of STATS) stats[st.key] = clamp(def.stats[st.key] + Math.round((rng() * 2 - 1) * 3), 5, 100);
   const co = {
-    id: def.id, name: def.name, product: def.product, sector: def.sector, art: def.art, energy: !!def.energy,
+    id: def.id, name: def.name, product: def.product, sector: def.sector, art: def.art, ceo: def.ceo, pitch: def.pitch, energy: !!def.energy,
     core: def.core, traits: def.traits, stats, prevStats: { ...stats }, badges: [], effects: [],
     status: 'applicant', everPicked: false, joined: state.turn, hist: [], path: [], trialQuarter: 0,
     cardsThisMonth: 0, stockThisMonth: false, flash: null, spent: 0, lastG: 0, lastWhy: [],
@@ -829,7 +874,7 @@ function playCard(handIdx, coId) {
     const m = traitMul(t, card.kind);
     applyFx(card.fx, t, m, out);
     if (card.link && linkOk(card.link, t)) applyFx(card.linkFx, t, m, out);
-    t.flash = { text: out.join(' · '), until: state.t + 2.6 };
+    t.flash = { text: jn(out.map(glue)), until: state.t + 2.6 };
     t.hist[state.turn] = t.value;
     t.spent += cost / targets.length;
   }
@@ -913,10 +958,13 @@ function audition(q) {
   mark();
 }
 /** 심사장 연출의 시간표(초): 기업이 차례로 입장한 뒤, 차례로 지원서를 심사위원석 서류함에 낸다 */
+/** 심사장 연출 시각(초): 입장 → 대표가 한 명씩 회사 소개(말풍선) → 소개가 끝나면 지원서 제출 */
 function lobbyTimes(n) {
-  const enter = i => i * tune.lobbyEnterGap, sendStart = enter(n - 1) + 0.9;
-  const send = i => sendStart + i * tune.lobbySendGap;
-  return { enter, send, land: i => send(i) + 0.9, end: send(n - 1) + 1.2 };
+  const gap = tune.lobbyPitchGap;
+  const enter = i => i * tune.lobbyEnterGap, talkStart = enter(n - 1) + 0.9;
+  const talk = i => talkStart + i * gap;
+  const send = i => talk(i) + gap * 0.6;
+  return { enter, talk, send, land: i => send(i) + 0.9, end: send(n - 1) + 1.2 };
 }
 /** 심사장: 연출 중이면 끝 장면으로 건너뛰고, 다 끝났으면 오디션(지원서 심사)으로 넘어간다 */
 function confirmLobby() {
@@ -1146,12 +1194,16 @@ function fitTraitsOf(kind, good = true) {
     return good ? m > 1 : m < 1;
   }).map(t => t.name);
 }
+/** 목록을 ' · '로 잇되, 항목 하나가 두 줄로 갈라지지 않게 한 덩어리로 묶는다 */
+const jn = a => { const v = a.filter(Boolean); return v.map((x, i) => `<span class="nw">${x}${i < v.length - 1 ? ' ·' : ''}</span>`).join(' '); };
+/** 숫자(+4%, 60 등)를 앞 단어에 붙여 숫자만 다음 줄로 떨어지지 않게 한다 */
+const glue = t => String(t).replace(/([^\s>]) (?=[+−-]?\d)/g, '$1&nbsp;');
 /** 카드가 특히 잘 맞는 기업: 특성, 연계 배지·업종, 비용 할인 */
 function cardFitTxt(card) {
   const f = fitTraitsOf(card.kind);
   if (card.link) f.push(card.link.badge ? `[${BADGES[card.link.badge].name}] 배지` : '에너지 업종');
   if (card.kind === 'cert') f.push(`${TRAITS.patent.name}(비용 할인)`);
-  return f.join(' · ');
+  return jn(f);
 }
 /** 카드 한 장을 내 기업 중 누구에게 쓰면 좋은지 점수 (클수록 좋다) */
 function fitScore(card, co) { return traitMul(co, card.kind) + (card.link && linkOk(card.link, co) ? 0.6 : 0); }
@@ -1160,7 +1212,7 @@ function cardAdvice(card) {
   const my = mine();
   const ok = my.filter(co => !cardCond(card, co)).sort((a, b) => fitScore(card, b) - fitScore(card, a));
   const good = fitTraitsOf(card.kind), bad = fitTraitsOf(card.kind, false);
-  let h = `<b>${card.name}</b>은(는) ${card.about}하는 카드예요. `;
+  let h = `<span class="nw"><b>${card.name}</b>${josa(card.name, '은', '는').slice(card.name.length)}</span> ${card.about}하는 카드예요. `;
   if (good.length) h += `'${good.join("'·'")}' 기업에 쓰면 효과가 커져요. `;
   if (card.link) h += card.link.badge ? `[${BADGES[card.link.badge].name}] 배지가 있는 기업이면 보너스가 붙어요. ` : '에너지 업종이면 효과가 2배예요. ';
   if (bad.length) h += `'${bad.join("'·'")}' 기업은 효과가 줄어요. `;
@@ -1179,7 +1231,7 @@ function bestPairTip() {
       if (sc > 1.05 && (!best || sc > best.sc)) best = { card, co, sc };
     }
   });
-  return best ? `이번 카드 중에서는 <b>'${best.card.name}'</b>을(를) <b>${best.co.name}</b>에 쓰면 ${effectTxt(best.co, best.card)}예요.` : '';
+  return best ? `이번 카드 중에서는 <span class="nw"><b>'${best.card.name}'</b>${josa(best.card.name, '을', '를').slice(best.card.name.length)}</span> <b class="nw">${best.co.name}</b>에 쓰면 ${effectTxt(best.co, best.card)}예요.` : '';
 }
 /** 사무실의 비서 달이가 지금 상황에 맞춰 건네는 말: 카드를 고르면 어떤 기업에 맞는지 조언한다 */
 function secretaryLine(sel) {
@@ -1203,7 +1255,7 @@ function traitChips(co) {
   return co.traits.map(t => `<span class="chip ${TRAITS[t].good ? 'good' : 'bad'}" data-tip="${TRAITS[t].good ? '장점' : '단점'}: ${TRAITS[t].desc}">${TRAITS[t].name}</span>`).join('');
 }
 function traitList(co) {
-  return co.traits.map(t => `<div class="trait ${TRAITS[t].good ? 'good' : 'bad'}"><b>${TRAITS[t].good ? '장점' : '단점'}</b><span class="tn">${TRAITS[t].name}</span><span class="td">${TRAITS[t].desc}</span></div>`).join('');
+  return co.traits.map(t => `<div class="trait ${TRAITS[t].good ? 'good' : 'bad'}"><b>${TRAITS[t].good ? '장점' : '단점'}</b><span class="tn">${TRAITS[t].name}</span><span class="td">${jn(TRAITS[t].desc.split(" · ").map(glue))}</span></div>`).join('');
 }
 /** 핵심 역량 칩: 마우스를 올리면 뜻이 보인다 */
 function coreChips(co) {
@@ -1229,7 +1281,7 @@ function fitKinds(co) {
   }
   if (has(co, 'patent')) good.push('품질 보증 비용 −30%');
   if (co.energy) good.push('리튬 공급 2배');
-  return `<div class="fitk"><div class="g"><span>잘 맞는 카드</span><b>${good.join(' · ') || '특별히 없음'}</b></div><div class="b"><span>안 맞는 카드</span><b>${bad.join(' · ') || '특별히 없음'}</b></div></div>`;
+  return `<div class="fitk"><div class="g"><span>잘 맞는 카드</span><b>${jn(good) || '특별히 없음'}</b></div><div class="b"><span>안 맞는 카드</span><b>${jn(bad) || '특별히 없음'}</b></div></div>`;
 }
 function cardHTML(card, i, opts = {}) {
   const co = opts.co, cost = cardCost(card, co);
@@ -1240,7 +1292,7 @@ function cardHTML(card, i, opts = {}) {
     <div class="aw">${cardArt(card.art, card.kind)}</div>
     <div class="cn">${card.name}</div>
     <div class="ab">${card.about}</div>
-    <div class="ct">${card.text.map(t => `<div>${t}</div>`).join('')}</div>
+    <div class="ct">${card.text.map(t => `<div>${glue(t)}</div>`).join('')}</div>
     ${fit ? `<div class="fit"><b>잘 맞음</b> ${fit}</div>` : ''}
     <div class="rr">${RARITY[card.rarity].name}</div></div>`;
 }
@@ -1264,14 +1316,14 @@ function renderHeader() {
     : state.anim ? '결산 중: 이번 달 기업가치 변화 확인'
     : state.budget >= cheapest ? `카드로 기업을 지원하고 '다음 달' (남은 카드 ${state.hand.length}장)` : `예산이 모자랍니다: '다음 달'로 넘어가기`;
   const qGoal = q === 4 ? `국가대표 후보를 전체 1위로 (현재 ${state.nominee ? ranking.indexOf(state.cos[state.nominee]) + 1 + '위' : '-'})`
-    : `내 기업이 포기한 기업보다 많이 자라면 다음 분기 예산 증가 · 분기 성장률 내 기업 <span class="${cls(myG - dropG)}">${fmtP(myG)}</span> vs 포기한 기업 ${fmtP(dropG)}`;
+    : `내 기업이 포기한 기업보다 많이 자라면 다음 분기 예산 증가 · <span class="nw">분기 성장률 내 기업 <span class="${cls(myG - dropG)}">${fmtP(myG)}</span> vs 포기한 기업 ${fmtP(dropG)}</span>`;
   const finalGoal = `4분기 말 국가대표 1곳이 전체 1위 · 내 최고 순위 ${best ? best + '위' : '-'} / ${ranking.length}곳`;
   setHTML($('hdr'), `
     <div class="org-chip"><img src="assets/brand/pps_h.png" alt="조달청" draggable="false"></div>
     <div class="brand"><span class="t1">혁신기업 키움 리그</span><span class="t2">${q}분기 · ${monthName(state.turn)} · 턴 ${Math.min(12, state.turn + 1)} / 12</span></div>
     <div class="hbox"><span class="lbl">남은 예산</span><span class="val">${Math.round(state.budget)}억</span>
       <div class="budget-bar"><i style="width:${clamp(state.budget / Math.max(1, allocTotal) * 100, 0, 100)}%"></i></div></div>
-    <div class="hbox money"><span>${state.alloc.map(a => `${a.k} ${a.v >= 0 ? '+' : '−'}${Math.abs(Math.round(a.v))}억`).join(' · ')}</span><span>이번 분기 카드 지출 −${Math.round(state.spentQ)}억</span></div>
+    <div class="hbox money"><span>${jn(state.alloc.map(a => `${a.k} ${a.v >= 0 ? '+' : '−'}${Math.abs(Math.round(a.v))}억`))}</span><span>이번 분기 카드 지출 −${Math.round(state.spentQ)}억</span></div>
     <div class="goals"><div><span class="gk">지금 할 일</span><span>${nearGoal}</span></div><div><span class="gk">분기 목표</span><span>${qGoal}</span></div><div><span class="gk">최종 목표</span><span>${finalGoal}</span></div></div>
     <div class="hbtns"><button class="hbtn" data-act="help">도움말 (H)</button><button class="hbtn" data-act="mute">${muted ? '소리 켜기' : '소리 끄기'} (M)</button></div>`);
 }
@@ -1280,7 +1332,7 @@ function renderTicker() { setHTML($('tick'), ''); }
 function renderTitle() {
   const steps = [
     ['심사장 · 오디션', productArt('drone'), '지원 기업이 심사장에 모여 지원서를 냅니다. 능력치와 장단점을 보고 키울 기업을 <b>PICK</b>합니다.'],
-    ['조달 지원 카드', '<img class="art img-art" src="assets/card/firetruck.png" alt="">', "매달 예산으로 카드를 사서 기업에 씁니다. 공공기관이 <b>먼저 사서 써 보는</b> 시범구매, 나라가 <b>품질을 보증하는</b> 인증, <b>팔 곳을 넓혀 주는</b> 판로 지원 등이 있습니다."],
+    ['조달 지원 카드', '<img class="art img-art" src="assets/card/firetruck.png" alt="">', "매달 예산으로 카드를 사서 기업에 씁니다. 공공기관이 <b class=\"nw\">먼저 사서 써 보는</b> 시범구매, 나라가 <b class=\"nw\">품질을 보증하는</b> 인증, <b class=\"nw\">판매처를 넓히는</b> 판로 지원 등이 있습니다."],
     ['분기 성과 발표', '<img class="art img-art" src="assets/stage/medal_gold.png" alt="">', '3달마다 내가 뽑은 기업과 포기한 기업이 함께 순위를 겨룹니다. 성과에 따라 다음 분기 예산이 정해집니다.'],
   ];
   const how = steps.map(([t, ic, d], i) => `${i ? '<div class="arrow" aria-hidden="true"></div>' : ''}<div class="panel step"><span class="no">${i + 1}</span><div class="ic">${ic}</div><div><b class="st">${t}</b><div>${d}</div></div></div>`).join('');
@@ -1313,13 +1365,16 @@ function renderLobby() {
   const xs = ids.map((_, i) => 800 + (i - (n - 1) / 2) * gap);
   const cos = ids.map((id, i) => {
     const co = state.cos[id];
-    return `<div class="appl" style="left:${xs[i]}px;--t:${T.enter(i).toFixed(2)}s"><div class="pp">${productArt(co.art)}</div><img class="pl" src="assets/stage/plinth.png" alt="" draggable="false"><div class="tagn"><span>No.${String(i + 1).padStart(2, '0')}</span>${co.name}</div></div>`;
+    return `<div class="appl" style="left:${xs[i]}px;--t:${T.enter(i).toFixed(2)}s">
+      <div class="say" style="--t:${T.talk(i).toFixed(2)}s;--dur:${tune.lobbyPitchGap}s"><b>${co.ceo} 대표</b>${co.pitch}</div>
+      <div class="ceo"><img src="assets/ceo/${co.id}.png" alt="${co.ceo} 대표" draggable="false"><span class="prod">${productArt(co.art)}</span></div>
+      <img class="pl" src="assets/stage/plinth.png" alt="" draggable="false"><div class="tagn"><span>No.${String(i + 1).padStart(2, '0')}</span>${co.name}</div></div>`;
   }).join('');
   const folders = ids.map((_, i) => `<img class="fold" src="assets/stage/folder.png" alt="" draggable="false" style="left:${xs[i] - 30}px;--t:${T.send(i).toFixed(2)}s;--dx:${(1200 - xs[i]).toFixed(0)}px">`).join('');
   const sheets = ids.map((_, i) => `<i style="--t:${T.land(i).toFixed(2)}s;bottom:${54 + i * 5}px"></i>`).join('');
   const talk = [
     ['narmi', q === 1 ? `혁신기업 키움 리그 심사장에 오신 것을 환영합니다! 1분기 지원 기업 <b>${n}곳</b>이 입장합니다.` : `${q}분기 추가 지원 기업 <b>${n}곳</b>이 심사장에 들어옵니다!`],
-    ['dali', L.done ? `지원서 ${n}장이 모두 접수됐어요. '심사 시작'을 눌러 지원서를 살펴보세요!` : '기업들이 심사위원석으로 지원서를 내고 있어요.'],
+    ['dali', L.done ? `지원서 ${n}장이 모두 접수됐어요. '심사 시작'을 눌러 지원서를 살펴보세요!` : '대표님들이 회사를 소개하고 지원서를 내고 있어요.'],
   ];
   return `${mcHead(`${q}분기 심사장`, `지원 기업 ${n}곳 입장 · 지원서 접수`, talk)}
     <div class="lobby" style="--age:${age.toFixed(3)}s">${cos}${folders}<div class="tray"><img src="assets/stage/tray.png" alt="" draggable="false">${sheets}<span class="cnt">${L.done ? `접수 ${n} / ${n}` : '접수 중'}</span></div></div>
@@ -1434,7 +1489,7 @@ function renderMonth() {
   if (my.length < 4 && state.quarter < 4) cos += `<div class="co empty">다음 분기 오디션에서 기업을 더 뽑을 수 있습니다</div>`;
   const legend = mineOrder().map(id => state.cos[id]).map(c => `<span><i style="background:${c.status === 'eliminated' ? '#adb5bd' : colorOf(c)}"></i>${c.name}${c.status === 'eliminated' ? ' (탈락)' : ''}</span>`).join('') + `<span><i style="background:repeating-linear-gradient(90deg,#868e96 0 6px,transparent 6px 10px)"></i>포기한 기업 평균</span>`;
   const report = anim ? `<div>${monthName(state.turn - 1)} 결산 중입니다…</div>`
-    : state.report.length ? state.report.map(r => `<div><b>${r.name}</b> <span class="${cls(r.g)}">${fmtP(r.g)}</span> · ${r.why.join(' · ')}</div>`).join('') : '<div>첫 달입니다.</div><div>카드를 지원하고 다음 달로 넘어가면</div><div>기업별 성장 결산이 여기에 나옵니다.</div>';
+    : state.report.length ? state.report.map(r => `<div><b>${r.name}</b> <span class="${cls(r.g)}">${fmtP(r.g)}</span> · ${jn(r.why.map(glue))}</div>`).join('') : '<div>첫 달입니다.</div><div>카드를 지원하고 다음 달로 넘어가면</div><div>기업별 성장 결산이 여기에 나옵니다.</div>';
   const hand = state.hand.map((id, i) => cardHTML(CARD[id], i, { sel: state.selected === i, dim: CARD[id].cost > state.budget })).join('') || '<div class="panel">이번 달 카드를 모두 썼습니다.</div>';
   const last = state.turn % 3 === 2;
   return `<div class="month ${anim ? 'animating' : ''}">
@@ -1458,7 +1513,7 @@ function renderCeremony() {
   const vals = c.ranking.map(id => state.cos[id].value), maxV = Math.max(...vals), lo = Math.min(...vals) * 0.85;
   const tagOf = (co, id) => co.status === 'mine' ? (state.nominee === id ? '<span class="tag nom">국가대표 후보</span>' : '<span class="tag my">MY PICK</span>')
     : co.status === 'eliminated' ? '<span class="tag elim">탈락</span>' : '<span class="tag drop">포기</span>';
-  const rowH = Math.min(62, Math.floor(430 / n));
+  const rowH = Math.min(62, Math.floor((516 - 54 - 3 * n) / n));
   const bars = c.ranking.map((id, i) => {
     const co = state.cos[id];
     return `<div class="br r${i + 1} ${co.status === 'mine' ? 'mine' : co.status === 'eliminated' ? 'gone' : 'out'} ${shown(i) ? '' : 'hide'}" style="height:${rowH}px;--rh:${rowH}px">
@@ -1486,12 +1541,12 @@ function renderCeremony() {
   else if (c.final) {
     const nom = state.cos[state.nominee];
     const r = c.ranking.indexOf(state.nominee) + 1;
-    side = `<div class="panel judge"><h3>최종 결과</h3><p style="font-size:19px">국가대표 후보 <b>${nom ? nom.name : '-'}</b>의 최종 순위는 <b style="color:#0c8599;font-size:28px">${r}위</b> / ${n}곳입니다.</p>${vs('내 기업 분기 성장', '포기한 기업 분기 성장')}</div>`;
+    side = `<div class="panel judge"><h3>최종 결과</h3><p style="font-size:19px">국가대표 후보 <b>${nom ? nom.name : '-'}</b>의 최종 순위는 <span class="nw">전체 ${n}곳 중</span> <b style="color:#0c8599;font-size:28px">${r}위</b>입니다.</p>${vs('내 기업 분기 성장', '포기한 기업 분기 성장')}</div>`;
   } else {
     const adv = c.eliminating ? `<div class="panel"><h3>다음 라운드 진출 <small>${c.advance.length} / ${c.keep}곳</small></h3>
       <div class="advhint">올려보낼 기업 <b>${c.keep}곳</b>을 고르세요. 탈락한 기업은 시장에서 계속 자랍니다.</div>
       <div class="adv">${mine().map((co, i) => { const on = c.advance.includes(co.id); return `<div class="advc ${on ? 'on' : ''} ${state.focus === i ? 'focus' : ''}" data-act="advance" data-id="${co.id}">
-        <span class="pic">${productArt(co.art)}</span><div><b>${co.name}</b> ${c.ranking.indexOf(co.id) + 1}위 · ${fmtV(co.value)}<div class="sm">${co.traits.map(t => TRAITS[t].name).join(' · ')}</div></div><span class="st">${on ? '진출' : '탈락'}</span></div>`; }).join('')}</div></div>` : '';
+        <span class="pic">${productArt(co.art)}</span><div><b>${co.name}</b> ${c.ranking.indexOf(co.id) + 1}위 · ${fmtV(co.value)}<div class="sm">${jn(co.traits.map(t => TRAITS[t].name))}</div></div><span class="st">${on ? '진출' : '탈락'}</span></div>`; }).join('')}</div></div>` : '';
     side = `<div class="panel judge"><h3>예산 심사 결과</h3>${vs('내가 뽑은 기업 평균', '포기한 기업 평균')}${lines}</div>${adv}`;
   }
   const btn = desk(!done ? `<span class="info">순위를 하위권부터 공개하고 있습니다</span><button class="btn ghost" data-act="skip">바로 보기 (Space)</button>`
@@ -1528,7 +1583,7 @@ function helpHTML() {
       <div class="hgrid two">${Object.values(TRAITS).map(t => `<div class="hitem ${t.good ? 'good' : 'bad'}"><b>${t.good ? '장점' : '단점'} · ${t.name}</b><span>${t.desc}</span></div>`).join('')}</div>`;
   } else if (tab === 'cards') {
     body = `<h4>카드 분야 8가지</h4><div class="hgrid two">${Object.entries(KIND).map(([k, v]) => `<div class="hitem kind"><b><i style="background:${KIND_COLOR[k]}"></i>${v.name} <small>(${v.term})</small></b><span>${v.desc}</span>${fitTraitsOf(k).length ? `<small>효과가 커지는 특성: ${fitTraitsOf(k).join(', ')}</small>` : ''}</div>`).join('')}</div>
-      <h4>카드 ${CARDS.length}장</h4><div class="hcards">${CARDS.map(c => `<div class="hc"><div class="ha">${cardArt(c.art, c.kind)}</div><div><b>${c.name}</b> <small>${KIND[c.kind].name} · ${RARITY[c.rarity].name} · ${c.cost}억</small><div class="hab">${c.about}</div><div class="hct">${c.text.join(' · ')}</div>${cardFitTxt(c) ? `<div class="hfit">잘 맞는 기업: ${cardFitTxt(c)}</div>` : ''}</div></div>`).join('')}</div>`;
+      <h4>카드 ${CARDS.length}장</h4><div class="hcards">${CARDS.map(c => `<div class="hc"><div class="ha">${cardArt(c.art, c.kind)}</div><div><b>${c.name}</b> <small>${KIND[c.kind].name} · ${RARITY[c.rarity].name} · ${c.cost}억</small><div class="hab">${c.about}</div><div class="hct">${jn(c.text.map(glue))}</div>${cardFitTxt(c) ? `<div class="hfit">잘 맞는 기업: ${cardFitTxt(c)}</div>` : ''}</div></div>`).join('')}</div>`;
   } else {
     const T = [
       ['기업가치', '기업이 얼마짜리인지 보여 주는 값(억 원)입니다. 순위는 기업가치로 정합니다.'],
@@ -1548,9 +1603,9 @@ function helpHTML() {
 }
 /** 월 운영 화면에서 기업 하나를 크게 보는 창: 육각형, 장단점, 잘 맞는 카드, 지속 효과, 지난달 결산 */
 function coDetailHTML(co) {
-  const eff = co.effects.length ? co.effects.map(e => `매달 +${(e.pct * 100).toFixed(1)}% (${e.left}개월 남음)`).join(' · ') : '없음';
+  const eff = co.effects.length ? jn(co.effects.map(e => `매달 +${(e.pct * 100).toFixed(1)}% (${e.left}개월 남음)`)) : '없음';
   const extra = `<div class="kv2"><span>지속 효과</span><b>${eff}</b></div>
-    <div class="kv2"><span>지난달 성장</span><b>${co.lastWhy.length ? `<span class="${cls(co.lastG)}">${fmtP(co.lastG)}</span> · ${co.lastWhy.join(' · ')}` : '아직 없음'}</b></div>
+    <div class="kv2"><span>지난달 성장</span><b>${co.lastWhy.length ? `<span class="${cls(co.lastG)}">${fmtP(co.lastG)}</span> · ${jn(co.lastWhy.map(glue))}` : '아직 없음'}</b></div>
     <div class="kv2"><span>시작 → 지금</span><b>${fmtV(co.start)} → ${fmtV(co.value)} · 들인 예산 ${Math.round(co.spent)}억</b></div>`;
   return `<div class="ovbox codet"><div class="ovhead"><h3>기업 자세히 보기</h3><button class="x" data-act="close-ov">닫기 (Esc)</button></div>${appDetail(co, { valueLabel: '현재 기업가치', badges: true, extra })}</div>`;
 }
@@ -1574,7 +1629,7 @@ function renderNominate() {
 function renderResults() {
   const r = state.result;
   const nom = state.cos[r.nom];
-  const top = r.ranking.slice(0, 5).map((id, i) => { const co = state.cos[id]; return `<div class="rk r${i + 1} ${co.everPicked ? 'mine' : 'out'}"><span class="n">${i + 1}</span><span class="pic">${productArt(co.art)}</span><div><div class="nm">${co.name} ${id === r.nom ? '<span class="tag nom">국가대표</span>' : co.everPicked ? '<span class="tag my">MY PICK</span>' : '<span class="tag drop">포기</span>'}</div><div class="sub">${co.product} · 시작 ${fmtV(co.start)}</div></div><span class="vv">${fmtV(co.value)}</span></div>`; }).join('');
+  const top = r.ranking.slice(0, 6).map((id, i) => { const co = state.cos[id]; return `<div class="rk r${i + 1} ${co.everPicked ? 'mine' : 'out'}"><span class="n">${i + 1}</span><span class="pic">${productArt(co.art)}</span><div><div class="nm">${co.name} ${id === r.nom ? '<span class="tag nom">국가대표</span>' : co.everPicked ? '<span class="tag my">MY PICK</span>' : '<span class="tag drop">포기</span>'}</div><div class="sub">${co.product} · 시작 ${fmtV(co.start)}</div></div><span class="vv">${fmtV(co.value)}</span></div>`; }).join('');
   return `<div class="stage-title"><span class="ep">조달청장 성적표</span><h2>${r.grade.title}</h2></div>
     <div class="result"><div class="grade"><div class="g">${r.grade.g}</div><div class="gt">${r.grade.title}</div><p>${r.grade.text}</p><b>총점 ${r.total} / 100</b></div>
       <div class="panel"><h3>평가 내역</h3><div class="lines">
@@ -1583,7 +1638,7 @@ function renderResults() {
         <div><span>예산 효율: 지출 ${Math.round(state.spentTotal)}억으로 기업가치 ${fmtV(r.created)} 창출</span><b>${Math.round(r.effPts)} / 20</b></div>
         <div><span>국가대표의 지정 배지 (${nom.badges.map(b => BADGES[b].name).join(', ') || '없음'})</span><b>${r.badgePts} / 10</b></div>
         <div class="total"><span>총점</span><span>${r.total}</span></div></div>
-        <h3 style="margin-top:12px">최종 순위 상위 5곳</h3><div class="ranks">${top}</div></div></div>
+        <h3 style="margin-top:12px">최종 순위 상위 6곳</h3><div class="ranks">${top}</div></div></div>
     ${desk(`<button class="btn pink" data-act="restart">다시 하기 (Enter)</button>`)}`;
 }
 function renderFigures() {

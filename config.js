@@ -44,7 +44,7 @@ window.CONFIG = {
   // ---- 연출 (초) ----
   monthAnim: { value: 1.8, min: 0, max: 4, step: 0.1 },        // 다음 달로 넘어갈 때 차트가 오르내리는 결산 연출 길이
   lobbyEnterGap: { value: 0.22, min: 0.05, max: 1, step: 0.01 },// 심사장에 기업이 한 곳씩 입장하는 간격
-  lobbySendGap: { value: 0.35, min: 0.1, max: 1, step: 0.05 }, // 지원서를 한 장씩 내는 간격
+  lobbyPitchGap: { value: 1.7, min: 0.6, max: 4, step: 0.1 }, // 동물 대표가 한 명씩 회사를 소개하는 시간 (소개 뒤 지원서 제출)
 
   // ---- 엔딩 등급 경계 (100점 만점) ----
   gradeS: { value: 80, min: 50, max: 100, step: 1 },
