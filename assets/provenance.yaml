@@ -604,3 +604,15 @@
   tool: "Codex CLI 0.165.0 built-in image_gen (imagegen skill), one notebook from reference assets/stage/tray.png at the same angle; speck cleanup, trim and resize to 300px by PowerShell System.Drawing"
   date: 2026-11-15
   ships: true
+- path: assets/bgm/main.mp3
+  origin: ai
+  tool: "ACE-Step 1.5 text-to-music (claude-music skill, quality high, seed 2133017213), caption: playful upbeat game show background music, pizzicato strings, marimba, glockenspiel, piano, brushed drums, instrumental, 112 BPM C major; trimmed to 84 s, faded, loudness-normalized and encoded to MP3 128k by ffmpeg"
+  model: "acestep-v15-turbo + acestep-5Hz-lm-1.7B"
+  date: 2026-11-17
+  ships: true
+- path: assets/bgm/award.mp3
+  origin: ai
+  tool: "ACE-Step 1.5 text-to-music (claude-music skill, quality high, seed 4293309138), caption: triumphant celebratory orchestral award ceremony music, brass fanfare, timpani, strings, instrumental, 120 BPM D major; trimmed to 38.5 s, faded, loudness-normalized and encoded to MP3 128k by ffmpeg"
+  model: "acestep-v15-turbo + acestep-5Hz-lm-1.7B"
+  date: 2026-11-17
+  ships: true

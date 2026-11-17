@@ -6,6 +6,8 @@
 window.CONFIG = {
   seed: 1, // every gameplay random call reads rng(), seeded from this (or ?seed= in the address)
   volume: { value: 0.5, min: 0, max: 1, step: 0.05 },
+  bgmVolume: { value: 0.35, min: 0, max: 1, step: 0.05 },   // 배경 음악 크기(전체 음량에 곱한다)
+  bgmFade: { value: 1.5, min: 0.2, max: 4, step: 0.1 },      // 곡을 바꿀 때 줄이고 키우는 시간(초)
 
   // ---- 예산 (단위: 억 원) ----
   budgetQ1: { value: 100, min: 40, max: 200, step: 5 },        // 1분기 첫 배정 예산

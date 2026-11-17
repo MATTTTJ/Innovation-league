@@ -13,4 +13,4 @@
 
 ## 출처
 
-- 그림·글꼴 출처: [assets/provenance.yaml](assets/provenance.yaml)
+- 그림·글꼴·배경 음악 출처: [assets/provenance.yaml](assets/provenance.yaml) (배경 음악은 ACE-Step 1.5로 생성)

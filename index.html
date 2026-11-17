@@ -645,6 +645,8 @@
   .wr b.pos { background: #0c8599; } .wr b.neg { background: #e03131; } .wr:first-child b { background: #1f3a5f; }
   .wr.total { font-weight: 800; border-top: 1px dashed var(--line2); padding-top: 4px; } .wr.total span { font-weight: 800; color: #14304f; } .wr.total i { height: 16px; } .wr.total b { background: linear-gradient(90deg, #1f3a5f, #0c8599); } .wr.total em { font-size: 16px; color: #14304f; }
   .judge.budget.compact { gap: 7px; } .compact .mvp { padding: 5px 10px; grid-template-columns: 52px 1fr; } .compact .mvp-pic { width: 52px; height: 52px; } .compact .mvp-n { font-size: 17px; }
+  .wnote { font-size: 12.5px; color: var(--muted); text-align: right; }
+  .wf1h small { font-size: 12.5px; color: var(--muted); font-weight: 600; }
   .compact .wf { gap: 2px; padding-top: 5px; } .compact .wr { font-size: 13px; } .compact .wr i { height: 11px; }
   .judge .finco + .mvp { margin-top: 10px; }
   /* 월 운영 오른쪽 아래: 달이 대사 길이가 바뀌어도 아래 버튼들이 움직이지 않게, 대사 칸이 남는 높이를 모두 차지한다 */
@@ -838,6 +840,37 @@ function startAudio() {
     out.connect(ac.destination); audio = { ac, out };
   }
   if (audio.ac.state === 'suspended') audio.ac.resume();
+  bgmOn = true;
+}
+
+// ---- 배경 음악: <audio>로 반복 재생한다(압축을 푼 index.html, 즉 file://에서도 재생된다) ----
+// 무대·월 운영은 main, 4분기 최종 발표와 성적표는 award. 곡을 바꿀 때는 bgmFade초 동안 엇갈려 줄인다.
+const BGM = { main: 'assets/bgm/main.mp3', award: 'assets/bgm/award.mp3' };
+const bgmEls = {};
+let bgmOn = false; // 첫 입력(브라우저의 자동 재생 제한) 뒤에만 튼다
+function bgmWant() {
+  if (scene === 'results' || (scene === 'play' && state.phase === 'ceremony' && state.cer && state.cer.final)) return 'award';
+  return 'main';
+}
+/** 매 스텝: 원하는 곡은 목표 음량으로 올리고, 나머지는 0까지 내린 뒤 멈춘다 */
+function bgmUpdate(dt) {
+  if (!bgmOn) return;
+  const want = bgmWant(), level = muted ? 0 : tune.volume * tune.bgmVolume;
+  for (const key in BGM) {
+    let el = bgmEls[key];
+    const target = key === want ? level : 0;
+    if (!el) {
+      if (target <= 0) continue;
+      el = bgmEls[key] = new Audio(BGM[key]); el.loop = true; el.volume = 0; el.dataset.v = 0;
+    }
+    const v = +el.dataset.v, nv = target > v ? Math.min(target, v + dt / tune.bgmFade) : Math.max(target, v - dt / tune.bgmFade);
+    if (nv !== v) { el.dataset.v = nv; el.volume = clamp(nv, 0, 1); }
+    if (nv > 0 && el.paused && !el.dataset.wait) {
+      el.dataset.wait = 1;
+      const pr = el.play(); if (pr) pr.then(() => delete el.dataset.wait, () => delete el.dataset.wait); else delete el.dataset.wait;
+    }
+    if (nv <= 0 && !el.paused) { el.pause(); if (key === 'award') el.currentTime = 0; }
+  }
 }
 function setMuted(m) { muted = m; if (audio) audio.out.gain.value = m ? 0 : tune.volume; mark(); }
 addEventListener('tune', () => setMuted(muted));
@@ -1727,15 +1760,17 @@ function renderCeremony() {
   let run = 0, peak = 0;
   for (const [, v] of parts) { run += v; peak = Math.max(peak, run); }
   const wmax = Math.max(peak, c.next, 1);
+  const lim = c.next === run ? '' : c.next >= tune.budgetMax ? `상한 ${tune.budgetMax}억` : `하한 ${tune.budgetMin}억`;
+  const limNote = lim ? `<div class="wnote">계산 합계 ${Math.round(run)}억 → 예산 ${lim} 적용</div>` : '';
   run = 0;
   const wf = `<div class="wf">${parts.map(([l, v, tip]) => {
     const a = run; run += v;
     return `<div class="wr"><span ${tip ? `data-tip="${tip}"` : ''}>${l}</span><i><b class="${v >= 0 ? 'pos' : 'neg'}" style="left:${(Math.min(a, run) / wmax * 100).toFixed(1)}%;width:${(Math.abs(v) / wmax * 100).toFixed(1)}%"></b></i><em class="${v < 0 ? 'down' : ''}">${v >= 0 ? '+' : '−'}${Math.abs(v)}억</em></div>`;
-  }).join('')}<div class="wr total"><span>다음 분기 예산${c.next !== run ? ' (상·하한 적용)' : ''}</span><i><b style="left:0;width:${(c.next / wmax * 100).toFixed(1)}%"></b></i><em>${c.next}억</em></div></div>`;
+  }).join('')}<div class="wr total"><span>다음 분기 예산</span><i><b style="left:0;width:${(c.next / wmax * 100).toFixed(1)}%"></b></i><em>${c.next}억</em></div>${limNote}</div>`;
   // 좁은 자리(진출 선택이 함께 나올 때)용: 예산 항목을 한 줄 누적 막대로. 빼는 항목은 끝에서 빨갛게 덜어 낸다
   const posSum = parts.reduce((a, [, v]) => a + Math.max(0, v), 0) || 1;
   const segCls = ['base', 'perf', 'top', 'carry'];
-  const wf1 = `<div class="wf1"><div class="wf1h"><span>다음 분기 예산${c.next !== run ? ' (상·하한 적용)' : ''}</span><b>${c.next}억</b></div>
+  const wf1 = `<div class="wf1"><div class="wf1h"><span>다음 분기 예산${lim ? ` <small>(${lim} 적용)</small>` : ''}</span><b>${c.next}억</b></div>
     <div class="wf1b">${parts.map(([, v], i) => v > 0 ? `<i class="${segCls[i]}" style="width:${(v / posSum * 100).toFixed(1)}%"></i>` : '').join('')}${c.perf < 0 ? `<i class="cut" style="width:${(-c.perf / posSum * 100).toFixed(1)}%"></i>` : ''}</div>
     <div class="wf1l">${parts.map(([l, v, tip], i) => v ? `<span class="nw" ${tip ? `data-tip="${tip}"` : ''}><i class="${v < 0 ? 'cut' : segCls[i]}"></i>${l.replace(/ \(.*\)/, '')} ${v > 0 ? '+' : '−'}${Math.abs(v)}</span>` : '').join(' ')}</div></div>`;
   const vs = (a, b) => `<div class="vs"><div><div class="big ${cls(c.myG)}">${fmtP(c.myG)}</div><div class="l">${a}</div></div><div class="mid">VS</div><div><div class="big ${cls(c.dropG)}">${fmtP(c.dropG)}</div><div class="l">${b}</div></div></div>`;
@@ -2074,6 +2109,7 @@ function step() {
     if (state.help || state.coDetail) { if (pressed('Escape')) { state.help = null; state.coDetail = null; mark(); } hit.clear(); }
   }
   scenes[scene].update(STEP); hit.clear();
+  bgmUpdate(STEP);
   const key = scene + (state && state.phase) + (state && state.quarter);
   if (key !== lastScene) { lastScene = key; mark(); scrollTo(0, 0); $('main').scrollTop = 0; }
 }
